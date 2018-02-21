@@ -359,7 +359,7 @@ class StateManager extends MainController {
 
 
                 $rows = array_merge($rows1, $rows2);
-                $rows = array_merge($rows, $rows3);
+                //$rows = array_merge($rows, $rows3);
             $data["rows"] = $rows;
         }
         if ($state[0]->type == "FRT") {

@@ -47,15 +47,16 @@
 
                                             <select class="form-control" name="customer" required>
                                                 <?php if (isset($customers) && $customers != null && !empty($customers)) { ?>
-
+                                                      <?php var_dump($customers);die; ?>
                                                     <?php foreach ($customers as $customer) { ?>
                                                         <option><?php echo $customer->name ?></option>
-                                                    <?php
+                                              
+                                            </select>
+                                            <input type="hidden" name="customerID" value="<?php echo $customer->id ?>" >
+                                                  <?php
                                                     }
                                                 }
                                                 ?> 
-                                            </select>
-                                            <input type="hidden" name="customerID" value="<?php echo $customer->id ?>" >
                                         </div>
                                     </div>
                                     <div class="form-group row">
