@@ -359,7 +359,7 @@ class StateManager extends MainController {
 
 
                 $rows = array_merge($rows1, $rows2);
-                //$rows = array_merge($rows, $rows3);
+                $rows = array_merge($rows, $rows3);
             $data["rows"] = $rows;
         }
         if ($state[0]->type == "FRT") {
@@ -440,10 +440,10 @@ class StateManager extends MainController {
     }
 
     public function create_file($file_to_upload, $file_name, $view, $link, $error = null) {
-        /*if ($file_name == "versement_file")
+        if ($file_name == "versement_file")
             $data['time'] = 15000;
         if ($file_name == "operation_file")
-            $data['time'] = 125000;*/
+            $data['time'] = 125000;
 
         $data['link'] = $link;
         $data['file_to_upload'] = $file_to_upload;

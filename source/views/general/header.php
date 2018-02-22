@@ -64,7 +64,8 @@
                             <li class="has-submenu">
                                 <a href="<?php echo site_url(''); ?>"><i class="ion-home"></i>ACCUEIL</a>
                                 <ul class="submenu">
-                                    <li class="has-submenu"><a href="#"><i class="ion-ios7-paper">&nbsp;&nbsp;</i> Charger le fichier des </a>
+                                    <li class="has-submenu">
+                                        <a href="#"><i class="ion-ios7-paper">&nbsp;&nbsp;</i> Charger le fichier des </a>
                                         <ul class="submenu">
                                             <li><a href="<?php echo site_url('files/create_versement_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Versements</a></li>
                                             <li><a href="<?php echo site_url('files/create_operation_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Operation</a></li>
@@ -77,10 +78,23 @@
                                             <li><a href="<?php echo site_url('state/create_delivery_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>des produits  payés à la livraison</a></li>
                                             <li><a href="<?php echo site_url('state/create_croised_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i> croisé</a></li>
                                             <li><a href="<?php echo site_url('state/create_rejected_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>des produits rejettés</a></li>
-                                            <li><a href="<?php echo site_url('state/create_uninvoiced_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>des produitsnon facturés </a></li>
+                                            <li><a href="<?php echo site_url('state/create_uninvoiced_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>des produits non facturés </a></li>
                                         </ul>
                                     </li>
+
                                      <li><a href="<?php echo site_url('billings/create'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Générer une facture</a></li>
+
+                                     <li class="has-submenu"><a href="#"><i class="ion-ios7-paper">&nbsp;&nbsp;</i> Configurer </a>
+                                        <ul class="submenu">
+                                            <li><a href="<?php echo site_url('adresses'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>les adresses</a></li>
+                                            <li><a href="<?php echo site_url('zones'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>les zones</a></li>
+                                            <li><a href="<?php echo site_url('regions'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>les régions</a></li>
+                                            <li><a href="<?php echo site_url('weight_intervals'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i> les intervaux de poids</a></li>
+                                            <li><a href="<?php echo site_url('cash_intervals'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>les intervaux de cash</a></li>
+                                            
+                                        </ul>
+                                    </li>
+
                                 </ul>
 
                             </li>
@@ -117,14 +131,6 @@
                                     
                                     <li><a href="components-carousel.html"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Listing mensuel</a></li>
                                     <li><a href="components-nestable-list.html"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Historique</a></li>
-                                </ul>
-                            </li>
-
-                            <li class="has-submenu">
-                                <a href="#"><i class="ion-person-stalker"></i>GESTION DES COMPTES</a>
-                                <ul class="submenu">
-                                    <li><a href="components-grid.html"><i class="ion-android-social-user">&nbsp;&nbsp;</i>Nouveau compte utilisateur</a></li>
-                                    <li><a href="components-carousel.html"><i class="ion-ios7-people">&nbsp;&nbsp;</i>Liste des comptes utilisateurs</a></li>
                                 </ul>
                             </li>
                         </ul>

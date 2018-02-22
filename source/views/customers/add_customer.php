@@ -61,24 +61,14 @@
                                             <input type="text" value="<?php if (isset($customer)) echo $customer[0]->bank; ?>" id="example-email" name="bank" class="form-control" placeholder="Banque" required>
                                         </div>
                                     </div>
-                                    <div class="form-group row">
-                                        <label class="col-2 col-form-label" for="example-email">Ville</label>
-                                        <div class="col-4">
-                                            <input type="text" value="<?php if (isset($customer)) echo $customer[0]->town; ?>" id="example-email" name="town" class="form-control" placeholder="Ville" required>
-                                        </div>
-                                    </div>
+                                   
                                     <div class="form-group row">
                                         <label class="col-2 col-form-label" for="example-email">Adresse</label>
                                         <div class="col-4">
                                             <input type="text" value="<?php if (isset($customer)) echo $customer[0]->adress; ?>"  id="example-email" name="adress" class="form-control" placeholder="Adresse" required>
                                         </div>
                                     </div>
-                                    <div class="form-group row">
-                                        <label class="col-2 col-form-label" for="example-email">BP</label>
-                                        <div class="col-4">
-                                            <input type="text" value="<?php if (isset($customer)) echo $customer[0]->postal_box; ?>" id="example-email"  name="postal_box" class="form-control" placeholder="Boite Postale" required>
-                                        </div>
-                                    </div>
+                                    
                                     <div class="form-group row">
                                         <label class="col-2 col-form-label" for="example-email">Numéro de téléphone</label>
                                         <div class="col-4">
