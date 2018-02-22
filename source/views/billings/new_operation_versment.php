@@ -52,18 +52,19 @@
                                                      
                                                     <?php foreach ($customers as $customer) { ?>
                                                         <option><?php echo $customer->name ?></option>
-                                              
-                                            </select>
-                                            <input type="hidden" name="customerID" value="<?php echo $customer->id ?>" >
-                                                  <?php
+                                                       <?php
                                                     }
                                                 }
                                                 ?> 
+                                            </select>
+                                            
+                                                
+                                                 
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-2 col-form-label" for="example-email"><?php if (isset($file_to_upload) && $file_to_upload != null) echo $file_to_upload; ?></label>
-                                        <div class="col-4">
+                                        <div class="col-2">
                                             <input type="file"  name="file" class="form-control"  required>
                                         </div>
                                     </div>

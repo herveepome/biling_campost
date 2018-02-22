@@ -48,12 +48,12 @@
 
                                                     <?php foreach ($customers as $customer) { ?>
                                                         <option><?php echo $customer->name ?></option>
-                                               
-                                            </select>
-                                            <input type="hidden" name="customerID" value="<?php echo $customer->id ?>" >
-                                                 <?php }
+                                                     <?php }
                                                 }
                                                 ?> 
+                                            </select>
+                                           
+                                                
                                         </div>
                                     </div>
                                      <br>   
