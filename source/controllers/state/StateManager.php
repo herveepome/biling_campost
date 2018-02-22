@@ -413,7 +413,7 @@ class StateManager extends MainController {
         }
     }
 
-    public function generate_file($test, $name_file, $nam, $data, $state_file_id, $type, $file_type, $file_name, $customer_id, $type_file_required, $period, $headers, $file, $newfile, $path, $file_name, $name, $state_croisement_id = null) {
+    public function generate_file($test, $name_file, $nam, $data, $state_file_id, $type, $file_type, $file_name, $customer_id, $type_file_required, $period, $headers, $file, $newfile, $path, $name, $state_croisement_id = null) {
         $error = null;
 
         if ($state_croisement_id != null && empty($state_croisement_id) || empty($state_file_id)) {
@@ -440,10 +440,10 @@ class StateManager extends MainController {
     }
 
     public function create_file($file_to_upload, $file_name, $view, $link, $error = null) {
-        if ($file_name == "versement_file")
+        /*if ($file_name == "versement_file")
             $data['time'] = 15000;
         if ($file_name == "operation_file")
-            $data['time'] = 125000;
+            $data['time'] = 125000;*/
 
         $data['link'] = $link;
         $data['file_to_upload'] = $file_to_upload;
