@@ -7,7 +7,9 @@
                 <div class="col-sm-5 m-t-20">
                     <div class="progress m-b-20">
                         <div class="progress-bar progress-bar-striped progress-bar-animated" id="myBar" role="progressbar"  aria-valuemax="100" style="height: 30px" ></div>
-                        <input type="hidden" id="time" value="<?php echo $time ?>" >
+                        
+                        <input type="hidden" id="time" value="<?php if (isset($time) && $time != null && !empty($time)) echo $time ?>" >
+                        
                     </div>
                     <h4 id="finalMessage"></h4>
                 </div>
@@ -47,7 +49,7 @@
 
                                             <select class="form-control" name="customer" required>
                                                 <?php if (isset($customers) && $customers != null && !empty($customers)) { ?>
-                                                      <?php var_dump($customers);die; ?>
+                                                     
                                                     <?php foreach ($customers as $customer) { ?>
                                                         <option><?php echo $customer->name ?></option>
                                               
