@@ -92,41 +92,41 @@ $route['state/generate_croised_file']['post'] = 'state/StateManager/generate_cro
 $route['state/list_croised_file']['get'] = 'state/StateManager/list_croised';
 
 // adresses
-$route['adresses']['get'] = 'config/ConfigurationManager/getAdresses';
-$route['adress/create']['get'] = 'config/ConfigurationManager/createAdress';
-$route['adress/(:num)/edit']['get'] = 'config/ConfigurationManager/editAdress/$1';
-$route['adress/(:num)/update']['POST'] = 'config/ConfigurationManager/updateAdress/$1';
-$route['adress/(:num)/show']['get'] = 'config/ConfigurationManager/readAdresse/$1';
-$route['adress/(:num)/delete']['get'] = 'config/ConfigurationManager/dropAdress/$1';
+$route['config/adresses']['get'] = 'config/ConfigurationManager/adress';
+$route['adresse/new']['get'] = 'config/ConfigurationManager/adress/new';
+$route['adresse/create']['POST'] = 'config/ConfigurationManager/adress/create/$data';
+$route['adresse/(:num)/edit']['get'] = 'config/ConfigurationManager/adress/edit/$1';
+$route['adresse/(:num)/update']['POST'] = 'config/ConfigurationManager/adress/update/$1';
+$route['adresse/(:num)/delete']['get'] = 'config/ConfigurationManager/adress/delete/$1';
 
 // zones
-$route['zones']['get'] = 'config/ConfigurationManager/getZones';
-$route['zone/create']['get'] = 'config/ConfigurationManager/createZone';
-$route['zone/(:num)/edit']['get'] = 'config/ConfigurationManager/editZone/$1';
-$route['zone/(:num)/update']['POST'] = 'config/ConfigurationManager/updateZone/$1';
-$route['zone/(:num)/show']['get'] = 'config/ConfigurationManager/readZone/$1';
-$route['zone/(:num)/delete']['get'] = 'config/ConfigurationManager/dropZone/$1';
+$route['config/zones']['get'] = 'config/ConfigurationManager/zone';
+$route['zone/new']['get'] = 'config/ConfigurationManager/zone/new';
+$route['zone/create']['POST'] = 'config/ConfigurationManager/zone/create/$data';
+$route['zone/(:num)/edit']['get'] = 'config/ConfigurationManager/zone/edit/$1';
+$route['zone/(:num)/update']['POST'] = 'config/ConfigurationManager/zone/update/$1';
+$route['zone/(:num)/delete']['get'] = 'config/ConfigurationManager/zone/delete/$1';
 
 // regions
-$route['regions']['get'] = 'config/ConfigurationManager/getRegions';
-$route['region/create']['get'] = 'config/ConfigurationManager/createRegion';
-$route['region/(:num)/edit']['get'] = 'config/ConfigurationManager/editRegion/$1';
-$route['region/(:num)/update']['POST'] = 'config/ConfigurationManager/updateRegion/$1';
-$route['region/(:num)/show']['get'] = 'config/ConfigurationManager/readRegion/$1';
-$route['region/(:num)/delete']['get'] = 'config/ConfigurationManager/dropRegion/$1';
+$route['config/regions']['get'] = 'config/ConfigurationManager/region';
+$route['region/new']['get'] = 'config/ConfigurationManager/region/new';
+$route['region/create']['POST'] = 'config/ConfigurationManager/region/create/$data';
+$route['region/(:num)/edit']['get'] = 'config/ConfigurationManager/region/edit/$1';
+$route['region/(:num)/update']['POST'] = 'config/ConfigurationManager/region/update/$1';
+$route['region/(:num)/delete']['get'] = 'config/ConfigurationManager/region/delete/$1';
 
 // cash intervalls
-$route['cash_intervals']['get'] = 'config/ConfigurationManager/getCash';
-$route['cash_interval/create']['get'] = 'config/ConfigurationManager/createCashIntervall';
-$route['cash_interval/(:num)/edit']['get'] = 'config/ConfigurationManager/editCashIntervall/$1';
-$route['cash_interval/(:num)/update']['POST'] = 'config/ConfigurationManager/updateCashIntervall/$1';
-$route['cash_interval/(:num)/show']['get'] = 'config/ConfigurationManager/readCashIntervall/$1';
-$route['cash_interval/(:num)/delete']['get'] = 'config/ConfigurationManager/dropCashIntervall/$1';
+$route['config/cash_intervals']['get'] = 'config/ConfigurationManager/cashInterval';
+$route['cash/new']['get'] = 'config/ConfigurationManager/cashInterval/new';
+$route['cash/create']['POST'] = 'config/ConfigurationManager/cashInterval/create/$data';
+$route['cash/(:num)/edit']['get'] = 'config/ConfigurationManager/cashInterval/edit/$1';
+$route['cash/(:num)/update']['POST'] = 'config/ConfigurationManager/cashInterval/update/$1';
+$route['cash/(:num)/delete']['get'] = 'config/ConfigurationManager/cashInterval/delete/$1';
 
 // weight intervalls
-$route['weight_intervals']['get'] = 'config/ConfigurationManager/getWeight';
-$route['weight_interval/create']['get'] = 'config/ConfigurationManager/createWeightIntervall';
-$route['weight_interval/(:num)/edit']['get'] = 'config/ConfigurationManager/editWeightIntervall/$1';
-$route['weight_interval/(:num)/update']['POST'] = 'config/ConfigurationManager/updateWeightIntervall/$1';
-$route['weight_interval/(:num)/show']['get'] = 'config/ConfigurationManager/readWeightIntervall/$1';
-$route['weight_interval/(:num)/delete']['get'] = 'config/ConfigurationManager/dropWeightIntervall/$1';
+$route['config/weight_intervals']['get'] = 'config/ConfigurationManager/weightInterval';
+$route['weight/new']['get'] = 'config/ConfigurationManager/weightInterval/new';
+$route['weight/create']['POST'] = 'config/ConfigurationManager/weightInterval/create/$data';
+$route['weight/(:num)/edit']['get'] = 'config/ConfigurationManager/weightInterval/edit/$1';
+$route['weight/(:num)/update']['POST'] = 'config/ConfigurationManager/weightInterval/update/$1';
+$route['weight/(:num)/delete']['get'] = 'config/ConfigurationManager/weightInterval/delete/$1';

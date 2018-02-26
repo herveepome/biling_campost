@@ -17,147 +17,307 @@ class ConfigurationManager extends MainController {
 
     public function __construct() {
         parent::__construct();
+      // chargement de la base de donnée
         $this->load->model('Configuration_model');
     }
 
-    // lister les adresses
 
-    public function getAdresses(){
-         $data['adresses']=$this->Configuration_model->getAllAdresses();
-        
-        $this->load->view('general/header.php');
-        $this->load->view('configuration/adresse/list_adresses.php', $data);
-        $this->load->view('general/footer.php');
+     /* configurer les adresses */
 
+    public function adress($action='', $value=''){
+        if (($action=='new')&&($value==''))
+        {   
+            $data['adresse']=null;
+            $this->load->view('general/header.php');
+            $this->load->view('configuration/adresse/add_adress.php',$data);
+            $this->load->view('general/footer.php');
+        }
+
+        // éditer une adresse
+        else if ($action=='create'){
+            
+            $adresse=array(
+                        'adresse'=>addslashes($this->input->post('adresse'))
+                    );
+            $this->Configuration_model->create($adresse,'adresse');
+
+            redirect('config/adresses');
+        }
+        // éditer une adresse
+       else if(($action=='edit')&&($value!=''))
+        {
+           if($value > 0){
+                $data['adresse'] = $this->Configuration_model->edit($value,'id','adresse');
+                $this->load->view('general/header.php');
+                $this->load->view('configuration/adresse/add_adress.php',$data);
+                $this->load->view('general/footer.php');
+
+            }
+        }
+        // mettre à jour une adresse
+        else if(($action=='update')&&($value!='')){
+                    $adresse=array('adresse'=>addslashes($this->input->post('adresse'))
+                                            );
+                    $this->Configuration_model->update($value,$adresse,'id','adresse');
+                    redirect('config/adresses');
+             
+        } 
+        // supprimer une adresse
+        else if(($action=='delete')&&($value!=''))
+        {   
+            $adresse = array('adresse'=>addslashes($this->input->get('adresse')),
+                             'deleted'=>1);
+            $this->Configuration_model->update($value,$adresse,'id','adresse');
+                    redirect('config/adresses');
+             
+        }
+        // lister les adresses
+        else{
+            $data['adresses']=$this->Configuration_model->all('adresse');
+            $this->load->view('general/header.php');
+            $this->load->view('configuration/adresse/list_adresses.php', $data);
+            $this->load->view('general/footer.php');
+        }
     }
 
-     // lister les zones
+  /* configurer les zones */
 
-    public function getZones(){
-         $data['zones']=$this->Configuration_model->getAllZones();
-        
-        $this->load->view('general/header.php');
-        $this->load->view('configuration/zone/list_zones.php', $data);
-        $this->load->view('general/footer.php');
+    public function zone($action='', $value=''){
+        if (($action=='new')&&($value==''))
+        {   
+            $data['zone']=null;
+            $this->load->view('general/header.php');
+            $this->load->view('configuration/zone/add_zone.php',$data);
+            $this->load->view('general/footer.php');
+        }
 
+        // éditer une zone
+        else if ($action=='create'){
+            
+            $zone=array(
+                        'zone'=>addslashes($this->input->post('zone'))
+                    );
+            $this->Configuration_model->create($zone,'zone');
+
+            redirect('config/zones');
+        }
+        // éditer une zone
+       else if(($action=='edit')&&($value!=''))
+        {
+           if($value > 0){
+                $data['zone'] = $this->Configuration_model->edit($value,'id','zone');
+                $this->load->view('general/header.php');
+                $this->load->view('configuration/zone/add_zone.php',$data);
+                $this->load->view('general/footer.php');
+
+            }
+        }
+        // mettre à jour une zone
+        else if(($action=='update')&&($value!='')){
+                    $zone=array('zone'=>addslashes($this->input->post('zone'))
+                                            );
+                    $this->Configuration_model->update($value,$zone,'id','zone');
+                    redirect('config/zones');
+             
+        } 
+        // supprimer une zone
+        else if(($action=='delete')&&($value!=''))
+        {   
+            $zone = array('zone'=>addslashes($this->input->post('zone')),
+                             'deleted'=>1);
+            $this->Configuration_model->update($value,$zone,'id','zone');
+                    redirect('config/zones');
+             
+        }
+        // lister les zones
+        else{
+            $data['zones']=$this->Configuration_model->all('zone');
+            $this->load->view('general/header.php');
+            $this->load->view('configuration/zone/list_zones.php', $data);
+            $this->load->view('general/footer.php');
+        }
     }
 
-     // lister les regions
+  /* configurer les régions */
 
-    public function getRegions(){
-         $data['regions']=$this->Configuration_model->getAllRegions();
-        
-        $this->load->view('general/header.php');
-        $this->load->view('configuration/region/list_regions.php', $data);
-        $this->load->view('general/footer.php');
+    public function region($action='', $value=''){
+        if (($action=='new')&&($value==''))
+        {   
+            $data['region']=null;
+            $data['zones']=$this->Configuration_model->all('zone');
+            $this->load->view('general/header.php');
+            $this->load->view('configuration/region/add_region.php',$data);
+            $this->load->view('general/footer.php');
+        }
 
+        // éditer une région
+        else if ($action=='create'){
+            $zone=array('zone' =>$this->Configuration_model->find(addslashes($this->input->post('zone')),'zone')) ;
+            $id_zone=$zone["zone"][0]->id; 
+            $region=array(
+                        'name'=>addslashes($this->input->post('region')),
+                        'zone_id'=>$id_zone  
+                    );
+            $this->Configuration_model->create($region,'regions');
+
+            redirect('config/regions');
+        }
+        // éditer une région
+       else if(($action=='edit')&&($value!=''))
+        {
+           if($value > 0){
+                $data['region'] = $this->Configuration_model->edit($value,'id','regions');
+                $data['zones']=$this->Configuration_model->all('zone');
+                $this->load->view('general/header.php');
+                $this->load->view('configuration/region/add_region.php',$data);
+                $this->load->view('general/footer.php');
+
+            }
+        }
+        // mettre à jour une région
+        else if(($action=='update')&&($value!='')){
+            $zone=array('zone' =>$this->Configuration_model->find(addslashes($this->input->post('zone')),'zone')) ;
+            $id_zone=$zone["zone"][0]->id; 
+            $region=array(
+                'name'=>addslashes($this->input->post('region')),
+                'zone_id'=>$id_zone  
+            );
+            $this->Configuration_model->update($value,$region,'id','regions');
+            redirect('config/regions');
+             
+        } 
+        // supprimer une région
+        else if(($action=='delete')&&($value!=''))
+        {   
+            $region = array('name'=>addslashes($this->input->post('region')),
+                             'deleted'=>1);
+            $this->Configuration_model->update($value,$region,'id','regions');
+                    redirect('config/regions');
+             
+        }
+        // lister les régions
+        else{
+            $data['regions']=$this->Configuration_model->all('regions');
+            $this->load->view('general/header.php');
+            $this->load->view('configuration/region/list_regions.php', $data);
+            $this->load->view('general/footer.php');
+        }
     }
 
-     // lister les intervauxlles de poids
+         /* configurer les intervaux de poids */
 
-    public function getWeight(){
-         $data['weights']=$this->Configuration_model->getAllWeight();
-        
-        $this->load->view('general/header.php');
-        $this->load->view('configuration/weight/list_weight.php', $data);
-        $this->load->view('general/footer.php');
+    public function weightInterval($action='', $value=''){
+        if (($action=='new')&&($value==''))
+        {   
+            $data['weight']=null;
+            $this->load->view('general/header.php');
+            $this->load->view('configuration/weight/add_weight.php',$data);
+            $this->load->view('general/footer.php');
+        }
 
+        // éditer un interval de poids
+        else if ($action=='create'){
+            
+            $weight=array(
+                        'weight'=>addslashes($this->input->post('weight'))
+                    );
+            $this->Configuration_model->create($weight,'weight');
+
+            redirect('config/weight_intervals');
+        }
+        // éditer un interval de poids
+       else if(($action=='edit')&&($value!=''))
+        {
+           if($value > 0){
+                $data['weight'] = $this->Configuration_model->edit($value,'id','weight');
+                $this->load->view('general/header.php');
+                $this->load->view('configuration/weight/add_weight.php',$data);
+                $this->load->view('general/footer.php');
+
+            }
+        }
+        // mettre à jour un interval de poids
+        else if(($action=='update')&&($value!='')){
+                    $weight=array('weight'=>addslashes($this->input->post('weight'))
+                                            );
+                    $this->Configuration_model->update($value,$weight,'id','weight');
+                    redirect('config/weight_intervals');
+             
+        } 
+        // supprimer un interval de poids
+        else if(($action=='delete')&&($value!=''))
+        {   
+            $weight = array('weight'=>addslashes($this->input->get('weight')),
+                             'deleted'=>1);
+            $this->Configuration_model->update($value,$weight,'id','weight');
+                    redirect('config/weight_intervals');
+             
+        }
+        // lister les intervaux de poids
+        else{
+            $data['weight_intervals']=$this->Configuration_model->all('weight');
+            $this->load->view('general/header.php');
+            $this->load->view('configuration/weight/list_weight.php', $data);
+            $this->load->view('general/footer.php');
+        }
     }
 
-     // lister les intervaux de cash
+          /* configurer les intervaux de cash */
 
-    public function getCash(){
-         $data['cashs']=$this->Configuration_model->getAllCashIntervalls();
-        
-        $this->load->view('general/header.php');
-        $this->load->view('configuration/cash/list_cash.php', $data);
-        $this->load->view('general/footer.php');
+    public function cashInterval($action='', $value=''){
+        if (($action=='new')&&($value==''))
+        {   
+            $data['cash']=null;
+            $this->load->view('general/header.php');
+            $this->load->view('configuration/cash/add_cash.php',$data);
+            $this->load->view('general/footer.php');
+        }
 
-    }
+        // créer un interval de cash
+        else if ($action=='create'){
+            
+            $cash=array(
+                        'interval'=>addslashes($this->input->post('cash'))
+                    );
+            $this->Configuration_model->create($cash,'cash_interval');
 
-    // ajouter une nouvelle adresse
+            redirect('config/cash_intervals');
+        }
+        // éditer un interval de cash
+       else if(($action=='edit')&&($value!=''))
+        {
+           if($value > 0){
+                $data['cash'] = $this->Configuration_model->edit($value,'id','cash_interval');
+                $this->load->view('general/header.php');
+                $this->load->view('configuration/cash/add_cash.php',$data);
+                $this->load->view('general/footer.php');
 
-    public function createAdress(){
-        $this->edit();
-    }
-
-    // mettre à jour une adresse
-    public function editAdress(){
-
-    }
-
-    // supprimer une adresse
-
-    public function dropAdress(){
-
-    }
-
-    // ajouter une nouvelle zone
-
-    public function createZone(){
-        $this->edit();
-    }
-
-    // mettre à jour une zone
-    public function editZone(){
-
-    }
-
-    // supprimer une adresse
-
-    public function dropZone(){
-
-    }
-
-    // ajouter un nouvel interval de cash
-
-    public function createCashIntervall(){
-        $this->edit();
-    }
-
-    // mettre à jour une adresse
-    public function editCashIntervall(){
-
-    }
-
-    // supprimer une adresse
-
-    public function dropCashIntervall(){
-
-    }
-
-     // ajouter un nouvel interval de poids
-
-    public function createWeightIntervall(){
-        $this->edit();
-    }
-
-    // mettre à jour un interval de poids
-    public function editWeightIntervall(){
-
-    }
-
-    // supprimer un interval de poids
-
-    public function dropWeightIntervall(){
-
-    }
-
-    // ajouter une nouvelle région
-
-    public function createRegion(){
-        $this->edit();
-    }
-
-    // mettre à jour une région
-    public function editRegion(){
-        
-    }
-
-    // supprimer une région
-
-    public function dropRegion(){
-
+            }
+        }
+        // mettre à jour un interval de cash
+        else if(($action=='update')&&($value!='')){
+                    $cash=array('interval'=>addslashes($this->input->post('cash'))
+                                            );
+                    $this->Configuration_model->update($value,$cash,'id','cash_interval');
+                    redirect('config/cash_intervals');
+             
+        } 
+        // supprimer un interval de cash
+        else if(($action=='delete')&&($value!=''))
+        {   
+            $cash = array('interval'=>addslashes($this->input->get('cash')),
+                             'deleted'=>1);
+            $this->Configuration_model->update($value,$cash,'id','cash_interval');
+                    redirect('config/cash_intervals');
+             
+        }
+        // lister les intervaux de cash
+        else{
+            $data['cash_intervals']=$this->Configuration_model->all('cash_interval');
+            $this->load->view('general/header.php');
+            $this->load->view('configuration/cash/list_cash.php', $data);
+            $this->load->view('general/footer.php');
+        }
     }
 
 }

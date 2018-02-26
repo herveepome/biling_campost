@@ -86,11 +86,11 @@
 
                                      <li class="has-submenu"><a href="#"><i class="ion-ios7-paper">&nbsp;&nbsp;</i> Configurer </a>
                                         <ul class="submenu">
-                                            <li><a href="<?php echo site_url('adresses'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>les adresses</a></li>
-                                            <li><a href="<?php echo site_url('zones'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>les zones</a></li>
-                                            <li><a href="<?php echo site_url('regions'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>les régions</a></li>
-                                            <li><a href="<?php echo site_url('weight_intervals'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i> les intervaux de poids</a></li>
-                                            <li><a href="<?php echo site_url('cash_intervals'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>les intervaux de cash</a></li>
+                                            <li><a href="<?php echo site_url('config/adresses'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>les adresses</a></li>
+                                            <li><a href="<?php echo site_url('config/zones'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>les zones</a></li>
+                                            <li><a href="<?php echo site_url('config/regions'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>les régions</a></li>
+                                            <li><a href="<?php echo site_url('config/weight_intervals'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i> les intervaux de poids</a></li>
+                                            <li><a href="<?php echo site_url('config/cash_intervals'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>les intervaux de cash</a></li>
                                             
                                         </ul>
                                     </li>

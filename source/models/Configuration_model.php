@@ -6,49 +6,59 @@
  *
  * @author mct
  */
-class Configuration_model extends MY_Model {
+class Configuration_model extends CI_Model {
 
-    protected $adress = 'adresse';
-    protected $zone = 'zone';
-    protected $region = 'regions';
-    protected $weight = 'weight';
-    protected $cash = 'cash_interval';
-      
-    // la liste des adresses
-    public function getAllAdresses(){
+	// les tables
+	protected $adresse = 'adresse';
+	protected $zone = 'zone';
+	protected $regions = 'regions';
+	protected $weight = 'weight';
+	protected $cash_interval = 'cash_interval';
+
+    // lister les éléments de la table
+    public function all($table){
     	$this->db->select('*');
-		$this->db->from($this->adress);
+		$this->db->from($table);
+		$this->db->where('deleted',0);
 		return $this->db->get()->result();
     }
 
-    // la liste des zones
-    public function getAllZones(){
-    	$this->db->select('*');
-		$this->db->from($this->zone);
-		return $this->db->get()->result();
+
+    // fonction de création
+
+     public function create($data, $table)
+	{	
+		if ($this->db->insert($table,$data)){
+			return $this->db->insert_id();
+		}
+		else {return false;}
     }
 
-    // la liste des régions
-    public function getAllRegions(){
-    	$this->db->select('*');
-		$this->db->from($this->region);
-		return $this->db->get()->result();
-    }
+    // éditer une table
+    public function edit($id,$key,$table)
+	{	
+		$query = $this->db->get_where($table,array($key=>$id));
+        if($query->num_rows()>0){
+			$rows = $query->result();
+			return $rows[0];
+		}
+		
+	}
+	// mettre à jour
 
-     // les intervalles de poids
-    public function getAllWeight(){
-    	$this->db->select('*');
-		$this->db->from($this->weight);
+	public function update($id, $data,$key,$table)
+	{
+		$this->db->where($key, $id)->update($table,$data);
+		return true;
+	}
+	
+	public function find($data, $table){
+		$this->db->select('id');
+		$this->db->from($table);
+		$this->db->where('zone',$data);
 		return $this->db->get()->result();
-    }
-
-     // les intervalles de cash
-    public function getAllCashIntervalls(){
-    	$this->db->select('*');
-		$this->db->from($this->cash);
-		return $this->db->get()->result();
-    }
-  
+	}
+	
 
  
 

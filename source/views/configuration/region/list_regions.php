@@ -19,7 +19,7 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="m-b-30">
-                                <a href="<?php echo site_url('region/create'); ?>"><button id="addToTable" class="btn btn-success waves-effect waves-light">Ajouter une adresse<i class="mdi mdi-plus-circle-outline"></i></button></a>
+                                <a href="<?php echo site_url('region/new'); ?>"><button id="addToTable" class="btn btn-success waves-effect waves-light">Ajouter une région<i class="mdi mdi-plus-circle-outline"></i></button></a>
                             </div>
                         </div>
                     </div>
@@ -40,7 +40,7 @@
                                   <td><?php echo $region->name ?></td>
                                   <td class="actions">
                                         <a href="<?php echo site_url('region/'.$region->id.'/edit'); ?>" class="on-default edit-row" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="fa fa-pencil"></i></a>
-                                        <a href="<?php echo site_url('region/'.$region->id.'/show'); ?>" class="hidden on-editing save-row" data-toggle="tooltip" data-placement="top" title="" data-original-title="Details"><i class="ti-eye"></i></a>
+                                        
                                         <a href="#custom-modal<?php echo $region->id ?>" class="hidden on-editing cancel-row" data-animation="fadein" data-plugin="custommodal" data-original-title="Delete" data-overlaySpeed="200" data-overlayColor="#36404a"><i class="fa fa-times"></i></a>
                                   </td>
                               </tr>
@@ -60,9 +60,9 @@
             </button>
             <h4 class="custom-modal-title">Attention</h4>
             <div class="custom-modal-text">
-             <?php echo "Voulez vous vraiment supprimer  cette region ? ".$region->name." ?" ?>
+             <?php echo "Voulez vous vraiment supprimer  la région ".$region->name." ?" ?>
                  <a class="btn btn-primary waves-effect waves-light btn-md" href="<?php echo site_url('region/'.$region->id .'/delete'); ?>">oui</a>
-                  <a class="btn btn-danger waves-effect waves-light" href="<?php echo site_url('regions'); ?>">Non</a>
+                  <a class="btn btn-danger waves-effect waves-light" href="<?php echo site_url('config/regions'); ?>">Non</a>
                     
             </div>
         </div>
