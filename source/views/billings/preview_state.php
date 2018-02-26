@@ -39,9 +39,9 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="card-box table-responsive">
-                            <h4 class="m-t-0 header-title"><b>FICHIERS DES RETOURNES</b></h4>
+                            <h4 class="m-t-0 header-title"><b><?php echo $file_text_name; ?></b></h4>
                         <br>
-
+                        <th><?php //var_dump($headers);var_dump($rows);die; ?>
                             <table id="datatable-buttons" class="table table-striped table-bordered" cellspacing="0" width="100%">
                                 <thead>
                                 <tr class="font-13">
@@ -81,17 +81,7 @@
         <!-- end wrapper -->
 
 
-        <!-- Footer -->
-        <footer class="footer">
-            <div class="container">
-                <div class="row">
-                    <div class="col-12 text-center">
-                        2016 - 2017 © Minton - Coderthemes.com
-                    </div>
-                </div>
-            </div>
-        </footer>
-        <!-- End Footer -->
+ 
 
 
         <!-- jQuery  -->

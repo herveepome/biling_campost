@@ -72,11 +72,11 @@ $route['files/create_operation_file']['get'] = 'state/StateManager/create_operat
 $route['files/uploading_operation_file']['post'] = 'state/StateManager/uploading_operation_file';
 
 $route['state/(:num)/preview']['get'] = 'state/StateManager/show/$1';
+$route['state/(:num)/delete']['get'] = 'state/StateManager/destroy/$1';
 
 $route['state/create_returned_file']['get'] = 'state/StateManager/create_returned_file';
 $route['state/generate_returned_file']['post'] = 'state/StateManager/generate_returned_file';
 $route['state/list_returned_file']['get'] = 'state/StateManager/list_returned_file';
-
 
 $route['state/create_paidonline_file']['get'] = 'state/StateManager/create_paidonline';
 $route['state/generate_paidonline_file']['post'] = 'state/StateManager/generate_paidonline';

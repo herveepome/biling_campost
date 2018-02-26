@@ -188,6 +188,7 @@ class MY_Model extends CI_Model {
     }
     
     public function insert_many_rows($data){
+          //var_dump(count($data));die;
         $this->db->insert_batch($this->_table_name, $data);
     }
             

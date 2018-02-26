@@ -45,7 +45,8 @@
                                   <td class="actions">
                                         <a href="<?php echo site_url("state/".$state->id."/preview"); ?>" class="hidden on-editing save-row" data-toggle="tooltip" data-placement="top" title="" data-original-title="Visualiser"><i class="ti-eye"></i></a>
                                         <a href="<?php echo base_url( $state->file_path ); ?>" class="on-default edit-row" data-toggle="tooltip" data-placement="top" title="" data-original-title="Télécharger"><i class="fa fa-download"></i></a>
-                                        <a href="" class="hidden on-editing cancel-row" data-toggle="tooltip" data-placement="top" title="" data-original-title="Supprimer"><i class="fa fa-times"></i></a>
+                                        <a href="#custom-modal<?php echo $state->id ?>" class="hidden on-editing cancel-row" data-animation="fadein" data-plugin="custommodal" data-original-title="Delete" data-overlaySpeed="200" data-overlayColor="#36404a"><i class="fa fa-times"></i></a>
+                                        
                                     </td>
                               </tr>
                              <?php 
@@ -53,7 +54,45 @@
                               
                               </tbody>
                           </table>
-             
+                                <?php if (isset($states) && $states!=null && !empty($states)){ ?>
+                                  
+                                  <?php foreach ($states as $state) {?>
+                    
+                    <!-- Custom Modal -->
+        <div id="custom-modal<?php echo $state->id ?>" class="modal-demo">
+            <button type="button" class="close" onclick="Custombox.close();">
+                <span>&times;</span><span class="sr-only">Close</span>
+            </button>
+            <h4 class="custom-modal-title">Attention</h4>
+            <div class="custom-modal-text">
+             <?php echo "Voulez vous vraiment supprimer  le fichier ".$state->name." ?" ?>
+                 <a class="btn btn-primary waves-effect waves-light btn-md" href="<?php echo site_url('state/'.$state->id.'/delete'); ?>">oui</a>
+                  <a class="btn btn-danger waves-effect waves-light" href="
+                      <?php 
+                  if ($state->type == "FR") {
+            echo site_url('state/list_returned_file');
+        }
+        if ($state->type == "FPO") {
+            echo site_url('state/list_paidonline_file');
+        }
+        if ($state->type == "FCD") {
+             echo site_url('state/list_delivery_file');
+        }
+        if ($state->type == "FC") {
+            echo site_url('list_croised_file');
+        }
+        if ($state->type == "FRT") {
+            echo site_url('');
+        }
+        if ($state->type == "FUV") {
+            echo site_url('');
+        } ?>">Non</a>
+                    
+            </div>
+        </div>
+                    
+                    <?php 
+                                  }} ?>
                 </div>
             </div>
             <!-- end: col -->
