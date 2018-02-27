@@ -34,12 +34,11 @@
             <div class="container-fluid">
 
                 <!-- Page-Title -->
-               
-
+              
                 <div class="row">
                     <div class="col-12">
                         <div class="card-box table-responsive">
-                            <h4 class="m-t-0 header-title"><b><?php echo $file_text_name; ?></b></h4>
+                            <h4 class="m-t-0 header-title"><b><?php echo file_text_name; ?></b></h4>
                         <br>
                         <th><?php //var_dump($headers);var_dump($rows);die; ?>
                             <table id="datatable-buttons" class="table table-striped table-bordered" cellspacing="0" width="100%">

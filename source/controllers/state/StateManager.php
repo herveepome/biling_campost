@@ -32,6 +32,7 @@ class StateManager extends MainController {
         $this->load->model('state_model');
         $this->load->model('operation_model');
         $this->load->model('versement_model');
+        $this->load->model('weight_model');
         $this->load->library('excel');
         $this->load->library('htmlpdf');
         //$this->load->library('spout');
@@ -385,7 +386,7 @@ class StateManager extends MainController {
 
     public function generating_file($test, $file, $newfile, $data, $name) {
 
-
+        //var_dump($data);die;
         $writer = WriterFactory::create(Type::XLSX);
         $writer->openToFile($newfile);
         if ($test != "croisement") {
@@ -413,6 +414,7 @@ class StateManager extends MainController {
 
             $writer->close();
         }
+       
     }
 
     public function generate_file($test, $name_file, $nam, $data, $state_file_id, $type, $file_type, $file_name, $customer_id, $type_file_required, $period, $headers, $file, $newfile, $path, $name, $state_croisement_id = null) {
@@ -503,15 +505,22 @@ class StateManager extends MainController {
                     }
                 }
             }
-            //var_dump($data);die;
+           // var_dump($data);die;
             $this->versement_model->insert_many_rows($data);
         }
 
         if ($file_type == "operation") {
             foreach ($reader->getSheetIterator() as $sheet) {
                 foreach ($sheet->getRowIterator() as $row) {
-
+                 
                     if ($row["0"] != "Shipment Provider") {
+                        
+                        /*$weight=$this->weight_model->getAll(array('name'=>$row['4']));
+                        if(!empty($weight))
+                            $weight_id=(int)$weight[0]->id;
+                        else 
+                            $weight_id=20;*/
+                      
                         $data[] = array(
                             'state_file_id' => $state_file_id,
                             'shipment_provider' => $row['0'],
@@ -541,7 +550,7 @@ class StateManager extends MainController {
                     }
                 }
             }
-
+            //var_dump($data);die;
             $this->operation_model->insert_many_rows($data);
         }
         $reader->close();
