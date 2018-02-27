@@ -65,7 +65,7 @@ class ConfigurationManager extends MainController {
         // supprimer une adresse
         else if(($action=='delete')&&($value!=''))
         {   
-            $adresse = array('adresse'=>addslashes($this->input->get('adresse')),
+            $adresse = array('adresse'=>$this->Configuration_model->find('adresse','id',$value,'adresse')[0]->adresse,
                              'deleted'=>1);
             $this->Configuration_model->update($value,$adresse,'id','adresse');
                     redirect('config/adresses');
@@ -123,7 +123,7 @@ class ConfigurationManager extends MainController {
         // supprimer une zone
         else if(($action=='delete')&&($value!=''))
         {   
-            $zone = array('zone'=>addslashes($this->input->post('zone')),
+            $zone = array('zone'=>$this->Configuration_model->find('zone','id',$value,'zone')[0]->zone,
                              'deleted'=>1);
             $this->Configuration_model->update($value,$zone,'id','zone');
                     redirect('config/zones');
@@ -152,7 +152,7 @@ class ConfigurationManager extends MainController {
 
         // éditer une région
         else if ($action=='create'){
-            $zone=array('zone' =>$this->Configuration_model->find(addslashes($this->input->post('zone')),'zone')) ;
+            $zone=array('zone' =>$this->Configuration_model->find('id','zone',addslashes($this->input->post('zone')),'zone')) ;
             $id_zone=$zone["zone"][0]->id; 
             $region=array(
                         'name'=>addslashes($this->input->post('region')),
@@ -176,7 +176,7 @@ class ConfigurationManager extends MainController {
         }
         // mettre à jour une région
         else if(($action=='update')&&($value!='')){
-            $zone=array('zone' =>$this->Configuration_model->find(addslashes($this->input->post('zone')),'zone')) ;
+            $zone=array('zone' =>$this->Configuration_model->find('id','zone',addslashes($this->input->post('zone')),'zone')) ;
             $id_zone=$zone["zone"][0]->id; 
             $region=array(
                 'name'=>addslashes($this->input->post('region')),
@@ -189,7 +189,8 @@ class ConfigurationManager extends MainController {
         // supprimer une région
         else if(($action=='delete')&&($value!=''))
         {   
-            $region = array('name'=>addslashes($this->input->post('region')),
+            $region = array('name'=>$this->Configuration_model->find('name','id',$value,'regions')[0]->name,
+                            'zone_id'=>$this->Configuration_model->find('zone_id','id',$value,'regions')[0]->zone_id,
                              'deleted'=>1);
             $this->Configuration_model->update($value,$region,'id','regions');
                     redirect('config/regions');
@@ -219,7 +220,8 @@ class ConfigurationManager extends MainController {
         else if ($action=='create'){
             
             $weight=array(
-                        'weight'=>addslashes($this->input->post('weight'))
+                        'weight'=>addslashes($this->input->post('weight')),
+                        'name'=>addslashes($this->input->post('name'))
                     );
             $this->Configuration_model->create($weight,'weight');
 
@@ -238,7 +240,8 @@ class ConfigurationManager extends MainController {
         }
         // mettre à jour un interval de poids
         else if(($action=='update')&&($value!='')){
-                    $weight=array('weight'=>addslashes($this->input->post('weight'))
+                    $weight=array('weight'=>addslashes($this->input->post('weight')),
+                                    'name'=>addslashes($this->input->post('name'))
                                             );
                     $this->Configuration_model->update($value,$weight,'id','weight');
                     redirect('config/weight_intervals');
@@ -247,7 +250,7 @@ class ConfigurationManager extends MainController {
         // supprimer un interval de poids
         else if(($action=='delete')&&($value!=''))
         {   
-            $weight = array('weight'=>addslashes($this->input->get('weight')),
+            $weight = array('weight'=>$this->Configuration_model->find('weight','id',$value,'weight')[0]->weight,
                              'deleted'=>1);
             $this->Configuration_model->update($value,$weight,'id','weight');
                     redirect('config/weight_intervals');
@@ -305,7 +308,7 @@ class ConfigurationManager extends MainController {
         // supprimer un interval de cash
         else if(($action=='delete')&&($value!=''))
         {   
-            $cash = array('interval'=>addslashes($this->input->get('cash')),
+            $cash = array('interval'=>$this->Configuration_model->find('interval','id',$value,'cash_interval')[0]->interval,
                              'deleted'=>1);
             $this->Configuration_model->update($value,$cash,'id','cash_interval');
                     redirect('config/cash_intervals');

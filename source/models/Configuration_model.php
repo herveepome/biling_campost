@@ -51,11 +51,11 @@ class Configuration_model extends CI_Model {
 		$this->db->where($key, $id)->update($table,$data);
 		return true;
 	}
-	
-	public function find($data, $table){
-		$this->db->select('id');
+	// rechercher un attribut dans la table
+	public function find($id,$attr,$data, $table){
+		$this->db->select($id);
 		$this->db->from($table);
-		$this->db->where('zone',$data);
+		$this->db->where($attr,$data);
 		return $this->db->get()->result();
 	}
 	

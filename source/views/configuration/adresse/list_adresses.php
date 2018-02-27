@@ -23,6 +23,7 @@
                             </div>
                         </div>
                     </div>
+                    <div></div>
                     <table id="datatable-buttons" class="table table-striped table-bordered" cellspacing="0" width="100%">
                               <thead>
                               <tr>
