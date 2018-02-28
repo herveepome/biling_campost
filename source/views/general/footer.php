@@ -74,9 +74,11 @@
                 $('#datatable').DataTable();
 
                 //Buttons examples
+                var file = document.getElementById('file_id').value;
+                
                 var table = $('#datatable-buttons').DataTable({
                     lengthChange: false,
-                    buttons: ['copy', 'excel', 'pdf']
+                    buttons: [{extend: 'excelHtml5',title:file}, {extend: 'pdfHtml5',title:file}]
                 });
 
                 table.buttons().container()

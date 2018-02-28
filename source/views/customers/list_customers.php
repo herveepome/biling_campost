@@ -23,12 +23,11 @@
                             </div>
                         </div>
                     </div>
-                    <table id="datatable-buttons" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                    <table id="datatable" class="table table-bordered" cellspacing="0" width="100%">
                               <thead>
                               <tr>
                                   <th>Entreprise</th>
                                   <th>Numéro de contribuable</th>
-                                  <th>Boite Postale</th>
                                   <th>Téléphone</th>
                                   <th>Actions</th>
                               </tr>
@@ -42,7 +41,7 @@
                              <tr>
                                   <td><?php echo $customer->name ?></td>
                                   <td><?php echo $customer->uin ?></td>
-                                  <td><?php echo $customer->postal_box ?></td>
+                                 
                                   <td><?php echo $customer->phone_number ?></td>
                                   <td class="actions">
                                         <a href="<?php echo site_url('customer/'.$customer->id.'/edit'); ?>" class="on-default edit-row" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="fa fa-pencil"></i></a>

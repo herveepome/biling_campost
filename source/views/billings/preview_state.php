@@ -1,29 +1,6 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <title>Minton - Responsive Admin Dashboard Template</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-        <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
-        <meta content="Coderthemes" name="author" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-        <link rel="shortcut icon" href="assets/images/favicon.ico">
-
-        <!-- DataTables -->
-        <link href="../plugins/datatables/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-        <link href="../plugins/datatables/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-        <!-- Responsive datatable examples -->
-        <link href="../plugins/datatables/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-
-        <!-- App css -->
-        <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-        <link href="assets/css/icons.css" rel="stylesheet" type="text/css" />
-        <link href="assets/css/style.css" rel="stylesheet" type="text/css" />
-
-        <script src="assets/js/modernizr.min.js"></script>
-
-    </head>
 
     <body>
 
@@ -39,9 +16,9 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="card-box table-responsive">
-                            <h4 class="m-t-0 header-title"><b>FICHIERS DES RETOURNES</b></h4>
+                            <h4 class="m-t-0 header-title"><b> <?php echo $file_text_name ?></b></h4>
                         <br>
-
+                        <input type="hidden" id="file_id" value="<?php if (isset($file_text_name) && $file_text_name != null && !empty($file_text_name)) echo $file_text_name ?>" >
                             <table id="datatable-buttons" class="table table-striped table-bordered" cellspacing="0" width="100%">
                                 <thead>
                                 <tr class="font-13">
@@ -64,7 +41,7 @@
                                 <td ><?php echo $row->region; ?></td>
                                 <td ><?php echo $row->payment_method; ?></td>
                                 <td ><?php echo $row->amount_to_collect; ?></td>
-                                <td ><?php if (isset($row->amount_collected)) echo $row->amount_collected; ?></td>
+                                <?php if (isset($row->amount_collected)): ?><td ><?php echo $row->amount_collected; ?></td><?php endif;?>
                                 <td ><?php echo $row->bureau; ?></td>
                                 <td ><?php echo $row->date_operation; ?></td>
                                 </tr>
@@ -129,7 +106,8 @@
                 //Buttons examples
                 var table = $('#datatable-buttons').DataTable({
                     lengthChange: false,
-                    buttons: ['copy', 'excel', 'pdf']
+                    buttons: [{extend: 'excelHtml5',title:'test'}, {extend: 'pdfHtml5',title:'test'}],
+                    
                 });
 
                 table.buttons().container()
