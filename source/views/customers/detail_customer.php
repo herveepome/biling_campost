@@ -45,19 +45,13 @@
                                       <label class="col-2 col-form-label" for="example-email"><b><?php echo $customer[0]->bank; ?></b></label>
                                   </div>
                                   
-                                   <div class="form-group row">
-                                      <label class="col-2 col-form-label" for="example-email">Ville</label>
-                                      <label class="col-2 col-form-label" for="example-email"><b><?php echo $customer[0]->town; ?></b></label>
-                                  </div>
+                                   
                                   
                                    <div class="form-group row">
                                       <label class="col-2 col-form-label" for="example-email">Adresse</label>
                                       <label class="col-2 col-form-label" for="example-email"><b><?php echo $customer[0]->adress; ?></b></label>
                                   </div>
-                                  <div class="form-group row">
-                                      <label class="col-2 col-form-label" for="example-email">BP</label>
-                                      <label class="col-2 col-form-label" for="example-email"><b><?php echo $customer[0]->postal_box; ?></b></label>
-                                  </div>
+                                 
                                   
                                   
                                   

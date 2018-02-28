@@ -61,7 +61,7 @@
                                             <input type="text" value="<?php if (isset($customer)) echo $customer[0]->bank; ?>" id="example-email" name="bank" class="form-control" placeholder="Banque" required>
                                         </div>
                                     </div>
-                                   
+
                                     <div class="form-group row">
                                         <label class="col-2 col-form-label" for="example-email">Adresse</label>
                                         <div class="col-4">
