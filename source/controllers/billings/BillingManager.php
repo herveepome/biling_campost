@@ -30,7 +30,7 @@ class BillingManager extends MainController {
 
     public function index() {
         $this->load->view('general/header.php');
-        $this->load->view('general/accueil.php');
+        $this->load->view('customers/test.php');
         $this->load->view('general/footer.php');
     }
 
