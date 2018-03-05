@@ -247,7 +247,7 @@ class StateManager extends MainController {
             //var_dump($operation_id,$versement_id);die;
             $data = array();
             if (!empty($state_file_id) && !empty($state_croisement_id)) {
-            $data1 = $this->operation_model->getCroisedRows("SELECT o.shipment_provider,o.status,o.tracking_number,v.reference as amount_collected,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,v.credit as amount_collected,o.bureau,o.date_operation FROM versement v
+            $data1 = $this->operation_model->getCroisedRows("SELECT o.shipment_provider,o.status,o.tracking_number,v.reference,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,v.credit as amount_collected,o.bureau,o.date_operation FROM versement v
                                                             cross join operation o 
                                                             WHERE  o.tracking_number=v.reference AND cast(O.amount_to_collect as unsigned integer)<>0 AND status <>'Returned' AND status <>'Lost' AND o.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id.
                                                             " GROUP  BY o.order ");
@@ -473,6 +473,7 @@ class StateManager extends MainController {
     }
 
     public function create_file($file_to_upload, $file_name, $view, $link, $error = null) {
+        
         if ($file_name == "versement_file")
             $data['time'] = 15000;
         if ($file_name == "operation_file")

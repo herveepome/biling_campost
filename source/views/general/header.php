@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+
         <meta charset="utf-8" />
         <title>Facturation CAMPOST</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -26,11 +27,13 @@
         <link href="<?php echo base_url('assets/plugins/bootstrap-daterangepicker/daterangepicker.css'); ?>" rel="stylesheet" type="text/css" />
         <link href="<?php echo base_url('assets/plugins/switchery/switchery.min.css'); ?>" rel="stylesheet" type="text/css" />
 
+
         <!-- App css -->
         <link href="<?php echo base_url('assets/css/bootstrap.min.css'); ?>" rel="stylesheet" type="text/css" />
         <link href="<?php echo base_url('assets/css/icons.css'); ?>" rel="stylesheet" type="text/css" />
         <link href="<?php echo base_url('assets/css/style.css'); ?>" rel="stylesheet" type="text/css" />
         <link href="<?php echo base_url('assets/plugins/custombox/dist/custombox.min.css'); ?>" rel="stylesheet" />
+
 
         <script src="<?php echo base_url('assets/js/modernizr.min.js'); ?>"></script>
         <script src="<?php echo base_url('assets/js/script.js'); ?>"></script>
@@ -82,7 +85,9 @@
                                         </ul>
                                     </li>
 
-                                     <li><a href="<?php echo site_url('billings/create'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Générer une facture</a></li>
+                                    <li><a href="<?php echo site_url('billing/create'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Générer le fichier de facturation </a></li>
+
+                                     <li><a href="<?php echo site_url('bill/create'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Générer une facture</a></li>
 
                                      <li class="has-submenu"><a href="#"><i class="ion-ios7-paper">&nbsp;&nbsp;</i> Configurer </a>
                                         <ul class="submenu">
