@@ -43,7 +43,7 @@
                                   
                                   
                                   <td class="actions">
-                                        <a href="<?php echo site_url("state/".$state->id."/preview"); ?>" class="hidden on-editing save-row" data-toggle="tooltip" data-placement="top" title="" data-original-title="Visualiser"><i class="ti-eye"></i></a>
+                                        <a href="<?php if($state->type='FF'){echo site_url("billing/".$state->id."/read");}else{echo site_url("state/".$state->id."/preview");}  ?>" class="hidden on-editing save-row" data-toggle="tooltip" data-placement="top" title="" data-original-title="Visualiser"><i class="ti-eye"></i></a>
                                         
                                         <a href="" class="hidden on-editing cancel-row" data-toggle="tooltip" data-placement="top" title="" data-original-title="Supprimer"><i class="fa fa-times"></i></a>
                                     </td>

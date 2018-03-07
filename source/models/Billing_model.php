@@ -17,4 +17,5 @@ class Billing_model extends MY_Model {
         parent::__construct();
        $this->set_table_name("bill_file");
     }
+
 }

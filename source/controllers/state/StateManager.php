@@ -220,8 +220,27 @@ class StateManager extends MainController {
             $operation_id=$this->state_model->getALL(array("type" =>"FO","period"=>$period,"customerID"=>$customer_id[0]->id));
             $versement_id=$this->state_model->getALL(array("type" =>"FV","period"=>$period,"customerID"=>$customer_id[0]->id));
             $state_croisement_id = ($this->state_model->getALL(array("period" => $period, "type" => "FV", "customerID" => $customer_id[0]->id)));
-            //var_dump($operation_id,$versement_id);die;
-            
+            $data = array();
+            if (!empty($state_file_id) && !empty($state_croisement_id)) {
+            $data1 = $this->operation_model->getCroisedRows("SELECT o.shipment_provider,o.status,o.tracking_number,v.reference,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,v.credit as amount_collected,o.bureau,o.date_operation FROM versement v
+                                                            cross join operation o 
+                                                            WHERE  o.tracking_number=v.reference AND cast(O.amount_to_collect as unsigned integer)<>0 AND status <>'Returned' AND status <>'Lost' AND o.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id.
+                                                            " GROUP  BY o.order ");
+            $data2 = $this->operation_model->getCroisedRows("SELECT o.shipment_provider,o.status,o.tracking_number,v.reference as amount_collected ,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,v.credit as amount_collected,o.bureau,o.date_operation FROM versement v
+                                                            cross join operation o
+                                                            WHERE right(v.reference,9)=o.order AND o.tracking_number <> v.reference AND  cast(O.amount_to_collect as unsigned integer)<>0 AND status<>'Returned' AND status <>'Lost' AND cast(O.amount_to_collect as unsigned integer)= cast(v.credit as unsigned integer) AND o.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id.
+                                                            " ORDER BY o.order");
+
+            $data3 = $this->operation_model->getCroisedRows("SELECT o.shipment_provider,o.status,o.tracking_number,v.reference  ,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,v.credit as amount_collected ,o.bureau,o.date_operation FROM versement v
+                                                            cross join operation o
+                                                            WHERE right(v.reference,9)=o.order AND o.tracking_number <> v.reference AND  cast(O.amount_to_collect as unsigned integer)<>0 AND status<>'Returned' AND status <>'Lost' AND cast(O.amount_to_collect as unsigned integer)<  cast(v.credit as unsigned integer) AND o.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id.
+                                                            " ORDER BY o.order");
+
+
+                $data = array_merge($data1, $data2);
+                $data = array_merge($data, $data3);
+            }
+
             //var_dump($period,$customer_id,$state_file_id);die;
             $name = "opérations";
             $file_type = "Fichier croisé";
@@ -247,9 +266,18 @@ class StateManager extends MainController {
         $this->list_file("croised");
     }
 
+    public function list_billing() {
+
+        $this->list_file("billing");
+    }
+
     public function list_file($file_name, $message = null) {
         $name = null;
 
+        if ($file_name == "billing") {
+            $data["states"] = $this->state_model->getALL(array("type" => "FF"));
+            $name = "des fichiers de facturation";
+        }
         if ($file_name == "returned") {
             $data["states"] = $this->state_model->getALL(array("type" => "FR"));
             $name = "des produis retournés";
@@ -436,6 +464,7 @@ class StateManager extends MainController {
     }
 
     public function create_file($file_to_upload, $file_name, $view, $link, $error = null) {
+        
         if ($file_name == "versement_file")
             $data['time'] = 15000;
         if ($file_name == "operation_file")
