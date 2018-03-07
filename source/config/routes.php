@@ -71,6 +71,7 @@ $route['billing/(:num)/store']['POST'] = 'billings/BillingManager/store/$1';
 $route['billing/(:num)/(:num)/update']['POST'] = 'billings/BillingManager/update/$1/$2';
 $route['billing/(:num)/(:num)/delete']['get'] = 'billings/BillingManager/destroy/$1/$2';
 $route['billing/(:num)/read']['get'] = 'billings/BillingManager/read/$1';
+$route['state/list_billing_file']['get'] = 'state/StateManager/list_billing';
 
 //files and state
 $route['files/create_versement_file']['get'] = 'state/StateManager/create_versement_file';
