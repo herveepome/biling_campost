@@ -12,7 +12,7 @@
             </div>
         </div>
         <!-- end page title end breadcrumb -->
-
+         
         <div class="row">
             <div class="col-12">
                 <div class="card-box">
@@ -20,11 +20,11 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="p-20">
-                                <?php  if($this->uri->segment(2) == "newLine") : ?>
+                                <?php  if($this->uri->segment(3) == "newLine") : ?>
                                 <form action="<?php if (isset($state_file_id)&& $state_file_id != null) {echo site_url('billing/'.$state_file_id.'/store/');} ?>"   method="POST">
                                     <?php else: ?>
                                     <?php if (isset($billing)): ?>
-                                    <form action="<?php if (isset($state_file_id)&& $state_file_id != null) {echo site_url('billing/' . $billing[0]->id .'/'.$state_file_id. '/update');} ?>"   method="POST">
+                                    <form action="<?php if (isset($state_file_id)&& $state_file_id != null) {echo site_url('billing/' . $state_file_id .'/'.$billing[0]->id. '/update');} ?>"   method="POST">
                                         <?php endif; ?>
                                         <?php endif; ?>
 
@@ -87,7 +87,7 @@
                                         <center>
                                             <button type="submit" class="btn btn-primary waves-effect waves-light btn-md">Valider</button>
 
-                                            <a class="btn btn-danger waves-effect waves-light" href="<?php echo site_url('billings'); ?>">Annuler</a>
+                                            <a class="btn btn-danger waves-effect waves-light" href="<?php echo site_url('billing/'.$state_file_id.'/cancel'); ?>">Annuler</a>
                                         </center>
                                     </form>
                             </div>

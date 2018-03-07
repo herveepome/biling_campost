@@ -194,18 +194,20 @@ class BillingManager extends MainController {
 
     public function editBilling($state_file_id,$id=null) {
 
-
+        
             $data['billing'] = null;
             $data['billing_id'] = $state_file_id ;
 
-
+            
         if ($id != null) {
+            
 
-            $data['billing']=$this->billing_model->getALL(array("id"=>$id));
+            $data['billing']=$this->billing_model->getALL(array("id"=>$id,"deleted"=>0));
 
         }
+        
         $data['state_file_id']=$state_file_id ;
-
+        //var_dump($id,$data);die;
         $this->load->view('general/header.php');
         $this->load->view('billings/new_billing.php', $data);
         $this->load->view('general/footer.php');
@@ -215,7 +217,7 @@ class BillingManager extends MainController {
         $this->update($state_file_id);
     }
 
-    public function update($id = null,$state_file_id)
+    public function update($state_file_id,$id = null)
     {
 
         if ($this->input->post()) {

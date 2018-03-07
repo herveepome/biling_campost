@@ -57,7 +57,7 @@
                                     <td><?php echo $billing->final_status?></td>
                                     <td><?php echo $billing->final_status_date ?></td>
                                     <td class="actions">
-                                        <a href="<?php echo site_url('billing/'.$billing->id.'/'.$billing_id.'/edit'); ?> " class="on-default edit-row" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="fa fa-pencil"></i></a>
+                                        <a href="<?php  echo site_url('billing/'.$billing_id.'/'.$billing->id.'/edit'); ?> " class="on-default edit-row" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="fa fa-pencil"></i></a>
                                         <a href="#custom-modal<?php echo $billing->id ?>" class="hidden on-editing cancel-row" data-animation="fadein" data-plugin="custommodal" data-original-title="Delete" data-overlaySpeed="200" data-overlayColor="#36404a"><i class="fa fa-times"></i></a>
                                     </td>
                                 </tr>
@@ -79,7 +79,7 @@
                                 <div class="custom-modal-text">
                                     <?php echo "Voulez vous vraiment supprimer  cette ligne?" ?>
                                     <a class="btn btn-primary waves-effect waves-light btn-md" href="<?php echo site_url('billing/'.$billing->id .'/'.$billing_id.'/delete'); ?>">oui</a>
-                                    <a class="btn btn-danger waves-effect waves-light" href="<?php echo site_url('billings'); ?>">Non</a>
+                                    <a class="btn btn-danger waves-effect waves-light" href="<?php echo site_url('billing/'.$billing_id.'/cancel'); ?>">Non</a>
 
                                 </div>
                             </div>
