@@ -9,6 +9,10 @@
         <meta content="Coderthemes" name="author" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
+
+        <!--Form Wizard-->
+        <link rel="stylesheet" type="text/css" href="<?php echo base_url('assets/plugins/jquery.steps/css/jquery.steps.css');?>" >
+
         <link rel="shortcut icon" href="<?php echo base_url('assets/images/campost.png'); ?>">
         <!-- DataTables -->
         <link href="<?php echo base_url('assets/plugins/datatables/dataTables.bootstrap4.min.css'); ?>" rel="stylesheet" type="text/css" />

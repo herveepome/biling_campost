@@ -18,6 +18,7 @@ class CustomerManager extends MainController {
     public function __construct() {
         parent::__construct();
         $this->load->model('customer_model');
+        $this->load->model('configuration_model');
     }
 
     public function index() {
@@ -39,14 +40,17 @@ class CustomerManager extends MainController {
     /* Permet d'afficher l'interface de modification d'un client */
 
     public function edit($id = null) {
-        
+
         $data['customer'] = null;
         if ($id != null) {
             
             $data['customer']=$this->customer_model->getALL(array("id"=>$id));
             
         }
-
+        $data['adresses'] = $this->configuration_model->all('adresse');
+        $data['cashs'] = $this->configuration_model->all('cash_interval');
+        $data['zones'] = $this->configuration_model->all('zone');
+        $data['poids'] = $this->configuration_model->all('weight');
         $this->load->view('general/header.php');
         $this->load->view('customers/add_customer.php', $data);
         $this->load->view('general/footer.php');
@@ -64,6 +68,7 @@ class CustomerManager extends MainController {
         if ($this->input->post()) {
             extract($this->input->post(NULL, TRUE));
             $customer=$this->input->post();
+            $cash = $this->input->post();
             
             if ($id == null) {
                 
