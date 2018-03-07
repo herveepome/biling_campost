@@ -104,7 +104,7 @@
                                             <div class="col-6">
                                                 <div class="form-group row">
                                                     <label class="col-4 col-form-label" for="example-email"> [ <?php echo $cash->interval ; ?> ] </label>
-                                                    <input class="col-6" type="text" value="" id="example-email"  name="amount" class="form-control" placeholder="commission" required>
+                                                    <input class="col-6" type="text" value="" id="example-email"  name="amount[]" class="form-control" placeholder="commission" required>
 
                                                 </div>
 
@@ -115,7 +115,7 @@
                                     ?>
                                 </div>
                             </section>
-                            <h3>Tarification zone poids</h3>
+                            <h3>Tarification domicile</h3>
                             <section>
                                 <div class="form-group row">
                                     <?php if (isset($zones) && $zones != null && !empty($zones)) {
@@ -128,8 +128,8 @@
                                                         <label class="col-4 col-form-label" for="example-email">
                                                             [ <?php echo $zone->zone; ?> ][<?php echo $poid->weight; ?>] </label>
                                                         <input class="col-6" type="text" value="" id="example-email"
-                                                               name="tarif" class="form-control"
-                                                               placeholder="commission"
+                                                               name="tarif[]" class="form-control"
+                                                               placeholder="tarif"
                                                                required>
 
                                                     </div>

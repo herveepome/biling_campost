@@ -19,6 +19,8 @@ class CustomerManager extends MainController {
         parent::__construct();
         $this->load->model('customer_model');
         $this->load->model('configuration_model');
+        $this->load->model('cash_model');
+
     }
 
     public function index() {
@@ -67,12 +69,35 @@ class CustomerManager extends MainController {
 
         if ($this->input->post()) {
             extract($this->input->post(NULL, TRUE));
-            $customer=$this->input->post();
-            $cash = $this->input->post();
-            
+            $data=$this->input->post();
+           // var_dump($data); die;
+            $customer = array("name"=>$data['name'],
+                             "business_register"=>$data['business_register'],
+                             "uin"=>$data['uin'],
+                            "account_number"=>$data['account_number'],
+                            "bank"=>$data['bank'],
+                            "adress"=>$data['adress'],
+                            "phone_number"=>$data['phone_number'],
+                             );
+            $cashData = $data['amount'];
+            $tarifData= $data['tarif'];
+            $intervals = $this->configuration_model->all('cash_interval');
+
+           // var_dump($interval[0]->interval);die;
+            //var_dump($cashData); die;
             if ($id == null) {
-                
-                $this->customer_model->insert($customer);
+                if ($lastId = $this->customer_model->insert($customer) ){
+                    $i=0;
+                    foreach ($intervals as $interval){
+                        $cashs[]=array("cash_interval_id"=>$interval->id,
+                            "customer_id"=>$lastId,
+                            "amount"=>$cashData[$i]
+                            );
+                        $i++;
+                    }
+                    $this->cash_model->insert_many_rows($cashs);
+                }
+
                 
             }else{
                 
