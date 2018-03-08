@@ -315,6 +315,7 @@ class StateManager extends MainController {
     }
 
     public function show($id) {
+        
         $state = $this->state_model->getALL(array("id" => $id));
         
         $operation_id=$this->state_model->getALL(array("type" =>"FO","period"=>$state[0]->period,"customerID"=>$state[0]->customerID));
@@ -329,7 +330,7 @@ class StateManager extends MainController {
                 'Amount to collect', 'Bureau', 'D. opé');
             
                 $rows = $this->operation_model->getCroisedRows("SELECT o.shipment_provider,o.status, DISTINCT o.tracking_number,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,o.bureau,o.date_operation FROM operation o
-                                                            WHERE status = 'Returned' OR status = 'Lost' OR status = 'Reversed' OR status = 'Being returned' AND state_file_id =" .$operation_id[0]->id.
+                                                            WHERE status = 'Returned' OR status = 'Lost' OR status = 'Reversed' OR status = 'Being returned' OR status = 'At the hub' OR status = 'At the hub - requested' AND state_file_id =" .$operation_id[0]->id.
                                                             " ORDER  BY o.order ");
             
                
@@ -349,7 +350,7 @@ class StateManager extends MainController {
             $data["headers"] = array('Order','Tracking Number','Shipment Provider', 'Status', 'SIZE', 'Region', 'Payment Method',
                 'Amount to collect', 'Bureau', 'D. opé');
             $rows = $this->operation_model->getCroisedRows("SELECT o.shipment_provider,o.status, DISTINCT o.tracking_number,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,o.bureau,o.date_operation FROM operation o
-                                                            WHERE amount_to_collect<>0 AND status <> 'Returned' AND status <> 'Lost' AND status <> 'Reversed' AND status <> 'Being returned' 
+                                                            WHERE amount_to_collect<>0 AND status <> 'Returned' AND status <> 'Lost' AND status <> 'Reversed' AND status <> 'Being returned' AND status <> 'At the hub' AND status <> 'At the hub - requested'
                                                              AND SUBSTR(REPLACE(o.start_time,'/',''),3,6)=".substr($state[0]->period,2,6)." AND state_file_id =" .$operation_id[0]->id.
                                                             " ORDER  BY o.order "); 
             
@@ -361,19 +362,19 @@ class StateManager extends MainController {
                 'Amount to collect', 'Amount_collected', 'Bureau', 'D. opé');
             
            
-             //var_dump($test);die;
-            /*$rows1 = $this->operation_model->getCroisedRows("SELECT  o.tracking_number, o.shipment_provider,o.status,v.reference,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,v.credit as amount_collected,o.bureau,o.date_operation FROM versement v 
-                                                            JOIN operation o  ON v.reference=o.tracking_number  WHERE    cast(O.amount_to_collect as unsigned integer)<>0  AND status <> 'Lost' AND status <> 'Reversed' AND status <> 'Being returned'   AND o.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id.
+             
+           $rows1 = $this->operation_model->getCroisedRows("SELECT  o.tracking_number, o.shipment_provider,o.status,v.reference,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,v.credit as amount_collected,o.bureau,o.date_operation FROM versement v 
+                                                            LEFT JOIN operation o  ON v.reference=o.tracking_number  WHERE   cast(O.amount_to_collect as unsigned integer)<>0  AND status <> 'Lost' AND status <> 'Reversed' AND status <> 'Being returned' AND status <> 'At the hub' AND status <> 'At the hub - requested'  AND o.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id.
                                                             "  GROUP BY o.tracking_number ORDER BY o.order ");
-            $rows2 = $this->operation_model->getCroisedRows("SELECT  o.tracking_number, o.shipment_provider,o.status,v.reference  ,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,v.credit as amount_collected,o.bureau,o.date_operation FROM versement v
-                                                            cross join operation o
-                                                            WHERE SUBSTRING(v.reference,-9,9)=o.order AND v.reference<>o.tracking_number  AND  cast(O.amount_to_collect as unsigned integer)<>0 AND cast(O.amount_to_collect as unsigned integer)=cast(v.credit as unsigned integer) AND status <> 'Lost' AND status <> 'Reversed' AND status <> 'Being returned' AND o.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id.
+             /*$rows2 = $this->operation_model->getCroisedRows("SELECT  DISTINCT o.tracking_number, o.shipment_provider,o.status,v.reference  ,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,v.credit as amount_collected,o.bureau,o.date_operation FROM versement v
+                                                            left join operation o
+                                                            on  right(v.reference,9)=o.order   AND  cast(O.amount_to_collect as unsigned integer)<>0 AND cast(O.amount_to_collect as unsigned integer)=cast(v.credit as unsigned integer) AND status <> 'Lost' AND status <> 'Reversed' AND status <> 'Being returned' AND status <> 'At the hub' AND status <> 'At the hub - requested' AND o.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id.
                                                             " GROUP BY o.tracking_number ORDER  BY o.order");*/
 
-           $rows3 = $this->operation_model->getCroisedRows("SELECT DISTINCT o.tracking_number, o.shipment_provider,o.status,o.tracking_number,v.reference  ,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,v.credit as amount_collected ,o.bureau,o.date_operation FROM versement v
+           /*$rows3 = $this->operation_model->getCroisedRows("SELECT DISTINCT o.tracking_number, o.shipment_provider,o.status,o.tracking_number,v.reference  ,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,v.credit as amount_collected ,o.bureau,o.date_operation FROM versement v
                                                             cross join operation o
-                                                            WHERE right(v.reference,9)=o.order AND o.tracking_number <> v.reference AND  cast(O.amount_to_collect as unsigned integer)<>0  AND status <> 'Lost' AND status <> 'Reversed' AND status <> 'Being returned' AND cast(O.amount_to_collect as unsigned integer)<  cast(v.credit as unsigned integer)  AND o.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id.
-                                                            " GROUP BY o.tracking_number ORDER BY o.order");
+                                                            WHERE right(v.reference,9)=o.order AND o.tracking_number <> v.reference AND  cast(O.amount_to_collect as unsigned integer)<>0  AND status <> 'Lost' AND status <> 'Reversed' AND status <> 'Being returned' AND cast(O.amount_to_collect as unsigned integer)<  cast(v.credit as unsigned integer) AND status <> 'At the hub' AND status <> 'At the hub - requested'  AND o.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id.
+                                                            " GROUP BY o.tracking_number ORDER BY o.order");*/
                                                     
            
                                                            
@@ -382,7 +383,7 @@ class StateManager extends MainController {
                // $rows = array_merge($rows, $rows3);
             
             //var_dump($rows2);die;
-            $data["rows"] = $rows3;
+            $data["rows"] = $rows2;
         }
         if ($state[0]->type == "FRT") {
             $data["file_text_name"] = $name = "Fichier des rejets   de la période " . $state[0]->period;
