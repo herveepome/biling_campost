@@ -27,7 +27,7 @@
                             <?php endif; ?>
                             <?php endif; ?>
                         <div>
-                            <h3>Informations client</h3>
+                            <h3>Informations relative au client</h3>
                             <section>
                                 <div class="form-group row">
                                     <label class="col-2 col-form-label">Nom de l'entreprise</label>
@@ -87,7 +87,6 @@
                                 <div class="form-group row">
                                     <label class="col-2 col-form-label" for="example-email">Format du numéro de tracking</label>
                                     <div class="col-4">
-                                        <input type="text" value="<?php if (isset($customer)) echo $customer[0]->tracking_number; ?>"id="example-email"  name="phone_number" class="form-control" placeholder="Format du tracking number" required>
                                     </div>
 
                                 </div>
@@ -98,13 +97,15 @@
                             <section>
 
                                 <div class="form-group row">
-                                    <?php if (isset($cashs) && $cashs != null && !empty($cashs)) { ?>
+                                    <?php if (isset($cashs) && $cashs != null && !empty($cashs)) { $i=0;?>
                                          <?php foreach ($cashs as $cash) { ?>
 
                                             <div class="col-6">
                                                 <div class="form-group row">
                                                     <label class="col-4 col-form-label" for="example-email"> [ <?php echo $cash->interval ; ?> ] </label>
-                                                    <input class="col-6" type="text" value="" id="example-email"  name="amount[]" class="form-control" placeholder="commission" required>
+
+                                                        <input class="col-6" type="text" value="<?php if (isset($cash_collected)){   echo($cash_collected[$i]->amount); $i++;}   ?>" id="example-email"  name="amount[]" class="form-control" placeholder="commission" required>
+
 
                                                 </div>
 
@@ -115,11 +116,12 @@
                                     ?>
                                 </div>
                             </section>
-                            <h3>Tarification domicile</h3>
+                            <h3>Tarification à domicile</h3>
                             <section>
                                 <div class="form-group row">
                                     <?php if (isset($zones) && $zones != null && !empty($zones)) {
-                                        if (isset($poids) && $poids != null && !empty($poids)) { ?>
+                                        if (isset($poids) && $poids != null && !empty($poids)) {
+                                            $i=0;?>
                                         <?php foreach ($zones as $zone) {
                                                 foreach ($poids as $poid) {?>
 
@@ -127,10 +129,10 @@
                                                     <div class="form-group row">
                                                         <label class="col-4 col-form-label" for="example-email">
                                                             [ <?php echo $zone->zone; ?> ][<?php echo $poid->weight; ?>] </label>
-                                                        <input class="col-6" type="text" value="" id="example-email"
-                                                               name="tarif[]" class="form-control"
-                                                               placeholder="tarif"
-                                                               required>
+
+                                                            <input class="col-6" type="text" value="<?php if (isset($domicile_collected)){echo($domicile_collected[$i]->amount); $i++;}   ?>" id="example-email"  name="tarifdomicile[]" class="form-control"
+                                                                   placeholder="tarif à domicile"
+                                                                   required>
 
                                                     </div>
 
@@ -139,6 +141,35 @@
                                             }
                                         }
                                     }
+                                    }
+                                    ?>
+                                </div>
+                            </section>
+                            <h3>Tarification au bureau de poste</h3>
+                            <section>
+                                <div class="form-group row">
+                                    <?php if (isset($zones) && $zones != null && !empty($zones)) {
+                                        if (isset($poids) && $poids != null && !empty($poids)) {
+                                            $i=0;?>
+                                            <?php foreach ($zones as $zone) {
+                                                foreach ($poids as $poid) {?>
+
+                                                    <div class="col-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 col-form-label" for="example-email">
+                                                                [ <?php echo $zone->zone; ?> ][<?php echo $poid->weight; ?>] </label>
+
+                                                                <input class="col-6" type="text" value="<?php if (isset($bureau_collected)){echo($bureau_collected[$i]->amount); $i++;}   ?>" id="example-email"  name="tarifbureau[]" class="form-control"
+                                                                       placeholder="tarif au bureau de poste"
+                                                                       required>
+
+                                                        </div>
+
+                                                    </div>
+                                                    <?php
+                                                }
+                                            }
+                                        }
                                     }
                                     ?>
                                 </div>
