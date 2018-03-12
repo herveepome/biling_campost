@@ -383,7 +383,7 @@ class StateManager extends MainController {
                // $rows = array_merge($rows, $rows3);
             
             //var_dump($rows2);die;
-            $data["rows"] = $rows2;
+            $data["rows"] = $rows1;
         }
         if ($state[0]->type == "FRT") {
             $data["file_text_name"] = $name = "Fichier des rejets   de la période " . $state[0]->period;
