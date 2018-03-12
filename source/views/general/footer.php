@@ -23,6 +23,8 @@
             </div>
         </div>
 
+
+
 <!-- jQuery  -->
 
         <script src="<?php echo base_url('assets/js/jquery.min.js');?>"></script>
@@ -46,9 +48,12 @@
         <script src="<?php echo base_url('assets/plugins/datatables/buttons.colVis.min.js');?>"></script>
 
 
+        <!--Form Wizard-->
+        <script src="<?php echo base_url('assets/plugins/jquery.steps/js/jquery.steps.min.js');?>" type="text/javascript" > </script>
+        <script type="text/javascript" src="<?php echo base_url('assets/plugins/jquery-validation/js/jquery.validate.min.js');?>"></script>
 
-        <script src="<?php echo base_url('assets/js/jquery.core.js');?>"></script>
-        <script src="<?php echo base_url('assets/js/jquery.app.js');?>"></script>
+        <!--wizard initialization-->
+        <script src="<?php echo base_url('assets/pages/jquery.wizard-init.js');?>" type="text/javascript"></script>
 
         <!-- Responsive examples -->
         <script src="<?php echo base_url('assets/plugins/datatables/dataTables.responsive.min.js');?>"></script>

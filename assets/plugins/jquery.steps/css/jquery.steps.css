@@ -73,7 +73,7 @@
 
 .wizard > .steps > ul > li
 {
-    width: 25%;
+    width: 19%;
 }
 
 .wizard > .steps > ul > li,
@@ -110,6 +110,7 @@
     background: #eee;
     color: #aaa;
     cursor: default;
+    text-align: center;
 }
 
 .wizard > .steps .current a,
