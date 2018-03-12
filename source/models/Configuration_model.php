@@ -22,6 +22,12 @@ class Configuration_model extends CI_Model {
 		$this->db->where('deleted',0);
 		return $this->db->get()->result();
     }
+    public function getWhere($table,$field,$value){
+        $this->db->select('*');
+        $this->db->from($table);
+        $this->db->where($field,$value);
+        return $this->db->get()->result();
+    }
 
 
     // fonction de création

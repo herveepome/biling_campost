@@ -5,7 +5,6 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="page-title-box">
-                  
                     <h4 class="page-title">DETAILS SUR LE CLIENT</h4>
                 </div>
             </div>
@@ -81,20 +80,17 @@
                                                   if (isset($intervals) && $intervals!=null && !empty($intervals)){$i=0;
                                                        foreach ($cashs as $cash) {
                                                           // var_dump($intervals[1]);exit;
-                                                          if ($cash->cash_interval_id=$intervals[$i][0]->id){?>
+                                                          if ($cash->cash_interval_id=$intervals[$i]->id){?>
                                                               <tr>
-                                                                <td><?php echo $intervals[$i][0]->interval ?></td>
+                                                                <td><?php echo $intervals[$i]->interval ?></td>
                                                                 <td><?php echo $cash->amount ?></td>
 
                                                               </tr>
                                                               <?php $i++;
                                                          }
 
-
                                                       }}
                                                   } ?>
-
-
 
                                               </tbody>
                                           </table>
@@ -103,50 +99,88 @@
                                           <h3>Tarification Zone Poids</h3>  </br>
                                           <table class="table table-striped table-bordered" cellspacing="0" width="100%">
                                               <thead>
-                                              <tr>
-                                                  <th>A domicile</th>
-                                                  <th>Au bureau de poste </th>
-                                              </tr>
+                                                  <tr>
+                                                      <th >A domicile</th>
+                                                      <th >Au bureau de poste </th>
+                                                  </tr>
                                               </thead>
                                               <tbody>
-                                              <?php if (isset($cashs) && $cashs!=null && !empty($cashs)){
-                                                  if (isset($intervals) && $intervals!=null && !empty($intervals)){$i=0;
-                                                      foreach ($cashs as $cash) {
-                                                          // var_dump($intervals[1]);exit;
-                                                          if ($cash->cash_interval_id=$intervals[$i][0]->id){?>
-                                                              <tr>
-                                                                  <td><?php echo $intervals[$i][0]->interval ?></td>
-                                                                  <td><?php echo $cash->amount ?></td>
+                                              <tr>
+                                                  <td>
+                                                      <table>
+                                                        <tr>
+                                                            <td>Zone Poids</td>
+                                                            <td>Montant</td>
+                                                        </tr>
+                                                      </table>
+                                                  </td>
+                                                  <td>
+                                                      <table>
+                                                          <tr>
+                                                              <td>Zone Poids</td>
+                                                              <td>Montant</td>
+                                                          </tr>
+                                                      </table>
+                                                  </td>
 
-                                                              </tr>
-                                                              <?php $i++;
+                                              </tr>
+                                              <?php if (isset($depositsDomicile) && $depositsDomicile!=null && !empty($depositsDomicile)) {
+                                                  if (isset($depositsBureau) && $depositsBureau!=null && !empty($depositsBureau)) {
+                                                  if (isset($zones) && $zones != null && !empty($zones)) {
+                                                      if (isset($poids) && $poids != null && !empty($poids)) {
+                                                          $i = 0;
+                                                          //var_dump($deposits);exit;
+                                                          foreach ($zones as $zone) {
+                                                              foreach ($poids as $poid) {
+                                                                  ?>
+
+                                                                  <tr>
+
+                                                                          <td>
+                                                                              <table>
+                                                                                  <tr>
+                                                                                      <td> <?php if (($depositsDomicile[$i]->zone_id = $zone->id) && ($depositsDomicile[$i]->weight_id = $poid->id)) echo $zone->zone . '[' . $poid->weight . ']' ?> </td>
+                                                                                      <td><?php echo $depositsDomicile[$i]->amount ?> </td>
+                                                                                  </tr>
+                                                                              </table>
+                                                                          </td>
+                                                                          <td>
+                                                                              <table>
+                                                                                  <tr>
+                                                                                      <td> <?php if (($depositsBureau[$i]->zone_id = $zone->id) && ($depositsBureau[$i]->weight_id = $poid->id)) echo $zone->zone . '[' . $poid->weight . ']' ?> </td>
+                                                                                      <td><?php echo $depositsBureau[$i]->amount ?> </td>
+                                                                                  </tr>
+                                                                              </table>
+                                                                          </td>
+
+                                                                      <?php $i++; ?>
+
+                                                                  </tr>
+
+                                                                  <?php
+                                                              }}
+
                                                           }
-
-
                                                       }}
-                                              } ?>
-
+                                              }?>
 
 
                                               </tbody>
+
                                           </table>
                                       </div>
                                   </div>
                                   </div>
 
-                                  
                                   <?php endif; ?>
                                   
                                      <div class="form-group row">
                                             <div class="actions">
 
-                                                    
-
-                                                    <a class="btn btn-primary waves-effect waves-light btn-md" href="<?php echo site_url('customers'); ?>">Retour</a>
-
+                                                <a class="btn btn-primary waves-effect waves-light btn-md" href="<?php echo site_url('customers'); ?>">Retour</a>
 
                                             </div>
-                                        </div>
+                                     </div>
 
                               </form>
                           </div>
@@ -154,9 +188,7 @@
                 </div>
             </div>
             <!-- end: col -->
-
         <!-- end row -->
     </div> <!-- end container -->
 </div>
 <!-- end wrapper -->
-

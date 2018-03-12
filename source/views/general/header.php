@@ -115,8 +115,6 @@
                                 </ul>
                             </li>
 
-
-
                             <li class="has-submenu">
                                 <a href="#"><i class="ion-ios7-copy"></i>ETATS</a>
                                 
@@ -130,8 +128,7 @@
                                             <li><a href="<?php echo site_url('state/list_uninvoiced_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Fichier des produits non facturés </a></li>
                                             <li><a href="<?php echo site_url('state/list_billing_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Fichier de facturation </a></li>
                                         </ul>
-                                    
-                                
+
 
                             </li>
 

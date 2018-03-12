@@ -61,7 +61,7 @@ $route['customer/(:num)/update']['POST'] = 'customers/CustomerManager/update/$1'
 $route['customer/(:num)/show']['get'] = 'customers/CustomerManager/read/$1';
 $route['customer/(:num)/delete']['get'] = 'customers/CustomerManager/destroy/$1';
 
-//billings
+//billings and bill
 $route['billings']['get'] = 'billings/BillingManager';
 $route['billing/create']['get'] = 'billings/BillingManager/create';
 $route['billing/generate_billing_file']['post'] = 'billings/BillingManager/generate_billing_file';
@@ -72,6 +72,9 @@ $route['billing/(:num)/(:num)/update']['POST'] = 'billings/BillingManager/update
 $route['billing/(:num)/(:num)/delete']['get'] = 'billings/BillingManager/destroy/$1/$2';
 $route['billing/(:num)/read']['get'] = 'billings/BillingManager/read/$1';
 $route['state/list_billing_file']['get'] = 'state/StateManager/list_billing';
+
+$route['bill/create']['get'] = 'billings/BillingManager/createBill';
+$route['billing/generate_bill_file']['post'] = 'billings/BillingManager/generate_bill_file';
 
 //files and state
 $route['files/create_versement_file']['get'] = 'state/StateManager/create_versement_file';

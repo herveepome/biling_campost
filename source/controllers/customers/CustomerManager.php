@@ -22,7 +22,6 @@ class CustomerManager extends MainController {
         $this->load->model('cash_model');
         $this->load->model('local_model');
         $this->load->model('deposit_model');
-        $this->load->model('interval_model');
 
     }
 
@@ -202,16 +201,14 @@ class CustomerManager extends MainController {
     
     public function read($id) {
         $data['customer']=$this->customer_model->getALL(array("id"=>$id));
-        $cashs=$this->cash_model->getALL(array("customer_id"=>$id)); //récupérer les commissions pour ce client
-        foreach ($cashs as $cash){
-            $id_intervals[]=array("id"=>$cash->id);
-        }
-        foreach ($id_intervals as $intervals){
-            $interval[]=$this->interval_model->getALL(array("id"=>$intervals['id']));
-        }
-        $data['cashs'] = $cashs;
-        $data['intervals'] = $interval;
-        //var_dump($interval);exit;
+        $data['cashs']=$this->cash_model->getALL(array("customer_id"=>$id)); //récupérer les commissions pour ce client
+        $bureauId = $this->local_model->getALL(array("name"=>'Bureau de poste'))[0]->id;
+        $domicileId = $this->local_model->getALL(array("name"=>'A domicile'))[0]->id;
+        $data['depositsDomicile']=$this->deposit_model->getALL(array("deposit_local_id"=>$domicileId)); //récupérer les tarifs à domicile pour ce client
+        $data['depositsBureau']=$this->deposit_model->getALL(array("deposit_local_id"=>$bureauId)); //récupérer les tarifs au bureau de poste pour ce client
+        $data['intervals'] = $this->configuration_model->all('cash_interval'); // les intervals de cashs
+        $data['zones'] = $this->configuration_model->all('zone');  // les zones
+        $data['poids'] = $this->configuration_model->all('weight'); // les poids
 
         $this->load->view('general/header.php');
         $this->load->view('customers/detail_customer.php', $data);

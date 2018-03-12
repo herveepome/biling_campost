@@ -174,19 +174,7 @@
                                     ?>
                                 </div>
                             </section>
-                            <h3>Récapitulatif pour ce client</h3>
-                            <section>
-                                <div class="form-group clearfix">
-                                    <div class="col-lg-12">
-                                        <div class="checkbox checkbox-primary">
-                                            <input id="checkbox-h" type="checkbox">
-                                            <label for="checkbox-h">
-                                                I agree with the Terms and Conditions.
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </section>
+
                         </div>
                     </form>
 
