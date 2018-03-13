@@ -198,7 +198,7 @@ class BillingManager extends MainController {
         $this->editBilling($state_file_id);
     }
 
-    public function editBilling($state_file_id,$id=null) {
+    public function editBilling($id=null,$state_file_id) {
 
 
             $data['billing'] = null;
@@ -210,6 +210,7 @@ class BillingManager extends MainController {
             $data['billing']=$this->billing_model->getALL(array("id"=>$id));
 
         }
+       // var_dump($data['billing']); die;
         $data['state_file_id']=$state_file_id ;
 
         $this->load->view('general/header.php');

@@ -87,6 +87,7 @@
                                 <div class="form-group row">
                                     <label class="col-2 col-form-label" for="example-email">Format du numéro de tracking</label>
                                     <div class="col-4">
+                                        <input type="text" value="<?php if (isset($customer)) echo $customer[0]->tracking_number; ?>"id="example-email"  name="tracking_number" class="form-control" placeholder="Format du numéro de tracking " required>
                                     </div>
 
                                 </div>

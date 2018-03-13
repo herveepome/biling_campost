@@ -23,7 +23,7 @@
                                 <?php  if($this->uri->segment(2) == "newLine") : ?>
                                 <form action="<?php if (isset($state_file_id)&& $state_file_id != null) {echo site_url('billing/'.$state_file_id.'/store/');} ?>"   method="POST">
                                     <?php else: ?>
-                                    <?php if (isset($billing)): ?>
+                                    <?php if (isset($billing)):?>
                                     <form action="<?php if (isset($state_file_id)&& $state_file_id != null) {echo site_url('billing/' . $billing[0]->id .'/'.$state_file_id. '/update');} ?>"   method="POST">
                                         <?php endif; ?>
                                         <?php endif; ?>
