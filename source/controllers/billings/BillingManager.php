@@ -290,7 +290,12 @@ class BillingManager extends MainController {
             // le fichier de facturation pour ce client à cette période
             $bill_file = $this->billing_model->getALL(array("state_file_id" => $state_id[0]->id));
             $intervals = $this->configuration_model->all('cash_interval');
-            $totalCommissions=0;$totalDomicile=0;$totalRejets=0;$totalRetours=0;$totalEchecs=0;$totalRelais=0;
+            $totalCommissions = 0;
+            $totalDomicile = 0;
+            $totalRejets = 0;
+            $totalRetours = 0;
+            $totalEchecs = 0;
+            $totalRelais = 0;
             foreach ($bill_file as $bill) {
                 if ($bill->amount_collected == "")
                     $commissions = "";
@@ -300,108 +305,118 @@ class BillingManager extends MainController {
                         $i++;
                         $dataInterval = explode('-', $intervals[$i]->interval);
 
-                    } while ((int) $bill->amount_collected > (int)$dataInterval[1]);
+                    } while ((int)$bill->amount_collected > (int)$dataInterval[1]);
                     $commissionsId = $intervals[$i]->id;
-                    $commissions = (int) $this->cash_model->getALL(array('cash_interval_id' => $commissionsId))[0]->amount;
+                    $commissions = (int)$this->cash_model->getALL(array('cash_interval_id' => $commissionsId))[0]->amount;
 
-            $bill_file = $this->billing_model->getALL(array("state_file_id"=>$state_id[0]->id));
-             $intervals = $this->configuration_model->all('cash_interval');
+                    $bill_file = $this->billing_model->getALL(array("state_file_id" => $state_id[0]->id));
+                    $intervals = $this->configuration_model->all('cash_interval');
 
-            foreach ($bill_file as $bill){
-                $i=-1;
-                do{
-                    $i++;
-                    $dataInterval = explode('-',$intervals[$i]->interval);
+                    foreach ($bill_file as $bill) {
+                        $i = -1;
+                        do {
+                            $i++;
+                            $dataInterval = explode('-', $intervals[$i]->interval);
 
-                }while(intVal($bill->amount_collected) > intVal($dataInterval[1] ));
-                $commissionsId = $intervals[$i]->id;
-                
-                $commissions = $this->cash_model->getALL(array('cash_interval_id'=>$commissionsId));
-                var_dump($commissions);die;
-                $poid = $this->configuration_model->getWhere('weight','name',$bill->weight)[0]->id; // id du poids partant de son nom
-               // $zone = $this->configuration_model->getWhere('regions','name',$bill->region) ;   // id de la zone partant de la région
-                $zoneId = $this->region_model->getALL(array("name"=>$bill->region))[0]->zone_id;
-                $domicile = $this->local_model->getALL(array("name"=>'A domicile'))[0]->id ; // id à domicile
-                $bureau = $this->local_model->getALL(array("name"=>'Bureau de poste'))[0]->id ; // id en point relais
+                        } while (intVal($bill->amount_collected) > intVal($dataInterval[1]));
+                        $commissionsId = $intervals[$i]->id;
 
-                $tarifDomicile = $this->deposit_model->getALL(array("zone_id"=>$zoneId,"weight_id"=>$poid,"deposit_local_id"=>$domicile,"customer_id"=>$customer_id[0]->id) );
-                $tarifBureau = $this->deposit_model->getALL(array("zone_id"=>$zoneId,"weight_id"=>$poid,"deposit_local_id"=>$bureau,"customer_id"=>$customer_id[0]->id) );
-                $tarifRejets = 0 ; $tarifRetours = 0; $tarifEchecs =0 ;
-                if($bill->final_status=='Returned') {
-                    if (intVal($tarifDomicile) == 0)
-                        $tarifRetours = intVal($tarifBureau) / 2;
-                    else
-                        $tarifRetours = intVal($tarifDomicile) / 2;
-                }
+                        $commissions = $this->cash_model->getALL(array('cash_interval_id' => $commissionsId));
+                        var_dump($commissions);
+                        die;
+                        $poid = $this->configuration_model->getWhere('weight', 'name', $bill->weight)[0]->id; // id du poids partant de son nom
+                        // $zone = $this->configuration_model->getWhere('regions','name',$bill->region) ;   // id de la zone partant de la région
+                        $zoneId = $this->region_model->getALL(array("name" => $bill->region))[0]->zone_id;
+                        $domicile = $this->local_model->getALL(array("name" => 'A domicile'))[0]->id; // id à domicile
+                        $bureau = $this->local_model->getALL(array("name" => 'Bureau de poste'))[0]->id; // id en point relais
 
-                $zone = $this->configuration_model->getWhere('regions', 'name', $bill->region)[0]->zone_id;
-                $poid = $this->configuration_model->getWhere('weight', 'name', $bill->weight)[0]->id; // id du poids partant de son nom
+                        $tarifDomicile = $this->deposit_model->getALL(array("zone_id" => $zoneId, "weight_id" => $poid, "deposit_local_id" => $domicile, "customer_id" => $customer_id[0]->id));
+                        $tarifBureau = $this->deposit_model->getALL(array("zone_id" => $zoneId, "weight_id" => $poid, "deposit_local_id" => $bureau, "customer_id" => $customer_id[0]->id));
+                        $tarifRejets = 0;
+                        $tarifRetours = 0;
+                        $tarifEchecs = 0;
+                        if ($bill->final_status == 'Returned') {
+                            if (intVal($tarifDomicile) == 0)
+                                $tarifRetours = intVal($tarifBureau) / 2;
+                            else
+                                $tarifRetours = intVal($tarifDomicile) / 2;
+                        }
 
-                $domicile = $this->local_model->getALL(array("name" => 'A domicile'))[0]->id; // id à domicile
-                $bureau = $this->local_model->getALL(array("name" => 'Bureau de poste'))[0]->id; // id en point relais
+                        $zone = $this->configuration_model->getWhere('regions', 'name', $bill->region)[0]->zone_id;
+                        $poid = $this->configuration_model->getWhere('weight', 'name', $bill->weight)[0]->id; // id du poids partant de son nom
+
+                        $domicile = $this->local_model->getALL(array("name" => 'A domicile'))[0]->id; // id à domicile
+                        $bureau = $this->local_model->getALL(array("name" => 'Bureau de poste'))[0]->id; // id en point relais
 
 
-                $tarifDomicile =(int) $this->deposit_model->getALL(array("weight_id" => $poid, "zone_id" => $zone, "deposit_local_id" => $domicile, "customer_id" => $customer_id[0]->id))[0]->amount;
+                        $tarifDomicile = (int)$this->deposit_model->getALL(array("weight_id" => $poid, "zone_id" => $zone, "deposit_local_id" => $domicile, "customer_id" => $customer_id[0]->id))[0]->amount;
 
-                $tarifBureau = (int) $this->deposit_model->getALL(array("zone_id" => $zone, "weight_id" => $poid, "deposit_local_id" => $bureau, "customer_id" => $customer_id[0]->id))[0]->amount;
+                        $tarifBureau = (int)$this->deposit_model->getALL(array("zone_id" => $zone, "weight_id" => $poid, "deposit_local_id" => $bureau, "customer_id" => $customer_id[0]->id))[0]->amount;
 
-                $tarifRejets = 0; $tarifRetours = 0;$tarifEchecs = 0;
-                if ( ($bill->final_status == 'Returned') || ($bill->final_status == 'At the hub picked') ) {
-                    if ($tarifDomicile == 0)
-                        $tarifRetours = $tarifBureau / 2;
-                    else
-                        $tarifRetours = $tarifDomicile / 2;
-                } else if (($bill->final_status == 'Reversed') || ($bill->final_status == 'Failed') || ($bill->final_status == 'Lost') || ($bill->final_status == 'On the way to the hub') || ($bill->final_status == 'Partially delivered')) {
-                    if ($tarifDomicile == "") {
-                        $tarifRejets = $tarifBureau;
-                        $tarifEchecs = $tarifBureau;
-                    } else {
-                        $tarifRejets = $tarifDomicile;
-                        $tarifEchecs = $tarifDomicile;
+                        $tarifRejets = 0;
+                        $tarifRetours = 0;
+                        $tarifEchecs = 0;
+                        if (($bill->final_status == 'Returned') || ($bill->final_status == 'At the hub picked')) {
+                            if ($tarifDomicile == 0)
+                                $tarifRetours = $tarifBureau / 2;
+                            else
+                                $tarifRetours = $tarifDomicile / 2;
+                        } else if (($bill->final_status == 'Reversed') || ($bill->final_status == 'Failed') || ($bill->final_status == 'Lost') || ($bill->final_status == 'On the way to the hub') || ($bill->final_status == 'Partially delivered')) {
+                            if ($tarifDomicile == "") {
+                                $tarifRejets = $tarifBureau;
+                                $tarifEchecs = $tarifBureau;
+                            } else {
+                                $tarifRejets = $tarifDomicile;
+                                $tarifEchecs = $tarifDomicile;
+                            }
+
+                        }
+
+
+                        $data[] = array("Num" => $bill->id,
+                            "Date de collecte" => $bill->date_collected,
+                            "Numéro de commande" => $bill->order_number,
+                            "Num colis AIGE" => $bill->tracking_number,
+                            "Destination" => $bill->destination,
+                            "Poids" => $bill->weight,
+                            "Statut final" => $bill->final_status,
+                            "Date statut final" => $bill->final_status_date,
+                            "Tarif à domicile" => $tarifDomicile,
+                            "Tarif en point relais" => $tarifBureau,
+                            "Tarif rejets" => $tarifRejets,
+                            "Tarif retours" => $tarifRetours,
+                            "Tarif échecs" => $tarifEchecs,
+                            "Cash collecté" => $bill->amount_collected,
+                            "Commission sur cash collecté" => $commissions,
+                        );
+                        var_dump($data);
+
+                        $totalCommissions += $commissions;
+                        $totalDomicile += $tarifDomicile;
+                        $totalRejets += $tarifRejets;
+                        $totalRetours += $tarifRetours;
+                        $totalEchecs += $tarifEchecs;
+                        $totalRelais += $tarifBureau;
+
                     }
+                    //var_dump($data);exit;
 
+                    $name = "billing";
+                    $file_type = "Listing de facturation";
+                    $file_name = "listing";
+                    $path = "billing/generate_bill_file";
+                    $file = "./upload/model/listing.xlsx";
+                    $newfile = "./upload/billing/listing_" . $period . ".xlsx";
+
+                    $type = "LF";
+                    $headers = array('No', 'Date de collecte', 'Numéro de commande', 'No colis AIGE', 'Destination', 'Poids', 'Statut final', 'Date statut final');
+                    $file_text_name = "Listing de facturation";
+                    $name_file = "listing_file";
+                    $nam = "listing_" . $period;
+                    $test = "listing";
+                    $this->generate_listing($test, $name_file, $nam, $data, $state_id[0]->id, "LF", "Listing de facturation", "billing", $customer_id, $period, $headers, $file, $newfile, $path, $file_name, $name, $billing_id);
                 }
-
-
-                $data[] = array("Num" => $bill->id,
-                    "Date de collecte" => $bill->date_collected,
-                    "Numéro de commande" => $bill->order_number,
-                    "Num colis AIGE" => $bill->tracking_number,
-                    "Destination" => $bill->destination,
-                    "Poids" => $bill->weight,
-                    "Statut final" => $bill->final_status,
-                    "Date statut final" => $bill->final_status_date,
-                    "Tarif à domicile" => $tarifDomicile,
-                    "Tarif en point relais" =>$tarifBureau,
-                    "Tarif rejets" => $tarifRejets,
-                    "Tarif retours" => $tarifRetours,
-                    "Tarif échecs" => $tarifEchecs,
-                    "Cash collecté" => $bill->amount_collected,
-                    "Commission sur cash collecté" => $commissions,
-                );
-                var_dump($data) ;
-
-                $totalCommissions += $commissions; $totalDomicile += $tarifDomicile;
-                $totalRejets +=$tarifRejets; $totalRetours +=$tarifRetours;
-                $totalEchecs +=$tarifEchecs;$totalRelais +=$tarifBureau;
-
             }
-            //var_dump($data);exit;
-
-            $name = "billing";
-            $file_type = "Listing de facturation";
-            $file_name = "listing";
-            $path = "billing/generate_bill_file";
-            $file = "./upload/model/listing.xlsx";
-            $newfile = "./upload/billing/listing_" . $period . ".xlsx";
-
-            $type = "LF";
-            $headers = array('No', 'Date de collecte', 'Numéro de commande', 'No colis AIGE', 'Destination', 'Poids', 'Statut final', 'Date statut final');
-            $file_text_name = "Listing de facturation";
-            $name_file = "listing_file";
-            $nam = "listing_" . $period;
-            $test = "listing";
-            $this->generate_listing($test, $name_file, $nam, $data, $state_id[0]->id,"LF", "Listing de facturation", "billing", $customer_id, $period, $headers, $file, $newfile, $path, $file_name, $name, $billing_id);
         }
     }
 
