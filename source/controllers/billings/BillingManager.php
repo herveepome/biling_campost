@@ -303,6 +303,35 @@ class BillingManager extends MainController {
                     } while ((int) $bill->amount_collected > (int)$dataInterval[1]);
                     $commissionsId = $intervals[$i]->id;
                     $commissions = (int) $this->cash_model->getALL(array('cash_interval_id' => $commissionsId))[0]->amount;
+
+            $bill_file = $this->billing_model->getALL(array("state_file_id"=>$state_id[0]->id));
+             $intervals = $this->configuration_model->all('cash_interval');
+
+            foreach ($bill_file as $bill){
+                $i=-1;
+                do{
+                    $i++;
+                    $dataInterval = explode('-',$intervals[$i]->interval);
+
+                }while(intVal($bill->amount_collected) > intVal($dataInterval[1] ));
+                $commissionsId = $intervals[$i]->id;
+                
+                $commissions = $this->cash_model->getALL(array('cash_interval_id'=>$commissionsId));
+                var_dump($commissions);die;
+                $poid = $this->configuration_model->getWhere('weight','name',$bill->weight)[0]->id; // id du poids partant de son nom
+               // $zone = $this->configuration_model->getWhere('regions','name',$bill->region) ;   // id de la zone partant de la région
+                $zoneId = $this->region_model->getALL(array("name"=>$bill->region))[0]->zone_id;
+                $domicile = $this->local_model->getALL(array("name"=>'A domicile'))[0]->id ; // id à domicile
+                $bureau = $this->local_model->getALL(array("name"=>'Bureau de poste'))[0]->id ; // id en point relais
+
+                $tarifDomicile = $this->deposit_model->getALL(array("zone_id"=>$zoneId,"weight_id"=>$poid,"deposit_local_id"=>$domicile,"customer_id"=>$customer_id[0]->id) );
+                $tarifBureau = $this->deposit_model->getALL(array("zone_id"=>$zoneId,"weight_id"=>$poid,"deposit_local_id"=>$bureau,"customer_id"=>$customer_id[0]->id) );
+                $tarifRejets = 0 ; $tarifRetours = 0; $tarifEchecs =0 ;
+                if($bill->final_status=='Returned') {
+                    if (intVal($tarifDomicile) == 0)
+                        $tarifRetours = intVal($tarifBureau) / 2;
+                    else
+                        $tarifRetours = intVal($tarifDomicile) / 2;
                 }
 
                 $zone = $this->configuration_model->getWhere('regions', 'name', $bill->region)[0]->zone_id;
