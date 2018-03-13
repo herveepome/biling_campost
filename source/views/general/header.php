@@ -53,7 +53,7 @@
                     <div class="logo">
                         <!-- Text Logo -->
                         <a href="<?php echo site_url('billings'); ?>" class="logo">
-                            <img src="<?php echo base_url('assets/images/campost_ban.png') ?>" alt="" height="80px" class="logo-lg">
+                            <img src="<?php echo base_url('assets/images/billpost.png') ?>" alt="" height="80px" class="logo-lg">
                         </a>
                     </div>
                     <!-- End Logo container-->
