@@ -297,7 +297,9 @@ class BillingManager extends MainController {
 
                 }while(intVal($bill->amount_collected) > intVal($dataInterval[1] ));
                 $commissionsId = $intervals[$i]->id;
-                $commissions = $this->cash_model->getALL(array('cash_interval_id'=>$commissionsId))[0]->amount;
+                
+                $commissions = $this->cash_model->getALL(array('cash_interval_id'=>$commissionsId));
+                var_dump($commissions);die;
                 $poid = $this->configuration_model->getWhere('weight','name',$bill->weight)[0]->id; // id du poids partant de son nom
                // $zone = $this->configuration_model->getWhere('regions','name',$bill->region) ;   // id de la zone partant de la région
                 $zoneId = $this->region_model->getALL(array("name"=>$bill->region))[0]->zone_id;
