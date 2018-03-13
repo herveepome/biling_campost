@@ -65,11 +65,11 @@ $route['customer/(:num)/delete']['get'] = 'customers/CustomerManager/destroy/$1'
 $route['billings']['get'] = 'billings/BillingManager';
 $route['billing/create']['get'] = 'billings/BillingManager/create';
 $route['billing/generate_billing_file']['post'] = 'billings/BillingManager/generate_billing_file';
-$route['billing/(:num)/newLine']['get'] = 'billings/BillingManager/newLine/$1';
-$route['billing/(:num)/(:num)/edit']['get'] = 'billings/BillingManager/editBilling/$1/$2';
-$route['billing/(:num)/store']['POST'] = 'billings/BillingManager/store/$1';
-$route['billing/(:num)/(:num)/update']['POST'] = 'billings/BillingManager/update/$1/$2';
-$route['billing/(:num)/(:num)/delete']['get'] = 'billings/BillingManager/destroy/$1/$2';
+$route['billing/newLine']['get'] = 'billings/BillingManager/newLine';
+$route['billing/(:num)/edit']['get'] = 'billings/BillingManager/editBilling/$1';
+$route['billing/store']['POST'] = 'billings/BillingManager/store';
+$route['billing/(:num)/update']['POST'] = 'billings/BillingManager/update/$1';
+$route['billing/(:num)/delete']['get'] = 'billings/BillingManager/destroy/$1';
 $route['billing/(:num)/read']['get'] = 'billings/BillingManager/read/$1';
 $route['state/list_billing_file']['get'] = 'state/StateManager/list_billing';
 

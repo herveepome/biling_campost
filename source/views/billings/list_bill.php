@@ -14,14 +14,13 @@
         <div class="row">
 
             <div class="col-sm-12">
-                <?php if (isset($billing_id)) { ?>
                 <div class="card-box">
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="m-b-30">
-                                <a href="<?php echo site_url('billing/'.$billing_id.'/newLine'); ?>"><button id="addToTable" class="btn btn-success waves-effect waves-light">Ajouter une ligne<i class="mdi mdi-plus-circle-outline"></i></button></a>
+                                <a href="<?php echo site_url('billing/newLine'); ?>"><button id="addToTable" class="btn btn-success waves-effect waves-light">Ajouter une ligne<i class="mdi mdi-plus-circle-outline"></i></button></a>
 
-                                <a style="float: right;" href="<?php  echo site_url('billing/'.$billing_id.'/read'); ?> "> <button type="submit" id="addToTable" class="btn btn-primary waves-effect waves-light">Valider</button></a>
+                                <a style="float: right;" href="<?php if ( isset($infos))  echo site_url('billing/'.$infos.'/read'); ?> "> <button type="submit" id="addToTable" class="btn btn-primary waves-effect waves-light">Valider</button></a>
 
                             </div>
 
@@ -36,6 +35,8 @@
                             <th>Num colis</th>
                             <th>Destination</th>
                             <th>Poids</th>
+                            <th>Région</th>
+                            <th>Lieux de dépôt</th>
                             <th>Statut final</th>
                             <th>Date statut final</th>
                             <th>Actions</th>
@@ -54,10 +55,12 @@
                                     <td><?php echo $billing->tracking_number ?></td>
                                     <td><?php echo $billing->destination ?></td>
                                     <td><?php echo $billing->weight?></td>
+                                    <td><?php echo $billing->region?></td>
+                                    <td><?php echo $billing->deposit_local?></td>
                                     <td><?php echo $billing->final_status?></td>
                                     <td><?php echo $billing->final_status_date ?></td>
                                     <td class="actions">
-                                        <a href="<?php echo site_url('billing/'.$billing->id.'/'.$billing_id.'/edit'); ?> " class="on-default edit-row" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="fa fa-pencil"></i></a>
+                                        <a href="<?php echo site_url('billing/'.$billing->id.'/edit'); ?> " class="on-default edit-row" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="fa fa-pencil"></i></a>
                                         <a href="#custom-modal<?php echo $billing->id ?>" class="hidden on-editing cancel-row" data-animation="fadein" data-plugin="custommodal" data-original-title="Delete" data-overlaySpeed="200" data-overlayColor="#36404a"><i class="fa fa-times"></i></a>
                                     </td>
                                 </tr>
@@ -78,14 +81,14 @@
                                 <h4 class="custom-modal-title">Attention</h4>
                                 <div class="custom-modal-text">
                                     <?php echo "Voulez vous vraiment supprimer  cette ligne?" ?>
-                                    <a class="btn btn-primary waves-effect waves-light btn-md" href="<?php echo site_url('billing/'.$billing->id .'/'.$billing_id.'/delete'); ?>">oui</a>
+                                    <a class="btn btn-primary waves-effect waves-light btn-md" href="<?php echo site_url('billing/'.$billing->id .'/delete'); ?>">oui</a>
                                     <a class="btn btn-danger waves-effect waves-light" href="<?php echo site_url('billings'); ?>">Non</a>
 
                                 </div>
                             </div>
 
                             <?php
-                        }} }?>
+                        }} ?>
                 </div>
             </div>
             <!-- end: col -->
