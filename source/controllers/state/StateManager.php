@@ -361,6 +361,8 @@ class StateManager extends MainController {
             $data["headers"] = array('Order','Tracking Number','Shipment Provider', 'Status', 'SIZE','Region', 'Payment Method',
                 'Amount to collect', 'Amount_collected', 'Bureau', 'D. opé');
             
+            
+            
            
              
            $rows1 = $this->operation_model->getCroisedRows("SELECT  o.tracking_number, o.shipment_provider,o.status,v.reference,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,v.credit as amount_collected,o.bureau,o.date_operation FROM versement v 
@@ -578,6 +580,7 @@ class StateManager extends MainController {
                 $reader->close();
             }
             $this->operation_model->insert_many_rows($data);
+            //$this->operation_model->getCroisedRows();
         }
     }
 
