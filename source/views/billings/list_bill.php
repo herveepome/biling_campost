@@ -20,7 +20,7 @@
                             <div class="m-b-30">
                                 <a href="<?php echo site_url('billing/newLine'); ?>"><button id="addToTable" class="btn btn-success waves-effect waves-light">Ajouter une ligne<i class="mdi mdi-plus-circle-outline"></i></button></a>
 
-                                <a style="float: right;" href="<?php if ( isset($infos))  echo site_url('billing/'.$infos.'/read'); ?> "> <button type="submit" id="addToTable" class="btn btn-primary waves-effect waves-light">Valider</button></a>
+                                <a style="float: right;" href="<?php if ( isset($infos)) {echo site_url('billing/'.$infos.'/read');}   ?> "> <button type="submit" id="addToTable" class="btn btn-primary waves-effect waves-light">Valider</button></a>
 
                             </div>
 
