@@ -220,27 +220,7 @@ class StateManager extends MainController {
             $operation_id=$this->state_model->getALL(array("type" =>"FO","period"=>$period,"customerID"=>$customer_id[0]->id));
             $versement_id=$this->state_model->getALL(array("type" =>"FV","period"=>$period,"customerID"=>$customer_id[0]->id));
             $state_croisement_id = ($this->state_model->getALL(array("period" => $period, "type" => "FV", "customerID" => $customer_id[0]->id)));
-            $data = array();
-            if (!empty($state_file_id) && !empty($state_croisement_id)) {
-            $data1 = $this->operation_model->getCroisedRows("SELECT o.shipment_provider,o.status,o.tracking_number,v.reference,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,v.credit as amount_collected,o.bureau,o.date_operation FROM versement v
-                                                            cross join operation o 
-                                                            WHERE  o.tracking_number=v.reference AND cast(O.amount_to_collect as unsigned integer)<>0 AND status <>'Returned' AND status <>'Lost' AND o.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id.
-                                                            " GROUP  BY o.order ");
-            $data2 = $this->operation_model->getCroisedRows("SELECT o.shipment_provider,o.status,o.tracking_number,v.reference as amount_collected ,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,v.credit as amount_collected,o.bureau,o.date_operation FROM versement v
-                                                            cross join operation o
-                                                            WHERE right(v.reference,9)=o.order AND o.tracking_number <> v.reference AND  cast(O.amount_to_collect as unsigned integer)<>0 AND status<>'Returned' AND status <>'Lost' AND cast(O.amount_to_collect as unsigned integer)= cast(v.credit as unsigned integer) AND o.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id.
-                                                            " ORDER BY o.order");
-
-            $data3 = $this->operation_model->getCroisedRows("SELECT o.shipment_provider,o.status,o.tracking_number,v.reference  ,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,v.credit as amount_collected ,o.bureau,o.date_operation FROM versement v
-                                                            cross join operation o
-                                                            WHERE right(v.reference,9)=o.order AND o.tracking_number <> v.reference AND  cast(O.amount_to_collect as unsigned integer)<>0 AND status<>'Returned' AND status <>'Lost' AND cast(O.amount_to_collect as unsigned integer)<  cast(v.credit as unsigned integer) AND o.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id.
-                                                            " ORDER BY o.order");
-
-
-                $data = array_merge($data1, $data2);
-                $data = array_merge($data, $data3);
-            }
-
+            
             //var_dump($period,$customer_id,$state_file_id);die;
             $name = "opérations";
             $file_type = "Fichier croisé";
@@ -264,6 +244,92 @@ class StateManager extends MainController {
     public function list_croised() {
 
         $this->list_file("croised");
+    }
+    
+    public function create_rejected() {
+
+        $this->create_file("Fichier des rejets", "rejected_file", 'billings/new_state.php', 'state/generate_rejected_file');
+    }
+
+    public function generate_rejected() {
+        //var_dump($this->input->post());die;
+        if ($this->input->post()) {
+            $error = null;
+            extract($this->input->post(NULL, TRUE));
+            $period = substr($period, 3, 2) . substr($period, 0, 2) . substr($period, 6);
+            $customer_id = $this->customer_model->getALL(array("name" => $customer));
+
+            $state_file_id = ($this->state_model->getALL(array("period" => $period, "type" => "FO", "customerID" => $customer_id[0]->id)));
+            $operation_id=$this->state_model->getALL(array("type" =>"FO","period"=>$period,"customerID"=>$customer_id[0]->id));
+            $versement_id=$this->state_model->getALL(array("type" =>"FV","period"=>$period,"customerID"=>$customer_id[0]->id));
+            $state_croisement_id = ($this->state_model->getALL(array("period" => $period, "type" => "FV", "customerID" => $customer_id[0]->id)));
+            
+            //var_dump($period,$customer_id,$state_file_id);die;
+            $name = "opérations";
+            $file_type = "Fichier des rejets";
+            $file_name = "rejected_file";
+            $path = "state/generate_rejected_file";
+            $file = "./upload/model/returned_paidonline_delivery.xlsx";
+            $newfile = "./upload/croised/rejected_" . $period . ".xlsx";
+
+
+            $type = "FRT";
+            $headers = array('Shipment Provider', 'Status', 'SIZE', 'Order', 'Region', 'Payment Method',
+                'Amount to collect', 'amount_collected', 'Bureau', 'D. opé');
+            $file_text_name = "Ficher des rejets";
+            $name_file = "rejected";
+            $nam = "rejected_" . $period;
+            $test = "croisement";
+            $this->generate_file($test, $name_file, $nam, $state_file_id, "FRT", "Fichiers croisé", "croised", $customer_id, $customer, $period, $headers, $file, $newfile, $path, $file_name, $name, $state_croisement_id);
+        }
+    }
+
+    public function list_rejected() {
+
+        $this->list_file("rejected");
+    }
+    
+    public function create_unvoiced() {
+
+        $this->create_file("Fichier des produits non facturés", "unvoiced_file", 'billings/new_state.php', 'state/generate_unvoiced_file');
+    }
+
+    public function generate_unvoiced() {
+        //var_dump($this->input->post());die;
+        if ($this->input->post()) {
+            $error = null;
+            extract($this->input->post(NULL, TRUE));
+            $period = substr($period, 3, 2) . substr($period, 0, 2) . substr($period, 6);
+            $customer_id = $this->customer_model->getALL(array("name" => $customer));
+
+            $state_file_id = ($this->state_model->getALL(array("period" => $period, "type" => "FO", "customerID" => $customer_id[0]->id)));
+            $operation_id=$this->state_model->getALL(array("type" =>"FO","period"=>$period,"customerID"=>$customer_id[0]->id));
+            $versement_id=$this->state_model->getALL(array("type" =>"FV","period"=>$period,"customerID"=>$customer_id[0]->id));
+            $state_croisement_id = ($this->state_model->getALL(array("period" => $period, "type" => "FV", "customerID" => $customer_id[0]->id)));
+            
+            //var_dump($period,$customer_id,$state_file_id);die;
+            $name = "opérations";
+            $file_type = "Fichier des produits non facturés";
+            $file_name = "unvoiced_file";
+            $path = "state/generate_unvoiced_file";
+            $file = "./upload/model/returned_paidonline_delivery.xlsx";
+            $newfile = "./upload/croised/unvoiced_" . $period . ".xlsx";
+
+
+            $type = "FUV";
+            $headers = array('Shipment Provider', 'Status', 'SIZE', 'Order', 'Region', 'Payment Method',
+                'Amount to collect', 'amount_collected', 'Bureau', 'D. opé');
+            $file_text_name = "Ficher des produits non facturés";
+            $name_file = "unvoiced";
+            $nam = "unvoiced_" . $period;
+            $test = "croisement";
+            $this->generate_file($test, $name_file, $nam, $state_file_id, "FUV", "Fichiers croisé", "croised", $customer_id, $customer, $period, $headers, $file, $newfile, $path, $file_name, $name, $state_croisement_id);
+        }
+    }
+
+    public function list_unvoiced() {
+
+        $this->list_file("unvoiced");
     }
 
     public function list_billing() {
@@ -298,7 +364,7 @@ class StateManager extends MainController {
             $data["states"] = $this->state_model->getALL(array("type" => "FRT"));
             $name = "produits rejetés";
         }
-        if ($file_name == "uninvoiced") {
+        if ($file_name == "unvoiced") {
             $data["states"] = $this->state_model->getALL(array("type" => "FUV"));
             $name = "produits non facturés";
         }
@@ -326,10 +392,10 @@ class StateManager extends MainController {
 
         if ($state[0]->type == "FR") {
             $data["file_text_name"] = $name = "Produits retournés de la période " . $state[0]->period;
-            $data["headers"] = array('Order','Tracking Number','Shipment Provider', 'Status', 'SIZE', 'Region', 'Payment Method',
-                'Amount to collect', 'Bureau', 'D. opé');
+            $data["headers"] = array('Order','Tracking Number', 'Status', 'SIZE', 'Region', 'Payment Method',
+                'Amount to collect');
             
-                $rows = $this->operation_model->getCroisedRows("SELECT o.shipment_provider,o.status, DISTINCT o.tracking_number,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,o.bureau,o.date_operation FROM operation o
+                $rows = $this->operation_model->getCroisedRows("SELECT DISTINCT o.shipment_provider,o.status, o.tracking_number,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,o.bureau,o.date_operation FROM operation o
                                                             WHERE status = 'Returned' OR status = 'Lost' OR status = 'Reversed' OR status = 'Being returned' OR status = 'At the hub' OR status = 'At the hub - requested' AND state_file_id =" .$operation_id[0]->id.
                                                             " ORDER  BY o.order ");
             
@@ -338,64 +404,143 @@ class StateManager extends MainController {
         }
         if ($state[0]->type == "FPO") {
             $data["file_text_name"] = $name = "Produits payés en ligne de la période " . $state[0]->period;
-            $data["headers"] = array('Order','Tracking Number','Shipment Provider', 'Status', 'SIZE', 'Region', 'Payment Method',
-                'Amount to collect', 'Bureau', 'D. opé');
-            $rows = $this->operation_model->getCroisedRows("SELECT o.shipment_provider,o.status, DISTINCT o.tracking_number,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,o.bureau,o.date_operation FROM operation o
+            $data["headers"] = array('Order','Tracking Number', 'Status', 'SIZE', 'Region', 'Payment Method',
+                'Amount to collect');
+            $rows = $this->operation_model->getCroisedRows("SELECT DISTINCT o.shipment_provider,o.status,  o.tracking_number,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,o.bureau,o.date_operation FROM operation o
                                                             WHERE amount_to_collect=0 AND state_file_id =" .$operation_id[0]->id.
                                                             " ORDER  BY o.order "); 
              $data["rows"] = $rows;
         }
         if ($state[0]->type == "FCD") {
             $data["file_text_name"] = $name = "Produits payés à la livraison de la période " . $state[0]->period;
-            $data["headers"] = array('Order','Tracking Number','Shipment Provider', 'Status', 'SIZE', 'Region', 'Payment Method',
-                'Amount to collect', 'Bureau', 'D. opé');
-            $rows = $this->operation_model->getCroisedRows("SELECT o.shipment_provider,o.status, DISTINCT o.tracking_number,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,o.bureau,o.date_operation FROM operation o
+            $data["headers"] = array('Order','Tracking Number', 'Status', 'SIZE', 'Region', 'Payment Method',
+                'Amount to collect');
+            $rows = $this->operation_model->getCroisedRows("SELECT DISTINCT o.shipment_provider,o.status,  o.tracking_number,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,o.bureau,o.date_operation FROM operation o
                                                             WHERE amount_to_collect<>0 AND status <> 'Returned' AND status <> 'Lost' AND status <> 'Reversed' AND status <> 'Being returned' AND status <> 'At the hub' AND status <> 'At the hub - requested'
                                                              AND SUBSTR(REPLACE(o.start_time,'/',''),3,6)=".substr($state[0]->period,2,6)." AND state_file_id =" .$operation_id[0]->id.
                                                             " ORDER  BY o.order "); 
             
             $data["rows"] = $rows;
         }
+        if ($state[0]->type == "FC" || $state[0]->type == "FRT" || $state[0]->type == "FUV") {
+            $this->operation_model->executeQuery("CREATE  TEMPORARY TABLE IF NOT EXISTS nominal AS ("
+             . "select * from (SELECT v.reference,"
+            . "o.status,o.start_time,o.tracking_number,o.size,o.order,o.delivered_date,"
+            . "o.address,o.region,o.payment_method,o.amount_to_collect, v.credit as amount_collected,"
+            . "o.bureau, o.date_operation, o.deposit_local FROM versement v LEFT join operation o "
+            . "ON o.tracking_number=v.reference  AND o.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id 
+            . " ORDER BY o.order)A where A.tracking_number IS NOT NULL)");
+            
+            //tuples avec les éléments de tracking_number null pour traiter les scénario alternatif
+            $this->operation_model->executeQuery("CREATE  TEMPORARY TABLE IF NOT EXISTS alternatifs AS "
+            ."(select t.reference,s.status,s.start_time,s.tracking_number,s.size,s.order,s.delivered_date,"     
+            ."s.address,s.region,s.payment_method,s.amount_to_collect, t.credit as amount_collected,"
+            ."s.bureau, s.date_operation, s.deposit_local from versement t left join operation s ON right(t.reference,LENGTH(s.order))=s.order "
+            ." where s.tracking_number<>t.reference AND t.id in (select A.id from "
+            ."(SELECT v.id,o.tracking_number FROM versement v LEFT join operation o "
+            ."ON o.tracking_number=v.reference AND o.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id." ORDER BY o.order)A where A.tracking_number IS NULL) "
+            ."AND s.tracking_number IS NOT NULL)");
+            
+            $this->operation_model->executeQuery("CREATE  TEMPORARY TABLE IF NOT EXISTS alternatifs_egaux AS"
+            ."(SELECT * FROM `alternatifs`A "
+            . "WHERE cast(A.amount_to_collect as unsigned integer)=cast(A.amount_collected as unsigned integer) "
+            . "AND right(A.reference,LENGTH(A.order))=A.order AND right(A.tracking_number,LENGTH(A.order))=A.order)");
+         
+            
+            $this->operation_model->executeQuery("CREATE  TEMPORARY TABLE IF NOT EXISTS alternatifs_differents AS"
+            . " SELECT * FROM `alternatifs`A "
+            . "WHERE cast(A.amount_to_collect as unsigned integer)<>cast(A.amount_collected as unsigned integer) "
+            . "AND right(A.reference,LENGTH(A.order))=A.order AND right(A.tracking_number,LENGTH(A.order))=A.order");
+            
+           $this->operation_model->executeQuery("CREATE  TEMPORARY TABLE IF NOT EXISTS alternatifs_superieur AS ( "
+            . "select v.reference,m.status,"
+            . "m.start_time,m.tracking_number,m.size,m.order,m.delivered_date,"     
+            ."m.address,m.region,m.payment_method,m.amount_to_collect, v.credit as amount_collected,"
+            ."m.bureau, m.date_operation, m.deposit_local from versement v left join operation m "
+            . "on right(v.reference,LENGTH(m.order))=m.order where m.order in "
+            . "(select DISTINCT a.order from alternatifs_differents a "
+            . "left join operation o on o.order=a.order where a.amount_collected in (select T.credit "
+            . "from(select sum(cast(c.amount_to_collect as unsigned integer)) as credit,"
+            . "c.order from operation c group by c.order)T where o.order=T.order) "
+            . "order by a.order))");
+           
+            
         if ($state[0]->type == "FC") {
             $data["file_text_name"] = $name = "Fichier croisé   de la période " . $state[0]->period;
-            $data["headers"] = array('Order','Tracking Number','Shipment Provider', 'Status', 'SIZE','Region', 'Payment Method',
-                'Amount to collect', 'Amount_collected', 'Bureau', 'D. opé');
+            $data["headers"] = array('Order','Tracking Number','Reference', 'Status', 'SIZE','Region', 'Payment Method',
+                'Amount to collect', 'Amount_collected');
+            
+            //scénario nominal du croisement
+            $nominal=$this->operation_model->getCroisedRows("SELECT * from nominal");
             
             
+            //Scénario alternatif avec amount_to_collect égal à amount_collected
+            $alternatifs_egaux=$this->operation_model->getCroisedRows("select * from alternatifs_egaux");
+                    
             
-           
-             
-           $rows1 = $this->operation_model->getCroisedRows("SELECT  o.tracking_number, o.shipment_provider,o.status,v.reference,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,v.credit as amount_collected,o.bureau,o.date_operation FROM versement v 
-                                                            LEFT JOIN operation o  ON v.reference=o.tracking_number  WHERE   cast(O.amount_to_collect as unsigned integer)<>0  AND status <> 'Lost' AND status <> 'Reversed' AND status <> 'Being returned' AND status <> 'At the hub' AND status <> 'At the hub - requested'  AND o.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id.
-                                                            "  GROUP BY o.tracking_number ORDER BY o.order ");
-             /*$rows2 = $this->operation_model->getCroisedRows("SELECT  DISTINCT o.tracking_number, o.shipment_provider,o.status,v.reference  ,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,v.credit as amount_collected,o.bureau,o.date_operation FROM versement v
-                                                            left join operation o
-                                                            on  right(v.reference,9)=o.order   AND  cast(O.amount_to_collect as unsigned integer)<>0 AND cast(O.amount_to_collect as unsigned integer)=cast(v.credit as unsigned integer) AND status <> 'Lost' AND status <> 'Reversed' AND status <> 'Being returned' AND status <> 'At the hub' AND status <> 'At the hub - requested' AND o.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id.
-                                                            " GROUP BY o.tracking_number ORDER  BY o.order");*/
-
-           /*$rows3 = $this->operation_model->getCroisedRows("SELECT DISTINCT o.tracking_number, o.shipment_provider,o.status,o.tracking_number,v.reference  ,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,v.credit as amount_collected ,o.bureau,o.date_operation FROM versement v
-                                                            cross join operation o
-                                                            WHERE right(v.reference,9)=o.order AND o.tracking_number <> v.reference AND  cast(O.amount_to_collect as unsigned integer)<>0  AND status <> 'Lost' AND status <> 'Reversed' AND status <> 'Being returned' AND cast(O.amount_to_collect as unsigned integer)<  cast(v.credit as unsigned integer) AND status <> 'At the hub' AND status <> 'At the hub - requested'  AND o.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id.
-                                                            " GROUP BY o.tracking_number ORDER BY o.order");*/
-                                                    
-           
-                                                           
-
-                //$rows = array_merge($rows1, $rows2);
-               // $rows = array_merge($rows, $rows3);
+            //Scénario alternatif avec amount_to_collect < à amount_collected
+            $alternatifs_differents=$this->operation_model->getCroisedRows("select * from alternatifs_superieur");
             
-            //var_dump($rows2);die;
-            $data["rows"] = $rows1;
+            $this->operation_model->executeQuery("DROP TABLE nominal");
+            $this->operation_model->executeQuery("DROP TABLE alternatifs");
+            $this->operation_model->executeQuery("DROP TABLE alternatifs_egaux");
+            $this->operation_model->executeQuery("DROP TABLE alternatifs_differents");
+            $this->operation_model->executeQuery("DROP TABLE alternatifs_superieur");
+            $data["rows"]=  array_merge($nominal,$alternatifs_egaux,$alternatifs_differents);
+            
+            
         }
+        if ( $state[0]->type == "FRT" || $state[0]->type == "FUV") {
+            $this->operation_model->executeQuery("CREATE  TEMPORARY TABLE IF NOT EXISTS rejets AS ("
+            . "select * from "
+            . "(SELECT v.libelle,v.date_operation,v.reference,v.bureau,v.credit as amount_collected,"
+            . "o.tracking_number FROM versement v LEFT join operation o ON o.tracking_number=v.reference "
+            . "ORDER BY o.order)k where tracking_number IS NULL and reference not in (SELECT reference FROM alternatifs_egaux ) "
+            . "and reference not in (select distinct reference from alternatifs_differents))");
+              
         if ($state[0]->type == "FRT") {
+            $data["rejets"]='rejets';
             $data["file_text_name"] = $name = "Fichier des rejets   de la période " . $state[0]->period;
-            $data["headers"] = array('Order','Tracking Number','Shipment Provider', 'Status', 'SIZE','Region', 'Payment Method',
-                'Amount to collect', 'Amount_collected', 'Bureau', 'D. opé');
+            $data["headers"] = array('Libellé','Date Opération','Référence','Bureau','Amount Collected');
+            
+            //ensemble des éléments ne respectant pas le scénario nominal et ne se trouvant dans aucun des scénarios alternatis
+            $rejets=$this->operation_model->getCroisedRows("select * from rejets");
+              
+            
+            $this->operation_model->executeQuery("DROP TABLE nominal");
+            $this->operation_model->executeQuery("DROP TABLE alternatifs");
+            $this->operation_model->executeQuery("DROP TABLE alternatifs_egaux");
+            $this->operation_model->executeQuery("DROP TABLE alternatifs_differents");
+            $this->operation_model->executeQuery("DROP TABLE alternatifs_superieur");
+            $this->operation_model->executeQuery("DROP TABLE rejets");
+            $data["rows"]=  $rejets;
+            //var_dump($data["rows"]);die;
         }
+        
+        
         if ($state[0]->type == "FUV") {
             $data["file_text_name"] = $name = "Fichier des non facturés   de la période " . $state[0]->period;
-            $data["headers"] = array('Order','Tracking Number','Shipment Provider', 'Status', 'SIZE','Region', 'Payment Method',
-                'Amount to collect', 'Amount_collected', 'Bureau', 'D. opé');
+            $data["headers"] = array('Order','Tracking Number', 'Status', 'SIZE', 'Region', 'Payment Method',
+                'Amount to collect');
+            $unvoiced=$this->operation_model->getCroisedRows("SELECT o.shipment_provider,
+            o.status,  o.tracking_number,o.size,o.order,o.region,o.payment_method,
+            o.amount_to_collect,o.bureau,o.date_operation FROM operation o
+            WHERE o.tracking_number not in (select tracking_number from nominal) AND o.tracking_number not in (select tracking_number from alternatifs_egaux)
+            AND o.tracking_number not in (select tracking_number from alternatifs_superieur) AND o.tracking_number not in (select reference from rejets)
+            AND amount_to_collect<>0 AND status <> 'Returned' AND status <> 'Lost' AND status <> 'Reversed' AND status <> 'Being returned' AND status <> 'At the hub' AND status <> 'At the hub - requested'
+            AND SUBSTR(REPLACE(o.start_time,'/',''),3,6)=".substr($state[0]->period,2,6)." AND state_file_id =" .$operation_id[0]->id.
+            " ORDER  BY o.order ");
+            
+            $this->operation_model->executeQuery("DROP TABLE nominal");
+            $this->operation_model->executeQuery("DROP TABLE alternatifs");
+            $this->operation_model->executeQuery("DROP TABLE alternatifs_egaux");
+            $this->operation_model->executeQuery("DROP TABLE alternatifs_differents");
+            $this->operation_model->executeQuery("DROP TABLE alternatifs_superieur");
+            $this->operation_model->executeQuery("DROP TABLE rejets");
+            $data["rows"]=  $unvoiced;
+            
+        }
+        }
         }
 
         
@@ -440,6 +585,7 @@ class StateManager extends MainController {
     }
 
     public function generate_file($test, $name_file, $nam, $state_file_id, $type, $file_type, $file_name, $customer_id, $type_file_required, $period, $headers, $file, $newfile, $path, $name, $state_croisement_id = null) {
+        
         $error = null;
 
         if ($state_croisement_id != null && empty($state_croisement_id) || empty($state_file_id)) {
@@ -543,6 +689,11 @@ class StateManager extends MainController {
                     else
                         $deposit_local="A domicile";
                     
+                    if(isset($row['4']) && $row['4']=="null")
+                        $size='SMALL';
+                    else
+                        $size=$row['4'];
+                    
                     if ($row["0"] != "Shipment Provider") {
                         $result = array(
                             'state_file_id' => $state_file_id,
@@ -550,7 +701,7 @@ class StateManager extends MainController {
                             'status' => $row['1'],
                             'start_time' => $row['2']->format('d/m/Y'),
                             'tracking_number' => $row['3'],
-                            'size' => $row['4'],
+                            'size' => $size,
                             'delivered_date' => $row['5']->format('d/m/Y'),
                             'last_failed_attempt_date' => $row['6']->format('d/m/Y'),
                             'flow' => $row['7'],
@@ -580,7 +731,17 @@ class StateManager extends MainController {
                 $reader->close();
             }
             $this->operation_model->insert_many_rows($data);
-            //$this->operation_model->getCroisedRows();
+            
+            $this->operation_model->executeQuery("CREATE TEMPORARY TABLE IF NOT exists doublons  "
+            . "AS(SELECT  id FROM operation t1 WHERE t1.tracking_number "
+            . "IN ( SELECT t2.tracking_number FROM operation t2 where t2.start_time=t1.start_time "
+            . "and t2.tracking_number=t1.tracking_number and t1.amount_to_collect=t2.amount_to_collect "
+            . " and t2.state_file_id= ".$state_file_id." GROUP BY t2.tracking_number "
+            . "HAVING COUNT(t2.tracking_number)>1 )  GROUP BY t1.tracking_number "
+            . "HAVING COUNT(t1.tracking_number)>1)");
+            
+            $this->operation_model->executeQuery("DELETE FROM operation where id in (select id from doublons)");
+            $this->operation_model->executeQuery("DROP TABLE doublons");
         }
     }
 

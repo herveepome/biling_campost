@@ -81,7 +81,7 @@
                                             <li><a href="<?php echo site_url('state/create_delivery_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>des produits  payés à la livraison</a></li>
                                             <li><a href="<?php echo site_url('state/create_croised_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i> croisé</a></li>
                                             <li><a href="<?php echo site_url('state/create_rejected_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>des produits rejettés</a></li>
-                                            <li><a href="<?php echo site_url('state/create_uninvoiced_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>des produits non facturés </a></li>
+                                            <li><a href="<?php echo site_url('state/create_unvoiced_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>des produits non facturés </a></li>
                                         </ul>
                                     </li>
 
@@ -123,7 +123,7 @@
                                             <li><a href="<?php echo site_url('state/list_delivery_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Fichiers des produits  payés à la livraison</a></li>
                                             <li><a href="<?php echo site_url('state/list_croised_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Fichiers croisés</a></li>
                                             <li><a href="<?php echo site_url('state/list_rejected_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Fichiers des produits rejettés</a></li>
-                                            <li><a href="<?php echo site_url('state/list_uninvoiced_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Fichier des produits non facturés </a></li>
+                                            <li><a href="<?php echo site_url('state/list_unvoiced_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Fichier des produits non facturés </a></li>
                                             <li><a href="<?php echo site_url('state/list_billing_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Fichier de facturation </a></li>
                                         </ul>
                                     

@@ -11,7 +11,7 @@
                     <?php  echo $message; ?>
                     </div>
                     <?php } ?>
-                    <h4 class="page-title">BILLING CAMPOST</h4>
+                    <h4 class="page-title">BILPOST</h4>
                 </div>
             </div>
         </div>

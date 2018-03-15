@@ -32,21 +32,34 @@
 
                                 <tbody>
                                 <tr class="font-14" >
+                                 <?php if (isset($rejets) && $rejets=="rejets") { ?>
+                                    
+                                     <?php if (isset($rows)) { ?> 
+                                     <?php foreach ($rows as $row) { ?>
+                                <td ><?php echo $row->libelle; ?></td>
+                                <td ><?php echo $row->date_operation; ?></td>
+                                <td ><?php echo $row->reference; ?></td>
+                                <td ><?php echo $row->bureau; ?></td>
+                                <td ><?php echo $row->amount_collected; ?></td>                           
+                                
+                                
+                                     
+                                </tr>
+                                 <?php }}}else{ ?>
+                                
                                      <?php if (isset($rows)) { ?> 
                                      <?php foreach ($rows as $row) { ?>
                                 <td ><?php echo $row->order; ?></td>
                                 <td ><?php echo $row->tracking_number; ?></td>
-                                <td ><?php echo $row->shipment_provider; ?></td>
+                                <?php if (isset($row->reference)): ?><td ><?php echo $row->reference; ?></td><?php endif;?>
                                 <td ><?php echo $row->status; ?></td>
                                 <td ><?php echo $row->size; ?></td>                           
                                 <td ><?php echo $row->region; ?></td>
                                 <td ><?php echo $row->payment_method; ?></td>
                                 <td ><?php echo $row->amount_to_collect; ?></td>
                                 <?php if (isset($row->amount_collected)): ?><td ><?php echo $row->amount_collected; ?></td><?php endif;?>
-                                <td ><?php echo $row->bureau; ?></td>
-                                <td ><?php echo $row->date_operation; ?></td>
                                 </tr>
-                                <?php }} ?>
+                                 <?php }}} ?>
                                 </tbody>
                             </table>
                         </div>

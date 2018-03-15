@@ -100,6 +100,14 @@ $route['state/create_croised_file']['get'] = 'state/StateManager/create_croised'
 $route['state/generate_croised_file']['post'] = 'state/StateManager/generate_croised';
 $route['state/list_croised_file']['get'] = 'state/StateManager/list_croised';
 
+$route['state/create_rejected_file']['get'] = 'state/StateManager/create_rejected';
+$route['state/generate_rejected_file']['post'] = 'state/StateManager/generate_rejected';
+$route['state/list_rejected_file']['get'] = 'state/StateManager/list_rejected';
+
+$route['state/create_unvoiced_file']['get'] = 'state/StateManager/create_unvoiced';
+$route['state/generate_unvoiced_file']['post'] = 'state/StateManager/generate_unvoiced';
+$route['state/list_unvoiced_file']['get'] = 'state/StateManager/list_unvoiced';
+
 // adresses
 $route['config/adresses']['get'] = 'config/ConfigurationManager/adress';
 $route['adresse/new']['get'] = 'config/ConfigurationManager/adress/new';
