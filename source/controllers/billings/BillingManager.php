@@ -220,6 +220,7 @@ class BillingManager extends MainController {
         $this->editBilling();
     }
 
+
     public function editBilling($id=null) {
 
             $data['billing'] = null;
@@ -230,6 +231,7 @@ class BillingManager extends MainController {
 
         }
         $data['malformedRegion']= $this->malformedRegion();
+
         $this->load->view('general/header.php');
         $this->load->view('billings/new_billing.php', $data);
         $this->load->view('general/footer.php');
@@ -238,7 +240,9 @@ class BillingManager extends MainController {
     public function store() {
         $this->update();
     }
+
     public function update($id = null)
+
     {
         if ($this->input->post()) {
             extract($this->input->post(NULL, TRUE));

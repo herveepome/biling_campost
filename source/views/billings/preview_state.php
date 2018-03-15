@@ -34,10 +34,11 @@
                                 <tr class="font-14" >
                                      <?php if (isset($rows)) { ?> 
                                      <?php foreach ($rows as $row) { ?>
+                                <td ><?php echo $row->order; ?></td>
+                                <td ><?php echo $row->tracking_number; ?></td>
                                 <td ><?php echo $row->shipment_provider; ?></td>
                                 <td ><?php echo $row->status; ?></td>
-                                <td ><?php echo $row->size; ?></td>
-                                <td ><?php echo $row->order; ?></td>
+                                <td ><?php echo $row->size; ?></td>                           
                                 <td ><?php echo $row->region; ?></td>
                                 <td ><?php echo $row->payment_method; ?></td>
                                 <td ><?php echo $row->amount_to_collect; ?></td>

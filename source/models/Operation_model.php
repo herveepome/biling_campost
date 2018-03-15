@@ -30,6 +30,7 @@ class Operation_model extends MY_Model {
         return $req->result();
     }
 
+
     public function createTable($query){
         $req= $this->db->query($query);
         return $req;

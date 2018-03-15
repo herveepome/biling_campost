@@ -12,7 +12,7 @@
             </div>
         </div>
         <!-- end page title end breadcrumb -->
-
+         
         <div class="row">
             <div class="col-12">
                 <div class="card-box">
@@ -20,11 +20,12 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="p-20">
-                                <?php  if($this->uri->segment(2) == "newLine") : ?>
+                             <?php  if($this->uri->segment(2) == "newLine") : ?>
                                 <form action="<?php echo site_url('billing/store/'); ?>"   method="POST">
                                     <?php else: ?>
                                     <?php if (isset($billing)): ?>
                                     <form action="<?php echo site_url('billing/' . $billing[0]->id .'/update'); ?>"   method="POST">
+
                                         <?php endif; ?>
                                         <?php endif; ?>
 

@@ -66,7 +66,9 @@
                                     <td><?php echo $billing->final_status?></td>
                                     <td><?php echo $billing->final_status_date ?></td>
                                     <td class="actions">
+
                                         <a href="<?php echo site_url('billing/'.$billing->id.'/edit'); ?> " class="on-default edit-row" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="fa fa-pencil"></i></a>
+
                                         <a href="#custom-modal<?php echo $billing->id ?>" class="hidden on-editing cancel-row" data-animation="fadein" data-plugin="custommodal" data-original-title="Delete" data-overlaySpeed="200" data-overlayColor="#36404a"><i class="fa fa-times"></i></a>
                                     </td>
                                 </tr>
