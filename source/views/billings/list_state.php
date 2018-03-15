@@ -54,9 +54,9 @@
                               </tbody>
                           </table>
                     
-                           <?php if (isset($customers) && $customers!=null && !empty($customers)){ ?>
-                                  
-                                 
+                            
+                        <?php if (isset($states) && $states!=null && !empty($states)){ ?>
+                                            
                      <?php foreach ($states as $state) {?>
                     
                     <!-- Custom Modal -->
@@ -67,14 +67,34 @@
             <h4 class="custom-modal-title">Attention</h4>
             <div class="custom-modal-text">
              <?php echo "Voulez vous vraiment supprimer  le fichier ".$state->name." ?" ?>
-                 <a class="btn btn-primary waves-effect waves-light btn-md" href="<?php echo site_url('customer/'.$customer->id .'/delete'); ?>">oui</a>
-                  <a class="btn btn-danger waves-effect waves-light" href="<?php echo site_url('customers'); ?>">Non</a>
+                 <a class="btn btn-primary waves-effect waves-light btn-md" href="<?php echo site_url('state/'.$state->id.'/delete'); ?>">oui</a>
+                  <a class="btn btn-danger waves-effect waves-light" href="
+                      <?php 
+                  if ($state->type == "FR") {
+            echo site_url('state/list_returned_file');
+        }
+        if ($state->type == "FPO") {
+            echo site_url('state/list_paidonline_file');
+        }
+        if ($state->type == "FCD") {
+             echo site_url('state/list_delivery_file');
+        }
+        if ($state->type == "FC") {
+            echo site_url('state/list_croised_file');
+        }
+        if ($state->type == "FRT") {
+            echo site_url('state/list_rejected_file');
+        }
+        if ($state->type == "FUV") {
+            echo site_url('state/list_unvoiced_file');
+        } ?>">Non</a>
                     
             </div>
         </div>
                     
                     <?php 
-                                  }} ?>
+                        }} ?>
+
              
                 </div>
             </div>

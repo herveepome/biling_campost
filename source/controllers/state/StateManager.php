@@ -763,5 +763,33 @@ class StateManager extends MainController {
             echo ($this->upload->display_errors());
         return false;
     }
+    
+    public function destroy($id) {
+        $file = $this->state_model->getALL(array("id" => $id));
+       
+        unlink($file[0]->file_path);
+        
+        $this->state_model->delete($id);
+
+        if ($file[0]->type == "FR") {
+            redirect('state/list_returned_file');
+        }
+        if ($file[0]->type == "FPO") {
+            redirect('state/list_paidonline_file');
+        }
+        if ($file[0]->type == "FCD") {
+             redirect('state/list_delivery_file');
+        }
+        if ($file[0]->type == "FC") {
+            redirect('list_croised_file');
+        }
+        if ($file[0]->type == "FRT") {
+            redirect('list_rejected_file');
+        }
+        if ($file[0]->type == "FUV") {
+            redirect('list_unvoiced_file');
+        }
+    }
+
 
 }
