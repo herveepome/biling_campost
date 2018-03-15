@@ -772,22 +772,22 @@ class StateManager extends MainController {
         $this->state_model->delete($id);
 
         if ($file[0]->type == "FR") {
-            redirect('state/list_returned_file');
+            redirect('state/StateManager/list_returned');
         }
         if ($file[0]->type == "FPO") {
-            redirect('state/list_paidonline_file');
+            redirect('state/StateManager/list_paidonline');
         }
         if ($file[0]->type == "FCD") {
-             redirect('state/list_delivery_file');
+             redirect('state/StateManager/list_delivery');
         }
         if ($file[0]->type == "FC") {
-            redirect('list_croised_file');
+            redirect('state/StateManager/list_croised');
         }
         if ($file[0]->type == "FRT") {
-            redirect('list_rejected_file');
+            redirect('state/StateManager/list_rejected');
         }
         if ($file[0]->type == "FUV") {
-            redirect('list_unvoiced_file');
+            redirect('state/StateManager/list_unvoiced_file');
         }
     }
 
