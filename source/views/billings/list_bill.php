@@ -5,7 +5,7 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="page-title-box">
-                    <h4 class="page-title"> <?php if ( isset($period) ){ ?> Fichier de facturation de la période du <?php echo $period ?> <?php } else { ?> Fichier de facturation     <?php  } ?> </h4>
+                    <h4 class="page-title"> <?php  if ( isset($period) ){ ?> Fichier de facturation de la période du <?php echo $period ?> <?php } else { ?> Fichier de facturation     <?php  } ?> </h4>
                 </div>
             </div>
         </div>
@@ -14,18 +14,24 @@
         <div class="row">
 
             <div class="col-sm-12">
-                <div class="card-box">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="m-b-30">
-                                <a href="<?php echo site_url('billing/newLine'); ?>"><button id="addToTable" class="btn btn-success waves-effect waves-light">Ajouter une ligne<i class="mdi mdi-plus-circle-outline"></i></button></a>
 
-                                <a style="float: right;" href="<?php if ( isset($infos)) {echo site_url('billing/'.$infos.'/read');}   ?> "> <button type="submit" id="addToTable" class="btn btn-primary waves-effect waves-light">Valider</button></a>
+                    <div class="card-box">
+                        <div class="row">
+                         <div class="col-sm-6">
+                             <div class="m-b-30">
+                                 <a href="<?php echo site_url('billing/newLine'); ?>"><button id="addToTable" class="btn btn-success waves-effect waves-light">Ajouter une ligne<i class="mdi mdi-plus-circle-outline"></i></button></a>
 
-                            </div>
+                                 <a href="#custom-modal-region" class="hidden on-editing cancel-row" data-animation="fadein" data-plugin="custommodal" data-original-title="Valider" data-overlaySpeed="200" data-overlayColor="#36404a">
+                                     <button type="submit" id="addToTable" class="btn btn-primary waves-effect waves-light">Valider</button>
+                                 </a>
+                             </div>
+
+
+                         </div>
 
                         </div>
                     </div>
+
                     <table id="datatable" class="table table-bordered" cellspacing="0" width="100%">
                         <thead>
                         <tr>
@@ -89,7 +95,29 @@
 
                             <?php
                         }} ?>
+
+                        <!-- Custom Modal -->
+                        <div id="custom-modal-region" class="modal-demo">
+                            <button type="button" class="close" onclick="Custombox.close();">
+                                <span>&times;</span><span class="sr-only">Close</span>
+                            </button>
+                            <h4 class="custom-modal-title">Attention</h4>
+                            <div class="custom-modal-text" style="text-align: left; line-height: 3">
+                                <?php if (isset($malformedRegion) && $malformedRegion!=null && !empty($malformedRegion))
+                                echo "Les lignes numéro "?> <?php foreach ($malformedRegion as $region) echo $region->id. ","?> <?php echo "ont les régions mal écrites ou nulles; ces lignes ne seront pas facturées. Valider quand même?"?>
+
+                            </div>
+                            <div class="custom-modal-text" style="text-align: right">
+                                <a class="btn btn-primary waves-effect waves-light btn-md" href="<?php echo site_url('billing/read'); ?>">oui</a>
+                                <a class="btn btn-danger waves-effect waves-light" href="<?php echo site_url('billings'); ?>">Non</a>
+                            </div>
+
+                        </div>
+
+                        <?php
+                   ?>
                 </div>
+
             </div>
             <!-- end: col -->
 

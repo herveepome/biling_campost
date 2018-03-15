@@ -21,23 +21,15 @@
                         <div class="col-12">
                             <div class="p-20">
                                 <?php  if($this->uri->segment(2) == "newLine") : ?>
-                                <form action="<?php if (isset($state_file_id)&& $state_file_id != null) {echo site_url('billing/'.$state_file_id.'/store/');} ?>"   method="POST">
+                                <form action="<?php echo site_url('billing/store/'); ?>"   method="POST">
                                     <?php else: ?>
                                     <?php if (isset($billing)): ?>
-                                    <form action="<?php if (isset($state_file_id)&& $state_file_id != null) {echo site_url('billing/' . $billing[0]->id .'/'.$state_file_id. '/update');} ?>"   method="POST">
+                                    <form action="<?php echo site_url('billing/' . $billing[0]->id .'/update'); ?>"   method="POST">
                                         <?php endif; ?>
                                         <?php endif; ?>
-
 
                                         <!-- end page title end breadcrumb -->
 
-                                        <div class="form-group row" style="display: none">
-                                            <label class="col-2 col-form-label">Id du fichier</label>
-                                            <div class="col-6">
-                                                <input type="text" value="<?php if (isset($state_file_id)) echo $state_file_id; ?>" id="example-email" name="state_file_id" class="form-control" placeholder="Id du fichier" required>
-                                            </div>
-
-                                        </div>
                                         <div class="form-group row">
                                             <label class="col-2 col-form-label">Date de collecte</label>
                                             <div class="col-6">
@@ -60,6 +52,12 @@
                                             <label class="col-2 col-form-label" for="example-email">Destination</label>
                                             <div class="col-6">
                                                 <input type="text"  value="<?php if (isset($billing)) echo $billing[0]->destination; ?>" id="example-email" name="destination" class="form-control" placeholder="Destination" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-2 col-form-label" for="example-email">Région</label>
+                                            <div class="col-6">
+                                                <input type="text"  value="<?php if (isset($billing)) echo $billing[0]->region; ?>" id="example-email" name="region" class="form-control" placeholder="Région" required>
                                             </div>
                                         </div>
                                         <div class="form-group row">

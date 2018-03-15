@@ -33,6 +33,7 @@ class BillingManager extends MainController {
         $this->load->model('tempo_model');
         $this->load->library('excel');
         $this->load->library('htmlpdf');
+        $this->load->library('session');
     }
 
     public function index() {
@@ -77,9 +78,10 @@ class BillingManager extends MainController {
         } else {
 
             $name = $name . "_" . $period . ".xlsx";
-
+           // var_dump($data);exit;
              foreach ($data as $row) {
             	$rows[] = array(
+            	   // 'id'=>$row->id,
 			    	'date_collected'=>$row->start_time,
 			    	'tracking_number'=>$row->tracking_number,
 			    	'destination'=>$row->address,
@@ -96,7 +98,7 @@ class BillingManager extends MainController {
             }
             // créer une table temporaire qui sera supprimée plustard et sur laquelle les éditions du FF se feront
             $this->operation_model->createTable("DROP TABLE IF EXISTS tempo_bill  " );
-            if ($this->operation_model->createTable("CREATE TABLE tempo_bill( `id` int(11) NOT NULL,
+            if ($this->operation_model->createTable("CREATE TABLE tempo_bill( `id` int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL ,
                                                                               `date_collected` varchar(32) NOT NULL,
                                                                               `tracking_number` varchar(32) NOT NULL,
                                                                               `destination` varchar(32) NOT NULL,
@@ -119,14 +121,24 @@ class BillingManager extends MainController {
                                     "newfile"=>$newfile,
                                     "type"=>$type,
                                     );
+            $this->session->item = $result['infos'];
 
-            // var_dump($values); die;
+
+
+            $result['malformedRegion']= $this->malformedRegion();
+
+            // var_dump( $result['billings']); die;
             $this->load->view('general/header.php');
             $this->load->view('billings/list_bill.php', $result);
             $this->load->view('general/footer.php');
 
 
         }
+    }
+
+    public function malformedRegion(){
+        $query = $this->operation_model->getCroisedRows("SELECT s.id from (SELECT * from tempo_bill t where t.region='' or t.region not in (select r.name from regions r)  )s ");
+        return $query ;
     }
 
 
@@ -210,15 +222,14 @@ class BillingManager extends MainController {
 
     public function editBilling($id=null) {
 
-
             $data['billing'] = null;
-
 
         if ($id != null) {
 
             $data['billing']=$this->tempo_model->getALL(array("id"=>$id));
 
         }
+        $data['malformedRegion']= $this->malformedRegion();
         $this->load->view('general/header.php');
         $this->load->view('billings/new_billing.php', $data);
         $this->load->view('general/footer.php');
@@ -227,66 +238,71 @@ class BillingManager extends MainController {
     public function store() {
         $this->update();
     }
-
     public function update($id = null)
     {
-
         if ($this->input->post()) {
             extract($this->input->post(NULL, TRUE));
             $billing = $this->input->post();
-
             if ($id == null) {
-
                 $this->tempo_model->insert($billing);
-
             } else {
-
                 $this->tempo_model->insert($billing, $id);
-
             }
             $this->list_billing_file();
-
         }
     }
 
 
-    public function read($infos) {
-        $data['billing']=$this->tempo_model->getALL(array("deleted"=>0));
-        foreach ($data['billing'] as $data_bill){
-            if($data_bill->deposit_local=="")
-                $data_bill->deposit_local = "A domicile";
-            if ($data_bill->region=="")
-                $Emptyregion[]=array("pos"=>$data_bill->id);
-        }
-        $nberEmptyRegion = $this->operation_model->createTable("SELECT COUNT(*) from (SELECT * from tempo_bill t where t.region not in (select r.name from region r)  ) ");
 
-        if($Emptyregion!="" || $nberEmptyRegion > 0 ){
-            $data['Emptyregion']=$Emptyregion; $data['nberEmptyRegion']=$nberEmptyRegion ;
-            $this->load->view('general/header.php');
-            $this->load->view('billings/list_bill.php', $data);
-            $this->load->view('general/footer.php');
-        }
-        $state_file_id=$this->state_model->insert(array("file_path" => $infos['newfile'], "type" => $infos['type'], "facturation_date" => "", "period" => $infos['period'], "customerID" => $infos['customer'], "name" => $infos['name']));
+    public function read() {
 
-        $period=$infos['period'];
-        //var_dump($period);die;
-        $data['file_text_name'] ='Fichier de facturation de la période du ' .$period ;
+        $infos = $_SESSION['item'];
+
+        $state_file_id=$this->state_model->insert(array("file_path" => $infos['newfile'], "type" => $infos['type'] ,"facturation_date" => "", "period" => $infos['period'], "customerID" => $infos['customer'], "name" => $infos['name']));
+
+        $tempo_bill  = $this->operation_model->getCroisedRows("select * from tempo_bill t where t.region <>'' and t.region in (select r.name from regions r)");
+        
+        foreach ($tempo_bill as $tempo){
+            if($tempo->deposit_local=="")
+                $tempo->deposit_local = "A domicile";
+            $rows[] = array(
+                'date_collected'=>$tempo->date_collected,
+                'tracking_number'=>$tempo->tracking_number,
+                'destination'=>$tempo->destination,
+                'region'=>$tempo->region,
+                'order_number'=>$tempo->order_number,
+                'weight'=>$tempo->weight,
+                'state_file_id'=>$state_file_id,
+                'final_status'=>$tempo->final_status,
+                'final_status_date'=>$tempo->final_status_date,
+                'deleted'=>0,
+                'amount_to_collect'=>$tempo->amount_to_collect,
+                'amount_collected'=>$tempo->amount_collected,
+                'deposit_local'=>$tempo->deposit_local
+            );
+
+        }
+        $this->operation_model->createTable("DROP TABLE IF EXISTS tempo_bill  " );
+        $this->billing_model->insert_many_rows($rows);
+        $data['billing']=$this->billing_model->getALL();
+
+        $data['file_text_name'] ='Fichier de facturation de la période du ' .$infos['period'] ;
         $this->load->view('general/header.php');
         $this->load->view('billings/read_billing.php', $data);
         $this->load->view('general/footer.php');
+
+
     }
 
     public function destroy($id) {
-        $this->billing_model->insert(array("deleted"=>1),$id);
+        $this->tempo_model->insert(array("deleted"=>1),$id);
         //var_dump($state_file_id);die;
         $this->list_billing_file();
     }
 
     public function list_billing_file() {
-        //var_dump($state_file_id);die;
-
+        $data['malformedRegion']= $this->malformedRegion();
         $data["billings"]= $this->tempo_model->getALL(array("deleted"=>0));
-
         $this->load->view('general/header.php');
         $this->load->view('billings/list_bill.php', $data);
         $this->load->view('general/footer.php');

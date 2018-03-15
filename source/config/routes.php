@@ -60,46 +60,37 @@ $route['customer/store']['POST'] = 'customers/CustomerManager/store';
 $route['customer/(:num)/update']['POST'] = 'customers/CustomerManager/update/$1';
 $route['customer/(:num)/show']['get'] = 'customers/CustomerManager/read/$1';
 $route['customer/(:num)/delete']['get'] = 'customers/CustomerManager/destroy/$1';
-
-//billings
-$route['billings']['get'] = 'billings/BillingManager';
+//billings and bill
+$route['billings']['get'] = 'billings/BillingManager/list_billing_file';
 $route['billing/create']['get'] = 'billings/BillingManager/create';
 $route['billing/generate_billing_file']['post'] = 'billings/BillingManager/generate_billing_file';
-$route['billing/newLine']['get'] = 'billings/BillingManager/newLine';
+$route['billing/newLine']['get'] = 'billings/BillingManager/newLine/$1';
 $route['billing/(:num)/edit']['get'] = 'billings/BillingManager/editBilling/$1';
-$route['billing/store']['POST'] = 'billings/BillingManager/store';
+$route['billing/store']['POST'] = 'billings/BillingManager/store/$1';
 $route['billing/(:num)/update']['POST'] = 'billings/BillingManager/update/$1';
 $route['billing/(:num)/delete']['get'] = 'billings/BillingManager/destroy/$1';
-$route['billing/(:num)/read']['get'] = 'billings/BillingManager/read/$1';
+$route['billing/read']['get'] = 'billings/BillingManager/read/$1';
 $route['state/list_billing_file']['get'] = 'state/StateManager/list_billing';
-
+$route['bill/create']['get'] = 'billings/BillingManager/createBill';
+$route['billing/generate_bill_file']['post'] = 'billings/BillingManager/generate_bill_file';
 //files and state
 $route['files/create_versement_file']['get'] = 'state/StateManager/create_versement_file';
 $route['files/uploading_versement_file']['post'] = 'state/StateManager/uploading_versement_file';
-
 $route['files/create_operation_file']['get'] = 'state/StateManager/create_operation_file';
 $route['files/uploading_operation_file']['post'] = 'state/StateManager/uploading_operation_file';
-
 $route['state/(:num)/preview']['get'] = 'state/StateManager/show/$1';
-
 $route['state/create_returned_file']['get'] = 'state/StateManager/create_returned_file';
 $route['state/generate_returned_file']['post'] = 'state/StateManager/generate_returned_file';
 $route['state/list_returned_file']['get'] = 'state/StateManager/list_returned_file';
-
-
 $route['state/create_paidonline_file']['get'] = 'state/StateManager/create_paidonline';
 $route['state/generate_paidonline_file']['post'] = 'state/StateManager/generate_paidonline';
 $route['state/list_paidonline_file']['get'] = 'state/StateManager/list_paidonline';
-
-
 $route['state/create_delivery_file']['get'] = 'state/StateManager/create_delivery';
 $route['state/generate_delivery_file']['post'] = 'state/StateManager/generate_delivery';
 $route['state/list_delivery_file']['get'] = 'state/StateManager/list_delivery';
-
 $route['state/create_croised_file']['get'] = 'state/StateManager/create_croised';
 $route['state/generate_croised_file']['post'] = 'state/StateManager/generate_croised';
 $route['state/list_croised_file']['get'] = 'state/StateManager/list_croised';
-
 // adresses
 $route['config/adresses']['get'] = 'config/ConfigurationManager/adress';
 $route['adresse/new']['get'] = 'config/ConfigurationManager/adress/new';
@@ -107,7 +98,6 @@ $route['adresse/create']['POST'] = 'config/ConfigurationManager/adress/create/$d
 $route['adresse/(:num)/edit']['get'] = 'config/ConfigurationManager/adress/edit/$1';
 $route['adresse/(:num)/update']['POST'] = 'config/ConfigurationManager/adress/update/$1';
 $route['adresse/(:num)/delete']['get'] = 'config/ConfigurationManager/adress/delete/$1';
-
 // zones
 $route['config/zones']['get'] = 'config/ConfigurationManager/zone';
 $route['zone/new']['get'] = 'config/ConfigurationManager/zone/new';
@@ -115,7 +105,6 @@ $route['zone/create']['POST'] = 'config/ConfigurationManager/zone/create/$data';
 $route['zone/(:num)/edit']['get'] = 'config/ConfigurationManager/zone/edit/$1';
 $route['zone/(:num)/update']['POST'] = 'config/ConfigurationManager/zone/update/$1';
 $route['zone/(:num)/delete']['get'] = 'config/ConfigurationManager/zone/delete/$1';
-
 // regions
 $route['config/regions']['get'] = 'config/ConfigurationManager/region';
 $route['region/new']['get'] = 'config/ConfigurationManager/region/new';
@@ -123,7 +112,6 @@ $route['region/create']['POST'] = 'config/ConfigurationManager/region/create/$da
 $route['region/(:num)/edit']['get'] = 'config/ConfigurationManager/region/edit/$1';
 $route['region/(:num)/update']['POST'] = 'config/ConfigurationManager/region/update/$1';
 $route['region/(:num)/delete']['get'] = 'config/ConfigurationManager/region/delete/$1';
-
 // cash intervalls
 $route['config/cash_intervals']['get'] = 'config/ConfigurationManager/cashInterval';
 $route['cash/new']['get'] = 'config/ConfigurationManager/cashInterval/new';
@@ -131,7 +119,6 @@ $route['cash/create']['POST'] = 'config/ConfigurationManager/cashInterval/create
 $route['cash/(:num)/edit']['get'] = 'config/ConfigurationManager/cashInterval/edit/$1';
 $route['cash/(:num)/update']['POST'] = 'config/ConfigurationManager/cashInterval/update/$1';
 $route['cash/(:num)/delete']['get'] = 'config/ConfigurationManager/cashInterval/delete/$1';
-
 // weight intervalls
 $route['config/weight_intervals']['get'] = 'config/ConfigurationManager/weightInterval';
 $route['weight/new']['get'] = 'config/ConfigurationManager/weightInterval/new';
