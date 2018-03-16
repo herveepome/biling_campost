@@ -689,7 +689,7 @@ class StateManager extends MainController {
                     else
                         $deposit_local="A domicile";
                     
-                    if(isset($row['4']) && $row['4']=="null")
+                    if(isset($row['4']) && $row['4']==null || $row['4']=="" )
                         $size='SMALL';
                     else
                         $size=$row['4'];
@@ -764,5 +764,33 @@ class StateManager extends MainController {
             echo ($this->upload->display_errors());
         return false;
     }
+    
+    public function destroy($id) {
+        $file = $this->state_model->getALL(array("id" => $id));
+       
+        unlink($file[0]->file_path);
+        
+        $this->state_model->delete($id);
+
+        if ($file[0]->type == "FR") {
+            redirect('state/StateManager/list_returned');
+        }
+        if ($file[0]->type == "FPO") {
+            redirect('state/StateManager/list_paidonline');
+        }
+        if ($file[0]->type == "FCD") {
+             redirect('state/StateManager/list_delivery');
+        }
+        if ($file[0]->type == "FC") {
+            redirect('state/StateManager/list_croised');
+        }
+        if ($file[0]->type == "FRT") {
+            redirect('state/StateManager/list_rejected');
+        }
+        if ($file[0]->type == "FUV") {
+            redirect('state/StateManager/list_unvoiced_file');
+        }
+    }
+
 
 }
