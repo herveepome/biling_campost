@@ -303,11 +303,12 @@ class BillingManager extends MainController {
 
 
 
-    public function read() {
+    public function read($id=null) {
+      $infos = $_SESSION['item'];
+       if ($id==null){
+        
 
-        $infos = $_SESSION['item'];
-
-        $state_file_id=$this->state_model->insert(array("file_path" => $infos['newfile'], "type" => $infos['type'] ,"facturation_date" => $infos['date_de_facturation'], "period" => $infos['period'], "customerID" => $infos['customer'], "name" => $infos['name']));
+        $id=$this->state_model->insert(array("file_path" => $infos['newfile'], "type" => $infos['type'] ,"facturation_date" => $infos['date_de_facturation'], "period" => $infos['period'], "customerID" => $infos['customer'], "name" => $infos['name']));
 
         $tempo_bill  = $this->operation_model->getCroisedRows("select * from tempo_bill t1 where t1.id not in (SELECT s.id from (SELECT * from tempo_bill t2 where t2.region='' or t2.region not in (select r.name from regions r)  )s)");
 
@@ -321,7 +322,7 @@ class BillingManager extends MainController {
                 'region'=>$tempo->region,
                 'order_number'=>$tempo->order_number,
                 'weight'=>$tempo->weight,
-                'state_file_id'=>$state_file_id,
+                'state_file_id'=>$id,
                 'final_status'=>$tempo->final_status,
                 'final_status_date'=>$tempo->final_status_date,
                 'deleted'=>0,
@@ -334,7 +335,9 @@ class BillingManager extends MainController {
 
         $this->operation_model->executeQuery("DROP TABLE IF EXISTS tempo_bill  " );
         $this->billing_model->insert_many_rows($rows);
-        $data['billing']=$this->billing_model->getALL(array("deleted"=>0, "state_file_id"=>$state_file_id));
+       }
+       
+        $data['billing']=$this->billing_model->getALL(array("deleted"=>0, "state_file_id"=>$id));
 
         $data['file_text_name'] ='Fichier de facturation de la période du ' .$infos['period'] ;
         $this->load->view('general/header.php');
@@ -530,7 +533,7 @@ class BillingManager extends MainController {
                                                         </tr>" ;
 
                 }
-                var_dump($data_listing); die;
+                //var_dump($data_listing); die;
                 $listing = "<table ><thead><tr>
                             <th>Num</th>
                             <th>Date de collecte</th>
@@ -555,8 +558,8 @@ class BillingManager extends MainController {
                 }
                 // exporter les données html du listing au format excell
             header('Content-type: application/excel');
-            $file = $namlisting.".xls";
-            header('Content-Disposition: attachment; filename='.$file);
+            $file_listing = $namlisting.".xls";
+            header('Content-Disposition: attachment; filename='.$file_listing);
             $data = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">
                     <head>
                         <!--[if gte mso 9]>
@@ -575,8 +578,9 @@ class BillingManager extends MainController {
                             </x:ExcelWorkbook>
                         </xml>
                         <![endif]-->
-                    </head>'.$listing ;
-            var_dump($data) ;
+                    </head><body>'.$listing.'</body></html>' ;
+            echo $data;
+           
 
         }
 

@@ -75,7 +75,8 @@ $route['billing/(:num)/edit']['get'] = 'billings/BillingManager/editBilling/$1';
 $route['billing/store']['POST'] = 'billings/BillingManager/store/$1';
 $route['billing/(:num)/update']['POST'] = 'billings/BillingManager/update/$1';
 $route['billing/(:num)/delete']['get'] = 'billings/BillingManager/destroy/$1';
-$route['billing/read']['get'] = 'billings/BillingManager/read/$1';
+$route['billing/(:num)/read']['get'] = 'billings/BillingManager/read/$1';
+$route['billing/read']['get'] = 'billings/BillingManager/read';
 
 $route['state/list_billing_file']['get'] = 'state/StateManager/list_billing';
 $route['bill/create']['get'] = 'billings/BillingManager/createBill';
