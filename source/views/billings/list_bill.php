@@ -20,12 +20,14 @@
                          <div class="col-sm-6">
                              <div class="m-b-30">
                                  <a href="<?php echo site_url('billing/newLine'); ?>"><button id="addToTable" class="btn btn-success waves-effect waves-light">Ajouter une ligne<i class="mdi mdi-plus-circle-outline"></i></button></a>
-
-                                 <a href="#custom-modal-region" class="hidden on-editing cancel-row" data-animation="fadein" data-plugin="custommodal" data-original-title="Valider" data-overlaySpeed="200" data-overlayColor="#36404a">
-                                     <button type="submit" id="addToTable" class="btn btn-primary waves-effect waves-light">Valider</button>
-                                 </a>
+                                 <?php if  (isset($malformedRegion) && $malformedRegion!=null && !empty($malformedRegion)){ ?>
+                                     <a href="#custom-modal-region" class="hidden on-editing cancel-row" data-animation="fadein" data-plugin="custommodal" data-original-title="Valider" data-overlaySpeed="200" data-overlayColor="#36404a">
+                                         <button type="submit" id="addToTable" class="btn btn-primary waves-effect waves-light">Valider</button>
+                                     </a>
+                                 <?php  }else { ?>
+                                     <a href="<?php echo site_url('billing/read'); ?>"><button id="addToTable" class="btn btn-success waves-effect waves-light">Ajouter une ligne<i class="mdi mdi-plus-circle-outline"></i></button></a>
+                                 <?php } ?>
                              </div>
-
 
                          </div>
 

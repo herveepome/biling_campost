@@ -271,9 +271,18 @@ class StateManager extends MainController {
         $this->list_file("billing");
     }
 
+    public function listing() {
+
+        $this->list_file("listing");
+    }
+
     public function list_file($file_name, $message = null) {
         $name = null;
 
+        if ($file_name == "listing") {
+            $data["states"] = $this->state_model->getALL(array("type" => "LF"));
+            $name = "des listings de facturation";
+        }
         if ($file_name == "billing") {
             $data["states"] = $this->state_model->getALL(array("type" => "FF"));
             $name = "des fichiers de facturation";

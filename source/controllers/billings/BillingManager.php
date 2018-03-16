@@ -69,9 +69,10 @@ class BillingManager extends MainController {
         $this->load->view('general/footer.php');
     }
 
-     public function generate_file($test, $name_file, $nam, $data, $operation_id, $type, $file_type, $file_name, $customer_id, $type_file_required, $period, $headers, $file, $newfile, $path, $name, $versement_id = null) {
+    // générer le fichier de facturation
+     public function generate_file($test, $name_file, $nam, $data, $operation_id, $type, $file_text_name,  $customer_id, $period, $headers, $file, $newfile, $path, $file_name, $name, $dateFacturation,$versement_id=null,$file_type) {
         $error = null;
-
+      // var_dump($period); die;
         if ($versement_id != null && empty($versement_id) || empty($operation_id)) {
             $error = "Ce fichier ne peut pas encore être généré car au moins un des fichiers requis  correspondant à ces critères n'a pas encore été chargé. Veuillez le(s) charger et réessayer";
             $this->create_file($file_type, $file_name, 'billings/new_state.php', $path, $error);
@@ -128,6 +129,7 @@ class BillingManager extends MainController {
                                     "period"=>$period,
                                     "newfile"=>$newfile,
                                     "type"=>$type,
+                                    "date_de_facturation"=>$dateFacturation,
                                     );
             $this->session->item = $result['infos'];
 
@@ -144,20 +146,20 @@ class BillingManager extends MainController {
 
         }
     }
-
+// les lignes dont les régioons sont vides ou mal formées
     public function malformedRegion(){
         $query = $this->operation_model->getCroisedRows("SELECT s.id from (SELECT * from tempo_bill t where t.region='' or t.region not in (select r.name from regions r)  )s ");
         return $query ;
     }
 
-
+// les données nécessaires à la génération du fichier de facturation
     public function generate_billing_file(){
         if ($this->input->post()) {
-            $data = $this->input->post();
+            $dataInput = $this->input->post();
             $error = null;
             extract($this->input->post(NULL, TRUE));
-            $period = substr($data['period'], 3, 2) . substr($data['period'], 0, 2) . substr($data['period'], 6);
-            $customer_id = $this->customer_model->getALL(array("name" => $data['customer']));
+            $period = substr($dataInput['period'], 3, 2) . substr($dataInput['period'], 0, 2) . substr($dataInput['period'], 6);
+            $customer_id = $this->customer_model->getALL(array("name" => $dataInput['customer']));
 
             //$state_file_id = ($this->state_model->getALL(array("period" => $period, "type" => "FO", "customerID" => $customer_id[0]->id)));
 
@@ -207,12 +209,13 @@ class BillingManager extends MainController {
             }
 
             //var_dump($period,$customer_id,$state_file_id);die;
-            $name = "opérations";
+            $name = "billing";
             $file_type = "Fichier de facturation";
             $file_name = "billing_file";
             $path = "billing/generate_billing_file";
             $file = "./upload/model/returned_paidonline_delivery.xlsx";
             $newfile = "./upload/billing/billing_" . $period . ".xlsx";
+            $dateFacturation = $dataInput['period'];
 
             $type = "FF";
             $headers = array('No', 'Date de collecte', 'Numéro de commande', 'No colis AIGE', 'Destination', 'Poids','Region','Lieux de dépôt','Statut final', 'Date statut final');
@@ -220,7 +223,8 @@ class BillingManager extends MainController {
             $name_file = "billing_file";
             $nam = "billing_" . $period;
             $test = "billing";
-            $this->generate_file($test, $name_file, $nam, $data, $operation_id, $type, "Fichier de facturation", "billing", $customer_id, $customer, $period, $headers, $file, $newfile, $path, $file_name, $name, $versement_id);
+
+            $this->generate_file($test, $name_file, $nam, $data, $operation_id, $type, $file_text_name, $customer_id, $period, $headers, $file, $newfile, $path, $file_name, $name, $dateFacturation,$versement_id,$file_type);
         }
 
     }
@@ -272,7 +276,7 @@ class BillingManager extends MainController {
 
         $infos = $_SESSION['item'];
 
-        $state_file_id=$this->state_model->insert(array("file_path" => $infos['newfile'], "type" => $infos['type'] ,"facturation_date" => "", "period" => $infos['period'], "customerID" => $infos['customer'], "name" => $infos['name']));
+        $state_file_id=$this->state_model->insert(array("file_path" => $infos['newfile'], "type" => $infos['type'] ,"facturation_date" => $infos['date_de_facturation'], "period" => $infos['period'], "customerID" => $infos['customer'], "name" => $infos['name']));
 
         $tempo_bill  = $this->operation_model->getCroisedRows("select * from tempo_bill t where t.region <>'' and t.region in (select r.name from regions r)");
         
@@ -335,21 +339,24 @@ class BillingManager extends MainController {
             $error = null;
             extract($this->input->post(NULL, TRUE));
             $period = substr($data['period'], 3, 2) . substr($data['period'], 0, 2) . substr($data['period'], 6);
+
             $customer_id = $this->customer_model->getALL(array("name" => $data['customer']));
             // l'id du state pour ce client à cette période
             $state_id = $this->state_model->getALL(array("period" => $period, "customerID" => $customer_id[0]->id, "type" => 'FF'));
+
             // le fichier de facturation pour ce client à cette période
             $bill_file = $this->billing_model->getALL(array("state_file_id" => $state_id[0]->id));
             $intervals = $this->configuration_model->all('cash_interval');
-            $totalCommissions = 0;
-            $totalDomicile = 0;
-            $totalRejets = 0;
-            $totalRetours = 0;
-            $totalEchecs = 0;
-            $totalRelais = 0;
+           $totalCommissions = 0; $totalDomicile = 0;$totalRejets = 0;
+            $totalRetours = 0;$totalEchecs = 0; $totalRelais = 0;
+
+
             foreach ($bill_file as $bill) {
+                // gestion des commissions sur les cash collectés
                 if ($bill->amount_collected == "")
                     $commissions = "";
+                else if ($bill->amount_collected > 500000)
+                    $commissions = $bill->amount_collected/100 ;
                 else {
                     $i = -1;
                     do {
@@ -357,140 +364,114 @@ class BillingManager extends MainController {
                         $dataInterval = explode('-', $intervals[$i]->interval);
 
                     } while ((int)$bill->amount_collected > (int)$dataInterval[1]);
-                    $commissionsId = $intervals[$i]->id;
-                    $commissions = (int)$this->cash_model->getALL(array('cash_interval_id' => $commissionsId))[0]->amount;
 
-                    $bill_file = $this->billing_model->getALL(array("state_file_id" => $state_id[0]->id));
-                    $intervals = $this->configuration_model->all('cash_interval');
+                     $commissionsId = $intervals[$i]->id;
 
-                    foreach ($bill_file as $bill) {
-                        $i = -1;
-                        do {
-                            $i++;
-                            $dataInterval = explode('-', $intervals[$i]->interval);
+                    $commissions = $this->cash_model->getALL(array('cash_interval_id' => $commissionsId))[0]->amount;
+                }
+                // gestion des tarifs à domicile ou en point relais
 
-                        } while (intVal($bill->amount_collected) > intVal($dataInterval[1]));
-                        $commissionsId = $intervals[$i]->id;
+                    $poid = $this->configuration_model->getWhere('weight', 'name', $bill->weight)[0]->id; // id du poids partant de son nom
+                  //  var_dump($poid);
+                    $zone = $this->configuration_model->getWhere('regions','name',$bill->region)[0]->zone_id ;   // id de la zone partant de la région
+                    $domicile = $this->local_model->getALL(array("name" => 'A domicile'))[0]->id; // id à domicile
+                    $bureau = $this->local_model->getALL(array("name" => 'Bureau de poste'))[0]->id; // id en point relais
 
-                        $commissions = $this->cash_model->getALL(array('cash_interval_id' => $commissionsId));
-                        var_dump($commissions);
-                        die;
-                        $poid = $this->configuration_model->getWhere('weight', 'name', $bill->weight)[0]->id; // id du poids partant de son nom
-                        // $zone = $this->configuration_model->getWhere('regions','name',$bill->region) ;   // id de la zone partant de la région
-                        $zoneId = $this->region_model->getALL(array("name" => $bill->region))[0]->zone_id;
-                        $domicile = $this->local_model->getALL(array("name" => 'A domicile'))[0]->id; // id à domicile
-                        $bureau = $this->local_model->getALL(array("name" => 'Bureau de poste'))[0]->id; // id en point relais
+                    if($bill->deposit_local=="A domicile"){
+                        $tarifDomicile = $this->deposit_model->getALL(array("zone_id" => $zone, "weight_id" => $poid, "deposit_local_id" => $domicile, "customer_id" => $customer_id[0]->id))[0]->amount;
+                        $tarifBureau=0;
+                    }
+                    else{
+                        $tarifBureau = $this->deposit_model->getALL(array("zone_id" => $zone, "weight_id" => $poid, "deposit_local_id" => $bureau, "customer_id" => $customer_id[0]->id))[0]->amount;
+                        $tarifDomicile=0;
+                    }
+                    // gestion de la tarification retour
 
-                        $tarifDomicile = $this->deposit_model->getALL(array("zone_id" => $zoneId, "weight_id" => $poid, "deposit_local_id" => $domicile, "customer_id" => $customer_id[0]->id));
-                        $tarifBureau = $this->deposit_model->getALL(array("zone_id" => $zoneId, "weight_id" => $poid, "deposit_local_id" => $bureau, "customer_id" => $customer_id[0]->id));
-                        $tarifRejets = 0;
-                        $tarifRetours = 0;
-                        $tarifEchecs = 0;
-                        if ($bill->final_status == 'Returned') {
-                            if (intVal($tarifDomicile) == 0)
-                                $tarifRetours = intVal($tarifBureau) / 2;
-                            else
-                                $tarifRetours = intVal($tarifDomicile) / 2;
+                    $tarifRejets = 0;
+                    $tarifRetours = 0;
+                    $tarifEchecs = 0;
+                    if (($bill->final_status == 'Returned') || ($bill->final_status == 'At the hub picked')) {
+                        if ($tarifDomicile == 0)
+                            $tarifRetours = 0.5*(float)$tarifBureau;
+                        else
+                            $tarifRetours = 0.5*(float)$tarifDomicile;
+                    } else if (($bill->final_status == 'Reversed') || ($bill->final_status == 'Failed') || ($bill->final_status == 'Lost') || ($bill->final_status == 'On the way to the hub') || ($bill->final_status == 'Partially delivered')) {
+                        if ($tarifDomicile == 0) {
+                            $tarifRejets = $tarifBureau;
+                            $tarifEchecs = $tarifBureau;
+                        } else {
+                            $tarifRejets = $tarifDomicile;
+                            $tarifEchecs = $tarifDomicile;
                         }
-
-                        $zone = $this->configuration_model->getWhere('regions', 'name', $bill->region)[0]->zone_id;
-                        $poid = $this->configuration_model->getWhere('weight', 'name', $bill->weight)[0]->id; // id du poids partant de son nom
-
-                        $domicile = $this->local_model->getALL(array("name" => 'A domicile'))[0]->id; // id à domicile
-                        $bureau = $this->local_model->getALL(array("name" => 'Bureau de poste'))[0]->id; // id en point relais
-
-
-                        $tarifDomicile = (int)$this->deposit_model->getALL(array("weight_id" => $poid, "zone_id" => $zone, "deposit_local_id" => $domicile, "customer_id" => $customer_id[0]->id))[0]->amount;
-
-                        $tarifBureau = (int)$this->deposit_model->getALL(array("zone_id" => $zone, "weight_id" => $poid, "deposit_local_id" => $bureau, "customer_id" => $customer_id[0]->id))[0]->amount;
-
-                        $tarifRejets = 0;
-                        $tarifRetours = 0;
-                        $tarifEchecs = 0;
-                        if (($bill->final_status == 'Returned') || ($bill->final_status == 'At the hub picked')) {
-                            if ($tarifDomicile == 0)
-                                $tarifRetours = $tarifBureau / 2;
-                            else
-                                $tarifRetours = $tarifDomicile / 2;
-                        } else if (($bill->final_status == 'Reversed') || ($bill->final_status == 'Failed') || ($bill->final_status == 'Lost') || ($bill->final_status == 'On the way to the hub') || ($bill->final_status == 'Partially delivered')) {
-                            if ($tarifDomicile == "") {
-                                $tarifRejets = $tarifBureau;
-                                $tarifEchecs = $tarifBureau;
-                            } else {
-                                $tarifRejets = $tarifDomicile;
-                                $tarifEchecs = $tarifDomicile;
-                            }
-
-                        }
-
-
-                        $data[] = array("Num" => $bill->id,
-                            "Date de collecte" => $bill->date_collected,
-                            "Numéro de commande" => $bill->order_number,
-                            "Num colis AIGE" => $bill->tracking_number,
-                            "Destination" => $bill->destination,
-                            "Poids" => $bill->weight,
-                            "Statut final" => $bill->final_status,
-                            "Date statut final" => $bill->final_status_date,
-                            "Tarif à domicile" => $tarifDomicile,
-                            "Tarif en point relais" => $tarifBureau,
-                            "Tarif rejets" => $tarifRejets,
-                            "Tarif retours" => $tarifRetours,
-                            "Tarif échecs" => $tarifEchecs,
-                            "Cash collecté" => $bill->amount_collected,
-                            "Commission sur cash collecté" => $commissions,
-                        );
-                        var_dump($data);
-
-                        $totalCommissions += $commissions;
-                        $totalDomicile += $tarifDomicile;
-                        $totalRejets += $tarifRejets;
-                        $totalRetours += $tarifRetours;
-                        $totalEchecs += $tarifEchecs;
-                        $totalRelais += $tarifBureau;
 
                     }
-                    //var_dump($data);exit;
+                // les données du listing
+                    $data[] = array("Num" => $bill->id,
+                        "Date_de_collecte" => $bill->date_collected,
+                        "Numero_de_commande" => $bill->order_number,
+                        "Num_colis_AIGE" => $bill->tracking_number,
+                        "Destination" => $bill->destination,
+                        "Poids" => $bill->weight,
+                        "Statut_final" => $bill->final_status,
+                        "Date_statut_final" => $bill->final_status_date,
+                        "Tarif_domicile" => $tarifDomicile,
+                        "Tarif_en point_relais" => $tarifBureau,
+                        "Tarif_rejets" => $tarifRejets,
+                        "Tarif_retours" => $tarifRetours,
+                        "Tarif_echecs" => $tarifEchecs,
+                        "Cash_collecte" => $bill->amount_collected,
+                        "Commission_sur_cash_collecte" => $commissions,
+                    );
 
-                    $name = "billing";
+                $totalCommissions += (float)$commissions;
+                $totalDomicile += (float)$tarifDomicile;
+                $totalEchecs += (float)$tarifEchecs;
+                $totalRejets += (float)$tarifRejets;
+                $totalRelais += (float)$tarifBureau;
+                $totalRetours += (float)$tarifRetours ;
+
+             }
+
+
+                    $name = "facturation";
                     $file_type = "Listing de facturation";
                     $file_name = "listing";
                     $path = "billing/generate_bill_file";
                     $file = "./upload/model/listing.xlsx";
                     $newfile = "./upload/billing/listing_" . $period . ".xlsx";
-
+                    $billing_id = $state_id[0]->id ;
                     $type = "LF";
+                    $facturation_date = $data['period'] ;
                     $headers = array('No', 'Date de collecte', 'Numéro de commande', 'No colis AIGE', 'Destination', 'Poids', 'Statut final', 'Date statut final');
                     $file_text_name = "Listing de facturation";
                     $name_file = "listing_file";
                     $nam = "listing_" . $period;
                     $test = "listing";
-                    $this->generate_listing($test, $name_file, $nam, $data, $state_id[0]->id, "LF", "Listing de facturation", "billing", $customer_id, $period, $headers, $file, $newfile, $path, $file_name, $name, $billing_id);
+                    $this->generate_listing($test, $name_file, $nam, $data, $state_id[0]->id, $type, $file_text_name, $facturation_date, $file_name, $customer_id, $period, $headers, $file, $newfile, $path, $file_name, $name,$billing_id);
                 }
             }
-        }
-    }
 
 
-    public function generate_listing($test, $name_file, $nam, $data, $state_file_id, $type, $file_type, $file_name, $customer_id, $type_file_required, $period, $headers, $file, $newfile, $path, $name, $billing_id = null) {
+    public function generate_listing($test, $name_file, $nam, $data, $state_file_id, $type, $file_type, $facturation_date, $file_name, $customer_id, $type_file_required, $period, $headers, $file, $newfile, $path, $name, $billing_id = null) {
         $error = null;
-
         if ($billing_id != null && empty($billing_id) || empty($state_file_id)) {
             $error = "Ce fichier ne peut pas encore être généré car le fichier requis  correspondant à ces critères n'a pas encore été chargé. Veuillez le charger et réessayer";
             $this->create_file($file_type, $file_name, 'billings/new_state.php', $path, $error);
         } elseif (empty($state_file_id)) {
-            $error = "Ce fichier ne peut pas encore être généré car fichier des " . $name . " correspondant à ces critères n'a pas encore été chargé. Veuillez le charger et réessayer";
+            $error = "Ce fichier ne peut pas encore être généré car fichier de " . $name . " correspondant à ces critères n'a pas encore été chargé. Veuillez le charger et réessayer";
             $this->create_file($file_type, $file_name, 'billings/new_state.php', $path, $error);
         } elseif (!empty($this->state_model->getALL(array("period" => $period, "type" => $type, "customerID" => $customer_id[0]->id)))) {
             $error = "un fichier correspondant à ces critères existe déjà. Veuillez le supprimer et réessayer ou changez de critères";
             $this->create_file($file_type, $file_name, 'billings/new_state.php', $path, $error);
         } else {
 
-            $name = $name . "_" . $period . ".xlsx";
-            $this->generating_file($test, $file, $newfile, $data, $name);
-            $this->state_model->insert(array("file_path" => $newfile, "type" => $type, "facturation_date" => $state_file_id[0]->facturation_date, "period" => $period, "customerID" => $customer_id[0]->id, "name" => $nam));
 
-            $this->list_file($name_file, "votre fichier a bien été généré. Vous pouvez le consulter dans la liste ci-dessous");
+            $this->state_model->insert(array("file_path" => $newfile, "type" => $type, "facturation_date" => $facturation_date, "period" => $period, "customerID" => $customer_id[0]->id, "name" => $nam));
+            $this->state_model->insert(array("file_path" => "./upload/billing/facture_" . $period . ".xlsx", "type" => 'F', "facturation_date" => $facturation_date, "period" => $period, "customerID" => $customer_id[0]->id, "name" => $nam));
+           $this->list_file($name_file, "votre fichier a bien été généré. Vous pouvez le consulter dans la liste ci-dessous");
+          //  $data['file_text_name'] ='Listing de facturation de la période du ' .$period ;
+           // $data['listing'] = $data;
+
         }
     }
 
