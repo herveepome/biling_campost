@@ -8,7 +8,7 @@
                     <div class="progress m-b-20">
                         <div class="progress-bar progress-bar-striped progress-bar-animated" id="myBar" role="progressbar"  aria-valuemax="100" style="height: 30px" ></div>
                         
-                        <input type="hidden" id="time" value="<?php if (isset($time) && $time != null && !empty($time)) echo $time ?>" >
+                        <input type="hidden" id="time" value="<?php if (isset($time) && $time != null && !empty($time)) echo $time; ?>" >
                         
                     </div>
                     <h4 id="finalMessage"></h4>

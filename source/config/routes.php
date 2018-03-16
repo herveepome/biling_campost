@@ -87,6 +87,11 @@ $route['files/uploading_versement_file']['post'] = 'state/StateManager/uploading
 $route['files/create_operation_file']['get'] = 'state/StateManager/create_operation_file';
 $route['files/uploading_operation_file']['post'] = 'state/StateManager/uploading_operation_file';
 $route['state/(:num)/preview']['get'] = 'state/StateManager/show/$1';
+
+
+$route['state/(:num)/delete']['get'] = 'state/StateManager/destroy/$1';
+
+
 $route['state/create_returned_file']['get'] = 'state/StateManager/create_returned_file';
 $route['state/generate_returned_file']['post'] = 'state/StateManager/generate_returned_file';
 $route['state/list_returned_file']['get'] = 'state/StateManager/list_returned_file';
@@ -99,6 +104,16 @@ $route['state/list_delivery_file']['get'] = 'state/StateManager/list_delivery';
 $route['state/create_croised_file']['get'] = 'state/StateManager/create_croised';
 $route['state/generate_croised_file']['post'] = 'state/StateManager/generate_croised';
 $route['state/list_croised_file']['get'] = 'state/StateManager/list_croised';
+
+
+$route['state/create_rejected_file']['get'] = 'state/StateManager/create_rejected';
+$route['state/generate_rejected_file']['post'] = 'state/StateManager/generate_rejected';
+$route['state/list_rejected_file']['get'] = 'state/StateManager/list_rejected';
+
+$route['state/create_unvoiced_file']['get'] = 'state/StateManager/create_unvoiced';
+$route['state/generate_unvoiced_file']['post'] = 'state/StateManager/generate_unvoiced';
+$route['state/list_unvoiced_file']['get'] = 'state/StateManager/list_unvoiced';
+
 // adresses
 $route['config/adresses']['get'] = 'config/ConfigurationManager/adress';
 $route['adresse/new']['get'] = 'config/ConfigurationManager/adress/new';

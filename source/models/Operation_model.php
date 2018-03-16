@@ -31,7 +31,12 @@ class Operation_model extends MY_Model {
     }
 
 
-    public function createTable($query){
+     public function executeQuery($query){
+        $req= $this->db->query($query);
+        return;
+    }
+     public function getCroisedArrayRows($query){
+
         $req= $this->db->query($query);
         return $req;
     }

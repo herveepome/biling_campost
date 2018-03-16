@@ -106,8 +106,8 @@ class BillingManager extends MainController {
 
 
             // créer une table temporaire qui sera supprimée plustard et sur laquelle les éditions du FF se feront
-            $this->operation_model->createTable("DROP TABLE IF EXISTS tempo_bill  " );
-            if ($this->operation_model->createTable("CREATE TABLE tempo_bill( `id` int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL ,
+            $this->operation_model->executeQuery("DROP TABLE IF EXISTS tempo_bill  " );
+            if ($this->operation_model->executeQuery("CREATE TABLE tempo_bill( `id` int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL ,
                                                                               `date_collected` varchar(32) NOT NULL,
                                                                               `tracking_number` varchar(32) NOT NULL,
                                                                               `destination` varchar(32) NOT NULL,
@@ -300,7 +300,7 @@ class BillingManager extends MainController {
             );
 
         }
-        $this->operation_model->createTable("DROP TABLE IF EXISTS tempo_bill  " );
+        $this->operation_model->executeQuery("DROP TABLE IF EXISTS tempo_bill  " );
         $this->billing_model->insert_many_rows($rows);
         $data['billing']=$this->billing_model->getALL();
 
