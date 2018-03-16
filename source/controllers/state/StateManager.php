@@ -487,8 +487,8 @@ class StateManager extends MainController {
             $this->operation_model->executeQuery("DROP TABLE alternatifs_egaux");
             $this->operation_model->executeQuery("DROP TABLE alternatifs_differents");
             $this->operation_model->executeQuery("DROP TABLE alternatifs_superieur");
-            $data["rows"]=$alternatifs_egaux;
-            //$data["rows"]=  array_merge($nominal,$alternatifs_egaux,$alternatifs_differents);
+            //$data["rows"]=$alternatifs_egaux;
+            $data["rows"]=  array_merge($nominal,$alternatifs_egaux,$alternatifs_differents);
             
             
         }
@@ -648,19 +648,18 @@ class StateManager extends MainController {
         }
     }
 
-    public function excel_to_sql($state_file_id, $file_type, $file) {
+   public function excel_to_sql($state_file_id, $file_type, $file) {
 
 
         $reader = ReaderFactory::create(Type::XLSX); // for XLSX files
 
 
         $reader->open($file);
-        
-        
-        
+        $data = array();
+
+
         if ($file_type == "versement") {
             foreach ($reader->getSheetIterator() as $sheet) {
-                
                 foreach ($sheet->getRowIterator() as $row) {
 
                     if ($row["1"] != "D. Opé.") {
@@ -675,14 +674,11 @@ class StateManager extends MainController {
                             'credit' =>str_replace(' ', '',$row['6']),
                             'solde' => $row['7'],
                         );
-                       
-                        
+
                         $data[] = $result;
-                        
                     }
                 }
             }
-           $reader->close();
             $this->versement_model->insert_many_rows($data);
         }
 
@@ -734,9 +730,8 @@ class StateManager extends MainController {
                 }
 
 
-                
+                $reader->close();
             }
-            $reader->close();
             $this->operation_model->insert_many_rows($data);
             
             $this->operation_model->executeQuery("CREATE TEMPORARY TABLE IF NOT exists doublons  "
@@ -750,7 +745,6 @@ class StateManager extends MainController {
             $this->operation_model->executeQuery("DELETE FROM operation where id in (select id from doublons)");
             $this->operation_model->executeQuery("DROP TABLE doublons");
         }
-        
     }
     public function upload_file($file_name, $allowed_types, $upload_path, $max_size, $file_uploading) {
         //var_dump($file_uploading);die;
