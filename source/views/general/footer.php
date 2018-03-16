@@ -111,6 +111,7 @@
         var elem = document.getElementById("myBar");
         var finalMessage = document.getElementById('finalMessage');
         var timer = document.getElementById('time');
+        alert(timer);
         var width = 1;
         var id = setInterval(frame, timer);
         function frame() {
