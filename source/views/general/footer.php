@@ -110,7 +110,7 @@
     function move() {
         var elem = document.getElementById("myBar");
         var finalMessage = document.getElementById('finalMessage');
-        var timer = document.getElementById('time');
+        var timer = document.getElementById('time').value;
         alert(timer);
         var width = 1;
         var id = setInterval(frame, timer);

@@ -689,7 +689,7 @@ class StateManager extends MainController {
                     else
                         $deposit_local="A domicile";
                     
-                    if(isset($row['4']) && $row['4']=="null" || $row['4']=="" )
+                    if(isset($row['4']) && $row['4']==null || $row['4']=="" )
                         $size='SMALL';
                     else
                         $size=$row['4'];
