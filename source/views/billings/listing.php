@@ -51,27 +51,13 @@
                             <td><?php echo $list->Date_statut_final ?></td>
 
                             <td><?php echo $list->Tarif_domicile ?></td>
-                            <td><?php echo $list->order_number?></td>
-                            <td><?php echo $list->tracking_number ?></td>
-                            <td><?php echo $list->destination ?></td>
-                            <td><?php echo $list->weight?></td>
-                            <td><?php echo $list->final_status?></td>
-                            <td><?php echo $list->final_status_date ?></td>
+                            <td><?php echo $list->Tarif_en_point_relais?></td>
+                            <td><?php echo $list->Tarif_rejets ?></td>
+                            <td><?php echo $list->Tarif_retours ?></td>
+                            <td><?php echo $list->Tarif_echecs?></td>
+                            <td><?php echo $list->Cash_collecte?></td>
+                            <td><?php echo $list->Commission_sur_cash_collecte ?></td>
 
-                            "Date_de_collecte" => $bill->date_collected,
-                            "Numero_de_commande" => $bill->order_number,
-                            "Num_colis_AIGE" => $bill->tracking_number,
-                            "Destination" => $bill->destination,
-                            "Poids" => $bill->weight,
-                            "Statut_final" => $bill->final_status,
-                            "Date_statut_final" => $bill->final_status_date,
-                            "Tarif_domicile" => $tarifDomicile,
-                            "Tarif_en_point_relais" => $tarifBureau,
-                            "Tarif_rejets" => $tarifRejets,
-                            "Tarif_retours" => $tarifRetours,
-                            "Tarif_echecs" => $tarifEchecs,
-                            "Cash_collecte" => $bill->amount_collected,
-                            "Commission_sur_cash_collecte" => $commissions,
 
 
 

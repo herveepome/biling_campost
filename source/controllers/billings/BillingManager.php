@@ -72,6 +72,7 @@ class BillingManager extends MainController {
     // générer le fichier de facturation
      public function generate_file($test, $name_file, $nam, $data, $operation_id, $type, $file_text_name,  $customer_id, $period, $headers, $file, $newfile, $path, $file_name, $name, $dateFacturation,$versement_id=null,$file_type) {
         $error = null;
+
       // var_dump($period); die;
         if ($versement_id != null && empty($versement_id) || empty($operation_id)) {
             $error = "Ce fichier ne peut pas encore être généré car au moins un des fichiers requis  correspondant à ces critères n'a pas encore été chargé. Veuillez le(s) charger et réessayer";
@@ -85,7 +86,7 @@ class BillingManager extends MainController {
         } else {
 
             $name = $name . "_" . $period . ".xlsx";
-           // var_dump($data);exit;
+
              foreach ($data as $row) {
             	$rows[] = array(
             	   // 'id'=>$row->id,
@@ -106,7 +107,8 @@ class BillingManager extends MainController {
 
 
             // créer une table temporaire qui sera supprimée plustard et sur laquelle les éditions du FF se feront
-            $this->operation_model->executeQuery("DROP TABLE IF EXISTS tempo_bill  " );
+           $req =  $this->operation_model->executeQuery("DROP TABLE IF EXISTS tempo_bill  " );
+
             if ($this->operation_model->executeQuery("CREATE TABLE tempo_bill( `id` int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL ,
                                                                               `date_collected` varchar(32) NOT NULL,
                                                                               `tracking_number` varchar(32) NOT NULL,
@@ -123,6 +125,7 @@ class BillingManager extends MainController {
                 $this->tempo_model->insert_many_rows($rows);
 
            $result['billings'] = $this->tempo_model->getALL(array("deleted"=>0));
+
            $result['period'] = $period;
            $result['infos'] = array("customer"=>$customer_id[0]->id,
                                     "name"=>$nam,
@@ -146,7 +149,7 @@ class BillingManager extends MainController {
 
         }
     }
-// les lignes dont les régioons sont vides ou mal formées
+// les lignes dont les régions sont vides ou mal formées
     public function malformedRegion(){
         $query = $this->operation_model->getCroisedRows("SELECT s.id from (SELECT * from tempo_bill t where t.region='' or t.region not in (select r.name from regions r)  )s ");
         return $query ;
@@ -173,42 +176,70 @@ class BillingManager extends MainController {
 
             if (!empty($operation_id)){
 
-            	// les retournés
-            	$returned = $this->operation_model->getCroisedRows("SELECT o.shipment_provider,o.status,o.address, o.delivered_date,o.start_time, o.tracking_number,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,o.bureau, o.amount_collected,o.date_operation, o.deposit_local FROM operation o
-                                                            WHERE status = 'Returned' OR status = 'Lost' OR status = 'Reversed' AND state_file_id =" .$operation_id[0]->id.
-                                                            " ORDER  BY o.order ");
+               $this->operation_model->executeQuery("CREATE  TEMPORARY TABLE IF NOT EXISTS nominal AS ("
+                    . "select * from (SELECT v.reference,"
+                    . "o.status,o.start_time,o.tracking_number,o.size,o.order,o.delivered_date,"
+                    . "o.address,o.region,o.payment_method,o.amount_to_collect, v.credit as amount_collected,"
+                    . "o.bureau, o.date_operation, o.deposit_local FROM versement v LEFT join operation o "
+                    . "ON o.tracking_number=v.reference  AND o.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id
+                    . " ORDER BY o.order)A where A.tracking_number IS NOT NULL)");
 
-            	// les payés en ligne
-            	$paidOnLine = $this->operation_model->getCroisedRows("SELECT o.shipment_provider,o.status,o.start_time, o.delivered_date,o.tracking_number,o.size,o.order,o.region,o.payment_method,o.address,o.amount_to_collect,o.bureau,o.date_operation,o.amount_collected,o.deposit_local FROM operation o
-                                                            WHERE amount_to_collect=0 AND payment_method !='Paiement Ã  la livraison' AND payment_method !='CashOnDelivery' AND state_file_id =" .$operation_id[0]->id.
-                                                            " ORDER  BY o.order ") ;
-            	//les croisés
-            	$croised = array();
+                //tuples avec les éléments de tracking_number null pour traiter les scénario alternatif
+                $this->operation_model->executeQuery("CREATE  TEMPORARY TABLE IF NOT EXISTS alternatifs AS "
+                    ."(select t.reference,s.status,s.start_time,s.tracking_number,s.size,s.order,s.delivered_date,"
+                    ."s.address,s.region,s.payment_method,s.amount_to_collect, t.credit as amount_collected,"
+                    ."s.bureau, s.date_operation, s.deposit_local from versement t left join operation s ON right(t.reference,LENGTH(s.order))=s.order "
+                    ." where s.tracking_number<>t.reference AND t.id in (select A.id from "
+                    ."(SELECT v.id,o.tracking_number FROM versement v LEFT join operation o "
+                    ."ON o.tracking_number=v.reference AND o.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id." ORDER BY o.order)A where A.tracking_number IS NULL) "
+                    ."AND s.tracking_number IS NOT NULL AND s.state_file_id=".$operation_id[0]->id." AND t.state_file_id=".$versement_id[0]->id. ")");
 
-            	$data1 = $this->operation_model->getCroisedRows("SELECT o.shipment_provider,o.status,o.start_time,o.tracking_number,v.reference as amount_collected,o.size,o.order,o.delivered_date,o.address,o.region,o.payment_method,o.amount_to_collect, v.credit as amount_collected, o.bureau, o.date_operation, o.deposit_local FROM versement v
-                                                            cross join operation o 
-                                                            WHERE  o.tracking_number=v.reference AND cast(O.amount_to_collect as unsigned integer)<>0 AND status <>'Returned' AND status <>'Lost' AND o.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id.
-                                                            " GROUP  BY o.order ");
-            $data2 = $this->operation_model->getCroisedRows("SELECT o.shipment_provider,o.status,o.start_time,o.tracking_number,v.reference as amount_collected ,o.size,o.order,o.address, o.delivered_date,o.region,o.payment_method,o.amount_to_collect,v.credit as amount_collected,o.bureau,o.date_operation,o.deposit_local FROM versement v
-                                                            cross join operation o
-                                                            WHERE right(v.reference,9)=o.order AND o.tracking_number <> v.reference AND  cast(O.amount_to_collect as unsigned integer)<>0 AND status<>'Returned' AND status <>'Lost' AND cast(O.amount_to_collect as unsigned integer)= cast(v.credit as unsigned integer) AND o.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id.
-                                                            " ORDER BY o.order");
-
-            $data3 = $this->operation_model->getCroisedRows("SELECT o.shipment_provider,o.status,o.start_time,o.tracking_number,v.reference, o.address ,o.size,o.delivered_date,o.order,o.region,o.payment_method,o.amount_to_collect,v.credit as amount_collected ,o.bureau,o.date_operation,o.deposit_local FROM versement v
-                                                            cross join operation o
-                                                            WHERE right(v.reference,9)=o.order AND o.tracking_number <> v.reference AND  cast(O.amount_to_collect as unsigned integer)<>0 AND status<>'Returned' AND status <>'Lost' AND cast(O.amount_to_collect as unsigned integer)<  cast(v.credit as unsigned integer) AND o.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id.
-                                                            " ORDER BY o.order");
+                $this->operation_model->executeQuery("CREATE  TEMPORARY TABLE IF NOT EXISTS alternatifs_egaux AS"
+                    ."(SELECT * FROM `alternatifs`A "
+                    . "WHERE cast(A.amount_to_collect as unsigned integer)=cast(A.amount_collected as unsigned integer) "
+                    . "AND right(A.reference,LENGTH(A.order))=A.order AND right(A.tracking_number,LENGTH(A.order))=A.order)");
 
 
-                $croised = array_merge($data1, $data2);
-                $croised = array_merge($croised, $data3);
-                $data = array_merge($croised, $returned);
-                $data = array_merge($data, $paidOnLine); // contenu du fichier de facturation
+                $this->operation_model->executeQuery("CREATE  TEMPORARY TABLE IF NOT EXISTS alternatifs_differents AS"
+                    . " SELECT * FROM `alternatifs`A "
+                    . "WHERE cast(A.amount_to_collect as unsigned integer)<>cast(A.amount_collected as unsigned integer) "
+                    . "AND right(A.reference,LENGTH(A.order))=A.order AND right(A.tracking_number,LENGTH(A.order))=A.order");
 
-               // var_dump($data) ; die();
+                $this->operation_model->executeQuery("CREATE  TEMPORARY TABLE IF NOT EXISTS alternatifs_superieur AS ( "
+                    . "select v.reference,m.status,"
+                    . "m.start_time,m.tracking_number,m.size,m.order,m.delivered_date,"
+                    ."m.address,m.region,m.payment_method,m.amount_to_collect, v.credit as amount_collected,"
+                    ."m.bureau, m.date_operation, m.deposit_local from versement v left join operation m "
+                    . "on right(v.reference,LENGTH(m.order))=m.order where m.order in "
+                    . "(select DISTINCT a.order from alternatifs_differents a "
+                    . "left join operation o on o.order=a.order where a.amount_collected in (select T.credit "
+                    . "from(select sum(cast(c.amount_to_collect as unsigned integer)) as credit,"
+                    . "c.order from operation c group by c.order)T where o.order=T.order) "
+                    . "order by a.order)AND m.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id.")");
+
+
+
+                //scénario nominal du croisement
+                $nominal=$this->operation_model->getCroisedRows("SELECT * from nominal");
+
+
+                //Scénario alternatif avec amount_to_collect égal à amount_collected
+                $alternatifs_egaux=$this->operation_model->getCroisedRows("select * from alternatifs_egaux");
+
+
+                //Scénario alternatif avec amount_to_collect < à amount_collected
+                $alternatifs_differents=$this->operation_model->getCroisedRows("select * from alternatifs_superieur");
+
+                $this->operation_model->executeQuery("DROP TABLE nominal");
+                $this->operation_model->executeQuery("DROP TABLE alternatifs");
+                $this->operation_model->executeQuery("DROP TABLE alternatifs_egaux");
+                $this->operation_model->executeQuery("DROP TABLE alternatifs_differents");
+                $this->operation_model->executeQuery("DROP TABLE alternatifs_superieur");
+                $data =  array_merge($nominal,$alternatifs_egaux,$alternatifs_differents);
+
+
             }
 
-            //var_dump($period,$customer_id,$state_file_id);die;
             $name = "billing";
             $file_type = "Fichier de facturation";
             $file_name = "billing_file";
@@ -278,8 +309,8 @@ class BillingManager extends MainController {
 
         $state_file_id=$this->state_model->insert(array("file_path" => $infos['newfile'], "type" => $infos['type'] ,"facturation_date" => $infos['date_de_facturation'], "period" => $infos['period'], "customerID" => $infos['customer'], "name" => $infos['name']));
 
-        $tempo_bill  = $this->operation_model->getCroisedRows("select * from tempo_bill t where t.region <>'' and t.region in (select r.name from regions r)");
-        
+        $tempo_bill  = $this->operation_model->getCroisedRows("select * from tempo_bill t1 where t1.id not in (SELECT s.id from (SELECT * from tempo_bill t2 where t2.region='' or t2.region not in (select r.name from regions r)  )s)");
+
         foreach ($tempo_bill as $tempo){
             if($tempo->deposit_local=="")
                 $tempo->deposit_local = "A domicile";
@@ -300,9 +331,10 @@ class BillingManager extends MainController {
             );
 
         }
+
         $this->operation_model->executeQuery("DROP TABLE IF EXISTS tempo_bill  " );
         $this->billing_model->insert_many_rows($rows);
-        $data['billing']=$this->billing_model->getALL();
+        $data['billing']=$this->billing_model->getALL(array("deleted"=>0, "state_file_id"=>$state_file_id));
 
         $data['file_text_name'] ='Fichier de facturation de la période du ' .$infos['period'] ;
         $this->load->view('general/header.php');
@@ -406,7 +438,7 @@ class BillingManager extends MainController {
 
                     }
                 // les données du listing
-                    $data[] = array("Num" => $bill->id,
+                    $rows[] = array("Num" => $bill->id,
                         "Date_de_collecte" => $bill->date_collected,
                         "Numero_de_commande" => $bill->order_number,
                         "Num_colis_AIGE" => $bill->tracking_number,
@@ -415,7 +447,7 @@ class BillingManager extends MainController {
                         "Statut_final" => $bill->final_status,
                         "Date_statut_final" => $bill->final_status_date,
                         "Tarif_domicile" => $tarifDomicile,
-                        "Tarif_en point_relais" => $tarifBureau,
+                        "Tarif_en_point_relais" => $tarifBureau,
                         "Tarif_rejets" => $tarifRejets,
                         "Tarif_retours" => $tarifRetours,
                         "Tarif_echecs" => $tarifEchecs,
@@ -432,28 +464,30 @@ class BillingManager extends MainController {
 
              }
 
-
                     $name = "facturation";
                     $file_type = "Listing de facturation";
                     $file_name = "listing";
                     $path = "billing/generate_bill_file";
                     $file = "./upload/model/listing.xlsx";
-                    $newfile = "./upload/billing/listing_" . $period . ".xlsx";
+                    $newfilelisting = "./upload/billing/listing_" . $period . ".xlsx";
+                    $newfilefact = "./upload/billing/listing_" . $period . ".xlsx";
                     $billing_id = $state_id[0]->id ;
                     $type = "LF";
                     $facturation_date = $data['period'] ;
                     $headers = array('No', 'Date de collecte', 'Numéro de commande', 'No colis AIGE', 'Destination', 'Poids', 'Statut final', 'Date statut final');
                     $file_text_name = "Listing de facturation";
                     $name_file = "listing_file";
-                    $nam = "listing_" . $period;
+                    $namlisting = "listing_" . $period;
+                    $namfacture = "facture" . $period;
                     $test = "listing";
-                    $this->generate_listing($test, $name_file, $nam, $data, $state_id[0]->id, $type, $file_text_name, $facturation_date, $file_name, $customer_id, $period, $headers, $file, $newfile, $path, $file_name, $name,$billing_id);
+                    $this->generate_listing($test, $name_file, $namlisting,$namfacture, $rows, $state_id[0]->id, $type, $file_text_name, $facturation_date, $file_name, $customer_id, $period, $headers, $file, $newfilelisting, $newfilefact, $path, $name,$file_type,$billing_id);
                 }
             }
 
 
-    public function generate_listing($test, $name_file, $nam, $data, $state_file_id, $type, $file_type, $facturation_date, $file_name, $customer_id, $type_file_required, $period, $headers, $file, $newfile, $path, $name, $billing_id = null) {
+    public function generate_listing($test, $name_file, $namlisting,$namfacture, $data, $state_file_id, $type, $file_text_name, $facturation_date, $file_name, $customer_id, $period, $headers, $file, $newfilelisting, $newfilefact, $path, $name, $file_type, $billing_id = null) {
         $error = null;
+
         if ($billing_id != null && empty($billing_id) || empty($state_file_id)) {
             $error = "Ce fichier ne peut pas encore être généré car le fichier requis  correspondant à ces critères n'a pas encore été chargé. Veuillez le charger et réessayer";
             $this->create_file($file_type, $file_name, 'billings/new_state.php', $path, $error);
@@ -465,22 +499,93 @@ class BillingManager extends MainController {
             $this->create_file($file_type, $file_name, 'billings/new_state.php', $path, $error);
         } else {
 
+           // $this->state_model->insert(array("file_path" => $newfilelisting, "type" => $type, "facturation_date" => $facturation_date, "period" => $period, "customerID" => $customer_id[0]->id, "name" => $namlisting));
+         //   $this->state_model->insert(array("file_path" => $newfilefact . $period . ".xlsx", "type" => 'F', "facturation_date" => $facturation_date, "period" => $period, "customerID" => $customer_id[0]->id, "name" => $namfacture));
 
-            $this->state_model->insert(array("file_path" => $newfile, "type" => $type, "facturation_date" => $facturation_date, "period" => $period, "customerID" => $customer_id[0]->id, "name" => $nam));
-            $this->state_model->insert(array("file_path" => "./upload/billing/facture_" . $period . ".xlsx", "type" => 'F', "facturation_date" => $facturation_date, "period" => $period, "customerID" => $customer_id[0]->id, "name" => $nam));
-           $this->list_file($name_file, "votre fichier a bien été généré. Vous pouvez le consulter dans la liste ci-dessous");
+          // $this->list_file($name_file, "votre fichier a bien été généré. Vous pouvez le consulter dans la liste ci-dessous");
           //  $data['file_text_name'] ='Listing de facturation de la période du ' .$period ;
            // $data['listing'] = $data;
+
+            // les données du listing au format html
+
+            if($data!=null && !empty($data)){
+
+                $data_listing ="";
+                foreach ($data as $list) {
+                    $data_listing = $data_listing."<tr class=\"font-14\" ><td>". $list['Num']."</td>
+                                                        <td>".$list['Date_de_collecte']."</td>
+                                                        <td>".$list['Numero_de_commande']."</td>
+                                                        <td>".$list['Num_colis_AIGE']."</td>
+                                                        <td>".$list['Destination']."</td>
+                                                        <td>".$list['Poids']."</td>
+                                                        <td>".$list['Statut_final']."</td>
+                                                        <td>".$list['Date_statut_final']."</td>
+                                                        <td>".$list['Tarif_domicile']."</td>
+                                                        <td>".$list['Tarif_en_point_relais']."</td>
+                                                        <td>".$list['Tarif_rejets']."</td>
+                                                        <td>".$list['Tarif_retours']."</td>
+                                                        <td>".$list['Tarif_echecs']."</td>
+                                                        <td>".$list['Cash_collecte']."</td>
+                                                        <td>".$list['Commission_sur_cash_collecte']."</td>
+                                                        </tr>" ;
+
+                }
+                var_dump($data_listing); die;
+                $listing = "<table ><thead><tr>
+                            <th>Num</th>
+                            <th>Date de collecte</th>
+                            <th>Num commande</th>
+                            <th>Num colis</th>
+                            <th>Destination</th>
+                            <th>Poids</th>
+                            <th>Statut final</th>
+                            <th>Date statut final</th>
+                            <th>Tarif livraison à domicile</th>
+                            <th>Tarif livraison en point relais</th>
+                            <th>Tarif retour</th>
+                            <th>Tarif échec</th>
+                            <th>Tarif rejet</th>
+                            <th>Cash collecté</th>
+                            <th>Commission sur cash collecté</th>
+                        </tr>
+                        </thead> 
+                        <tbody>".$data_listing."</tbody></table>"  ;
+
+
+                }
+                // exporter les données html du listing au format excell
+            header('Content-type: application/excel');
+            $file = $namlisting.".xls";
+            header('Content-Disposition: attachment; filename='.$file);
+            $data = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">
+                    <head>
+                        <!--[if gte mso 9]>
+                        <xml>
+                            <x:ExcelWorkbook>
+                                <x:ExcelWorksheets>
+                                    <x:ExcelWorksheet>
+                                        <x:Name>LISTING</x:Name>
+                                        <x:WorksheetOptions>
+                                            <x:Print>
+                                                <x:ValidPrinterInfo/>
+                                            </x:Print>
+                                        </x:WorksheetOptions>
+                                    </x:ExcelWorksheet>
+                                </x:ExcelWorksheets>
+                            </x:ExcelWorkbook>
+                        </xml>
+                        <![endif]-->
+                    </head>'.$listing ;
+            var_dump($data) ;
+
+        }
+
+
 
         }
     }
 
 
-
-
-
-
-}
 
 
 

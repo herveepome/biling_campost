@@ -697,27 +697,25 @@ class StateManager extends MainController {
                         $deposit_local="Bureau de poste";
                     else
                         $deposit_local="A domicile";
-                    
+
                     if(isset($row['4']) && $row['4']==null || $row['4']=="" )
                         $size='SMALL';
                     else
                         $size=$row['4'];
-                    
+
                     if ($row["0"] != "Shipment Provider") {
                         $result = array(
                             'state_file_id' => $state_file_id,
                             'shipment_provider' => $row['0'],
                             'status' => $row['1'],
-                            'start_time' => $row['2'],
+                            'start_time' => $row['2']->format('d/m/Y'),
                             'tracking_number' => $row['3'],
-
                             'size' => $size,
                             'delivered_date' => $row['5']->format('d/m/Y'),
                             'last_failed_attempt_date' => $row['6']->format('d/m/Y'),
-
                             'flow' => $row['7'],
                             'order' => $row['8'],
-                            'order_date' => $row['9'],
+                            'order_date' => $row['9']->format('d/m/Y'),
                             'phone_number' => $row['10'],
                             'customer_name' => $row['11'],
                             'address' => $row['12'],
@@ -742,19 +740,20 @@ class StateManager extends MainController {
                 $reader->close();
             }
             $this->operation_model->insert_many_rows($data);
-            
+
             $this->operation_model->executeQuery("CREATE TEMPORARY TABLE IF NOT exists doublons  "
-            . "AS(SELECT  id FROM operation t1 WHERE t1.tracking_number "
-            . "IN ( SELECT t2.tracking_number FROM operation t2 where t2.start_time=t1.start_time "
-            . "and t2.tracking_number=t1.tracking_number and t1.amount_to_collect=t2.amount_to_collect "
-            . " and t2.state_file_id= ".$state_file_id." GROUP BY t2.tracking_number "
-            . "HAVING COUNT(t2.tracking_number)>1 )  GROUP BY t1.tracking_number "
-            . "HAVING COUNT(t1.tracking_number)>1)");
-            
+                . "AS(SELECT  id FROM operation t1 WHERE t1.tracking_number "
+                . "IN ( SELECT t2.tracking_number FROM operation t2 where t2.start_time=t1.start_time "
+                . "and t2.tracking_number=t1.tracking_number and t1.amount_to_collect=t2.amount_to_collect "
+                . " and t2.state_file_id= ".$state_file_id." GROUP BY t2.tracking_number "
+                . "HAVING COUNT(t2.tracking_number)>1 )  GROUP BY t1.tracking_number "
+                . "HAVING COUNT(t1.tracking_number)>1)");
+
             $this->operation_model->executeQuery("DELETE FROM operation where id in (select id from doublons)");
             $this->operation_model->executeQuery("DROP TABLE doublons");
         }
     }
+
 
     public function upload_file($file_name, $allowed_types, $upload_path, $max_size, $file_uploading) {
         //var_dump($file_uploading);die;

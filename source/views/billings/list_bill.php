@@ -107,9 +107,18 @@
                             </button>
                             <h4 class="custom-modal-title">Attention</h4>
                             <div class="custom-modal-text" style="text-align: left; line-height: 3">
-                                <?php if (isset($malformedRegion) && $malformedRegion!=null && !empty($malformedRegion))
-                                echo "Les lignes numéro "?> <?php foreach ($malformedRegion as $region) echo $region->id. ","?> <?php echo "ont les régions mal écrites ou nulles; ces lignes ne seront pas facturées. Valider quand même?"?>
+                                <?php if (isset($malformedRegion) && $malformedRegion!=null && !empty($malformedRegion)){
+                                    if (count($malformedRegion)>25 ){
+                                        echo  "Vous avez " .count($malformedRegion). " lignes dont les régions sont mal écrites ou nulles; ces lignes ne seront pas facturées. Valider quand même?" ; }
+                                    else{
+                                        $regional='';
+                                        foreach ($malformedRegion as $region)
+                                            $regional=$regional.$region->id. ",";
+                                        echo "Les lignes numéro ".$regional."ont les régions mal écrites 
+                                        ou nulles; ces lignes ne seront pas facturées. Valider quand même?";
+                                    }
 
+                                }?>
                             </div>
                             <div class="custom-modal-text" style="text-align: right">
                                 <a class="btn btn-primary waves-effect waves-light btn-md" href="<?php echo site_url('billing/read'); ?>">oui</a>
