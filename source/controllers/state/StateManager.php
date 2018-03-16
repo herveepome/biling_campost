@@ -384,10 +384,11 @@ class StateManager extends MainController {
         
         $state = $this->state_model->getALL(array("id" => $id));
         
+        
         $operation_id=$this->state_model->getALL(array("type" =>"FO","period"=>$state[0]->period,"customerID"=>$state[0]->customerID));
         $versement_id=$this->state_model->getALL(array("type" =>"FV","period"=>$state[0]->period,"customerID"=>$state[0]->customerID));
         
-        
+        //var_dump($operation_id, $versement_id);die;
         $data = array();
 
         if ($state[0]->type == "FR") {
@@ -439,7 +440,7 @@ class StateManager extends MainController {
             ." where s.tracking_number<>t.reference AND t.id in (select A.id from "
             ."(SELECT v.id,o.tracking_number FROM versement v LEFT join operation o "
             ."ON o.tracking_number=v.reference AND o.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id." ORDER BY o.order)A where A.tracking_number IS NULL) "
-            ."AND s.tracking_number IS NOT NULL)");
+            ."AND s.tracking_number IS NOT NULL AND s.state_file_id=".$operation_id[0]->id." AND t.state_file_id=".$versement_id[0]->id. ")");
             
             $this->operation_model->executeQuery("CREATE  TEMPORARY TABLE IF NOT EXISTS alternatifs_egaux AS"
             ."(SELECT * FROM `alternatifs`A "
@@ -462,7 +463,7 @@ class StateManager extends MainController {
             . "left join operation o on o.order=a.order where a.amount_collected in (select T.credit "
             . "from(select sum(cast(c.amount_to_collect as unsigned integer)) as credit,"
             . "c.order from operation c group by c.order)T where o.order=T.order) "
-            . "order by a.order))");
+            . "order by a.order)AND m.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id.")");
            
             
         if ($state[0]->type == "FC") {
@@ -486,7 +487,8 @@ class StateManager extends MainController {
             $this->operation_model->executeQuery("DROP TABLE alternatifs_egaux");
             $this->operation_model->executeQuery("DROP TABLE alternatifs_differents");
             $this->operation_model->executeQuery("DROP TABLE alternatifs_superieur");
-            $data["rows"]=  array_merge($nominal,$alternatifs_egaux,$alternatifs_differents);
+            $data["rows"]=$alternatifs_egaux;
+            //$data["rows"]=  array_merge($nominal,$alternatifs_egaux,$alternatifs_differents);
             
             
         }
@@ -615,9 +617,9 @@ class StateManager extends MainController {
     public function create_file($file_to_upload, $file_name, $view, $link, $error = null) {
         
         if ($file_name == "versement_file")
-            $data['time'] = 15000;
+            $data['time'] = 200000;
         if ($file_name == "operation_file")
-            $data['time'] = 125000;
+            $data['time'] = 180000;
 
         $data['link'] = $link;
         $data['file_to_upload'] = $file_to_upload;
@@ -653,11 +655,12 @@ class StateManager extends MainController {
 
 
         $reader->open($file);
-        $data = array();
-
-
+        
+        
+        
         if ($file_type == "versement") {
             foreach ($reader->getSheetIterator() as $sheet) {
+                
                 foreach ($sheet->getRowIterator() as $row) {
 
                     if ($row["1"] != "D. Opé.") {
@@ -672,11 +675,14 @@ class StateManager extends MainController {
                             'credit' =>str_replace(' ', '',$row['6']),
                             'solde' => $row['7'],
                         );
-
+                       
+                        
                         $data[] = $result;
+                        
                     }
                 }
             }
+           $reader->close();
             $this->versement_model->insert_many_rows($data);
         }
 
@@ -728,8 +734,9 @@ class StateManager extends MainController {
                 }
 
 
-                $reader->close();
+                
             }
+            $reader->close();
             $this->operation_model->insert_many_rows($data);
             
             $this->operation_model->executeQuery("CREATE TEMPORARY TABLE IF NOT exists doublons  "
@@ -743,8 +750,8 @@ class StateManager extends MainController {
             $this->operation_model->executeQuery("DELETE FROM operation where id in (select id from doublons)");
             $this->operation_model->executeQuery("DROP TABLE doublons");
         }
+        
     }
-
     public function upload_file($file_name, $allowed_types, $upload_path, $max_size, $file_uploading) {
         //var_dump($file_uploading);die;
         if ($file_name != '')
