@@ -619,7 +619,7 @@ class StateManager extends MainController {
         if ($file_name == "versement_file")
             $data['time'] = 200000;
         if ($file_name == "operation_file")
-            $data['time'] = 180000;
+            $data['time'] = 100000;
 
         $data['link'] = $link;
         $data['file_to_upload'] = $file_to_upload;
@@ -685,7 +685,22 @@ class StateManager extends MainController {
         if ($file_type == "operation") {
             foreach ($reader->getSheetIterator() as $sheet) {
                 foreach ($sheet->getRowIterator() as $row) {
-                    //var_dump($row['30']);die;
+                    if(is_a($row['6'], 'DateTime') )
+                        $last_failed_attempt_date = $row['6']->format('d/m/Y') ;
+                    else
+                        $last_failed_attempt_date =  $row['6'];
+                    if(is_a($row['2'], 'DateTime'))
+                        $start_time = $row['2']->format('d/m/Y') ;
+                    else
+                        $start_time = $row['2'] ;
+                    if(is_a($row['5'],'DateTime'))
+                        $delivered_date = $row['5']->format('d/m/Y');
+                    else
+                        $delivered_date = $row['5'] ;
+                    if(is_a($row['9'],'DateTime'))
+                        $order_date = $row['9']->format('d/m/Y');
+                    else
+                        $order_date = $row['9'] ;
                     if(isset($row['30']) && $row['30']=="Warehouse")
                         $deposit_local="Bureau de poste";
                     else
@@ -701,15 +716,15 @@ class StateManager extends MainController {
                             'state_file_id' => $state_file_id,
                             'shipment_provider' => $row['0'],
                             'status' => $row['1'],
-                            'start_time' => $row['2'],
+                            'start_time' => $start_time,
                             'tracking_number' => $row['3'],
 
                             'size' => $size,
-                            'delivered_date' => $row['5']->format('d/m/Y'),
-                            'last_failed_attempt_date' => $row['6']->format('d/m/Y'),
+                            'delivered_date' => $delivered_date ,
+                            'last_failed_attempt_date' => $last_failed_attempt_date,
                             'flow' => $row['7'],
                             'order' => $row['8'],
-                            'order_date' => $row['9'],
+                            'order_date' => $order_date,
                             'phone_number' => $row['10'],
                             'customer_name' => $row['11'],
                             'address' => $row['12'],
@@ -719,13 +734,13 @@ class StateManager extends MainController {
                             'region' => $row['16'],
                             'payment_method' => $row['17'],
                             'amount_to_collect' => str_replace(' ', '', $row['18']),
-                            'delivery_run' => $row['19'],
-                            'delivery_run_create' => $row['20'],
-                            'bureau' => $row['21'],
-                            'date_operation' => $row['22'],
+                            'delivery_run' => $row['20'],
+                            'delivery_run_create' => $row['21'],
+                            'bureau' => $row['22'],
+                            'date_operation' => $row['23'],
                             'deposit_local' => $deposit_local,
                         );
-
+                        var_dump($result);die;
                         $data[] = $result;
                     }
                 }
@@ -745,7 +760,9 @@ class StateManager extends MainController {
             
             $this->operation_model->executeQuery("DELETE FROM operation where id in (select id from doublons)");
             $this->operation_model->executeQuery("DROP TABLE doublons");
+
         }
+      // $this->unlink($file);
     }
     public function upload_file($file_name, $allowed_types, $upload_path, $max_size, $file_uploading) {
         //var_dump($file_uploading);die;
