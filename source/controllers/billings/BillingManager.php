@@ -384,11 +384,10 @@ class BillingManager extends MainController {
             // l'id du state pour ce client à cette période
             $state_id = $this->state_model->getALL(array("period" => $period, "customerID" => $customer_id[0]->id, "type" => 'FF'));
             $bill_file=array();
-            // le fichier de facturation pour ce client à cette période
+            // le fichier de facturation pour ce client à cette périod
             if(!empty($state_id))
             $bill_file = $this->billing_model->getALL(array("state_file_id" => $state_id[0]->id));
-            
-        
+           
             $intervals = $this->configuration_model->all('cash_interval');
             $totalCommissions = 0; 
             $totalDomicile = 0;
@@ -396,56 +395,110 @@ class BillingManager extends MainController {
             $totalRetours = 0;
             $totalEchecs = 0; 
             $totalRelais = 0;
-         
-        
+            $interval_poids = $this->configuration_model->all('weight');
          $listing_rows=array();
          $facture=array();
          
           if(!empty($bill_file)){
-            foreach ($bill_file as $bill) {
-                // gestion des commissions sur les cash collectés
-                if ($bill->amount_collected == "")
-                    $commissions = "";
-                else if ($bill->amount_collected > 500000)
-                    $commissions = $bill->amount_collected/100 ;
-                else {
-                    $i = -1;
-                    do {
-                        $i++;
-                        $dataInterval = explode('-', $intervals[$i]->interval);
+           
+                foreach ($bill_file as $bill) {
+                    // gestion des commissions sur les cash collectés
+                    if ($bill->amount_collected == "")
+                        $commissions = "";
+                    else if ($bill->amount_collected > 500000)
+                        $commissions = $bill->amount_collected / 100;
+                    else {
+                        $i = -1;
+                        do {
+                            $i++;
+                            $dataInterval = explode('-', $intervals[$i]->interval);
 
-                    } while ((int)$bill->amount_collected > (int)$dataInterval[1]);
+                        } while ((int)$bill->amount_collected > (int)$dataInterval[1]);
 
-                     $commissionsId = $intervals[$i]->id;
+                        $commissionsId = $intervals[$i]->id;
 
-                    $commissions = $this->cash_model->getALL(array('cash_interval_id' => $commissionsId))[0]->amount;
-                }
-                // gestion des tarifs à domicile ou en point relais
+                        $commissions = $this->cash_model->getALL(array('cash_interval_id' => $commissionsId))[0]->amount;
+                    }
+                    $poids30 = $this->configuration_model->getWhere('weight', 'weight',20-30);
 
-                    $poid = $this->configuration_model->getWhere('weight', 'name', $bill->weight)[0]->id; // id du poids partant de son nom
-                  //  var_dump($poid);
-                    $zone = $this->configuration_model->getWhere('regions','name',$bill->region)[0]->zone_id ;   // id de la zone partant de la région
+                    // gestion des tarifs à domicile ou en point relais
+
+
+                    $zone = $this->configuration_model->getWhere('regions', 'name', $bill->region)[0]->zone_id;   // id de la zone partant de la région
                     $domicile = $this->local_model->getALL(array("name" => 'A domicile'))[0]->id; // id à domicile
                     $bureau = $this->local_model->getALL(array("name" => 'Bureau de poste'))[0]->id; // id en point relais
 
-                    if($bill->deposit_local=="A domicile"){
-                        $tarifDomicile = $this->deposit_model->getALL(array("zone_id" => $zone, "weight_id" => $poid, "deposit_local_id" => $domicile, "customer_id" => $customer_id[0]->id))[0]->amount;
-                        $tarifBureau=0;
-                    }
-                    else{
-                        $tarifBureau = $this->deposit_model->getALL(array("zone_id" => $zone, "weight_id" => $poid, "deposit_local_id" => $bureau, "customer_id" => $customer_id[0]->id))[0]->amount;
-                        $tarifDomicile=0;
+                    if ($bill->deposit_local == "A domicile") {
+
+                        if(is_int(str_replace(' ', '', $bill->weight))){
+                            $size = str_replace(' ', '', $bill->weight) ;
+                            if ($size > 30){
+                                $extra = $size - 30 ;
+                                $poid = $poids30[0]->id;
+                                $tarifBureau = 0;
+                                $tarifDomicile = $this->deposit_model->getALL(array("zone_id" => $zone, "weight_id" => $poid, "deposit_local_id" => $domicile, "customer_id" => $customer_id[0]->id))[0]->amount + (100*$extra);
+                            }
+                            else{
+                                $j = -1;
+                                do {
+                                    $j++;
+                                    $dataWeight= explode('-', $interval_poids[$i]->weight);
+
+                                } while ($size > (int)$dataWeight[1]);
+                                $poid = $interval_poids['$j']->id ;
+                                $tarifBureau = 0;
+                                $tarifDomicile = $this->deposit_model->getALL(array("zone_id" => $zone, "weight_id" => $poid, "deposit_local_id" => $domicile, "customer_id" => $customer_id[0]->id))[0]->amount;
+                            }
+                        }
+                        else{
+                            $poid = $this->configuration_model->getWhere('weight', 'name', $bill->weight)[0]->id; // id du poids partant de son nom
+                            $tarifDomicile = $this->deposit_model->getALL(array("zone_id" => $zone, "weight_id" => $poid, "deposit_local_id" => $domicile, "customer_id" => $customer_id[0]->id))[0]->amount;
+                            $tarifBureau = 0;
+                        }
+
+                    } else {
+                        if(is_int(str_replace(' ', '', $bill->weight))){
+                            $size = str_replace(' ', '', $bill->weight) ;
+                            if ($size > 30){
+                                $extra = $size - 30 ;
+                                $poid = $poids30[0]->id;
+                                $tarifDomicile = 0;
+                                $tarifBureau = $this->deposit_model->getALL(array("zone_id" => $zone, "weight_id" => $poid, "deposit_local_id" => $bureau, "customer_id" => $customer_id[0]->id))[0]->amount + (100*$extra);
+                            }
+                            else{
+                                $j = -1;
+                                do {
+                                    $j++;
+                                    $dataWeight= explode('-', $interval_poids[$i]->weight);
+
+                                } while ($size > (int)$dataWeight[1]);
+                                $poid = $interval_poids['$j']->id ;
+                                $tarifDomicile = 0;
+                                $tarifBureau = $this->deposit_model->getALL(array("zone_id" => $zone, "weight_id" => $poid, "deposit_local_id" => $bureau, "customer_id" => $customer_id[0]->id))[0]->amount;
+                            }
+                        }
+                        else{
+                            $poid = $this->configuration_model->getWhere('weight', 'name', $bill->weight)[0]->id; // id du poids partant de son nom
+                            $tarifBureau = $this->deposit_model->getALL(array("zone_id" => $zone, "weight_id" => $poid, "deposit_local_id" => $bureau, "customer_id" => $customer_id[0]->id))[0]->amount;
+                            $tarifDomicile = 0;
+                        }
+
+
                     }
                     // gestion de la tarification retour
 
                     $tarifRejets = 0;
                     $tarifRetours = 0;
                     $tarifEchecs = 0;
+
                     if (($bill->final_status == 'Returned') || ($bill->final_status == 'At the hub') ) {
+
                         if ($tarifDomicile == 0)
-                            $tarifRetours = 0.5*(float)$tarifBureau;
+                            $tarifRetours = 0.5 * (float)$tarifBureau;
                         else
+
                             $tarifRetours = 0.5*(float)$tarifDomicile;
+
                     } else if (($bill->final_status == 'Reversed') || ($bill->final_status == 'Failed') || ($bill->final_status == 'Lost') || ($bill->final_status == 'On the way to hub') || ($bill->final_status == 'Partially delivered')) {
                         if ($tarifDomicile == 0) {
                             $tarifRejets = $tarifBureau;
@@ -456,9 +509,11 @@ class BillingManager extends MainController {
                         }
 
                     }
+
                 // les données du listing et de la facture
                   
                     $listing_rows[] = array("Num" => $bill->id,
+
                         "Date_de_collecte" => $bill->date_collected,
                         "Numero_de_commande" => $bill->order_number,
                         "Num_colis_AIGE" => $bill->tracking_number,
@@ -474,6 +529,7 @@ class BillingManager extends MainController {
                         "Cash_collecte" => $bill->amount_collected,
                         "Commission_sur_cash_collecte" => $commissions,
                     );
+
                 //données de la facture
                             //données de la facture
                 $totalCommissions += (float)$commissions;
@@ -483,11 +539,8 @@ class BillingManager extends MainController {
                 $totalRelais += (float)$tarifBureau;
                 $totalRetours += (float)$tarifRetours ;
                 
-          
-
              }
-        }
-                
+        
                 $facture["totalCommissions"] = $totalCommissions;
                 $facture["totalDomicile"] = $totalDomicile;
                 $facture["totalEchecs"] = $totalEchecs;
@@ -525,8 +578,30 @@ class BillingManager extends MainController {
                   
                     $test = "listing";
                     $this->generate_listing($test, $name_file, $name, $listing_facture, $type, $file_text_name, $facturation_date, $file_name, $customer_id, $period, $headers, $file, $newfilelisting, $newfilefact, $path, $name,$file_type,$billing_id);
-                }
+       
+
+                $name = "facturation";
+                $file_type = "Listing de facturation";
+                $file_name = "listing";
+                $path = "billing/generate_bill_file";
+                $file = "./upload/model/listing.xlsx";
+                $newfilelisting = "./upload/billing/listing_" . $period . ".xlsx";
+                $newfilefact = "./upload/billing/listing_" . $period . ".xlsx";
+                $billing_id = $state_id[0]->id;
+                $type = "LF";
+                $facturation_date = $data['period'];
+                $headers = array('No', 'Date de collecte', 'Numéro de commande', 'No colis AIGE', 'Destination', 'Poids', 'Statut final', 'Date statut final');
+                $file_text_name = "Listing de facturation";
+                $name_file = "listing_file";
+                $namlisting = "listing_" . $period;
+                $namfacture = "facture" . $period;
+                $test = "listing";
+                $this->generate_listing($test, $name_file, $namlisting, $namfacture, $rows, $state_id[0]->id, $type, $file_text_name, $facturation_date, $file_name, $customer_id, $period, $headers, $file, $newfilelisting, $newfilefact, $path, $name, $file_type, $billing_id);
             }
+        }
+    }
+
+    
 
 
     public function generate_listing($test, $name_file, $name, $data, $type, $file_text_name, $facturation_date, $file_name, $customer_id, $period, $headers, $file, $newfilelisting, $newfilefact, $path, $name, $file_type, $billing_id = null) {
@@ -603,9 +678,9 @@ class BillingManager extends MainController {
                             <th>Date statut final</th>
                             <th>Tarif livraison à domicile</th>
                             <th>Tarif livraison en point relais</th>
+                            <th>Tarif rejet</th>
                             <th>Tarif retour</th>
                             <th>Tarif échec</th>
-                            <th>Tarif rejet</th>
                             <th>Cash collecté</th>
                             <th>Commission sur cash collecté</th>
                         </tr>
@@ -791,3 +866,4 @@ class BillingManager extends MainController {
     
     
 }
+    
