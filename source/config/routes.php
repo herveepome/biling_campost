@@ -52,6 +52,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $route['default_controller'] = 'MainController';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+// accueil
+$route['get_file']['POST'] = 'MainController/getFiles';
+
 // customers
 $route['customers']['get'] = 'customers/CustomerManager';
 $route['customer/create']['get'] = 'customers/CustomerManager/create';
