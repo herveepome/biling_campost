@@ -7,10 +7,14 @@
  */
 
 /**
- * Description of Test
+ * Description of bill_number_model
  *
  * @author hepomenzengue
  */
-class Test {
-    //put your code here
+class bill_number_model extends MY_Model {
+
+    public function __construct() {
+        parent::__construct();
+       $this->set_table_name("bill_number");
+    }
 }

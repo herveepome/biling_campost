@@ -14,36 +14,98 @@
 
 include_once (APPPATH.'controllers/MainController.php');
 //include_once (APPPATH.'libraries/PHPExcel/IOFactory.php');
-class FinalBillManager extends MainController{
+
+Class FinalBillManager extends MainController{
 
   public function __construct()
 	{
 		parent::__construct();
                 $this->load->helper(array('form', 'url'));
                 $this->load->model('state_model');
-
+                $this->load->library('datetimefrench');
 
 
 	}
 
-  public function index()
-	{
-    $this->load->view('general/header.php');
+  public function index(){
+        
+    //echo numfmt_create('fr_FR', NumberFormatter::SPELLOUT)->format(19.475);
+        //echo round(12.4587, 2);
+        //echo base_url("/upload/bill/test.php");
+      //date_default_timezone_set('Europe/Paris');
+      //setlocale (LC_TIME, 'fr_FR.utf8','fra');
+          
+      
+
+
+
+        /*$this->load->view('general/header.php');
     $this->load->view('files/list_cross_file.php');
-    $this->load->view('general/footer.php');
+    $this->load->view('general/footer.php');*/
 	}
+        
+     public function monthinFrench($month) {
+        $final_month="";
+        switch ($month) {
+            
+            case "January":
+            $final_month="Janvier";
+            break;
+        
+            case "February":
+            $final_month="Février";
+            break;
+        
+            case "March":
+            $final_month="Mars";
+            break;
+        
+            case "April":
+            $final_month="Avril";
+            break;
+        
+            case "May":
+            $final_month="Mai";
+            break;
+        
+            case "June":
+            $final_month="Juin";
+            break;
+        
+            case "July":
+            $final_month="Juillet";
+            break;
+        
+            case "August":
+            $final_month="Août";
+            break;
+        
+            case "September":
+            $final_month="Septembre";
+            break;
+        
+            case "October":
+            $final_month="Octobre";
+            break;
+        
+            case "November":
+            $final_month="Novembre";
+            break;
+        
+            case "December":
+            $final_month="Décembre";
+            break;
+        
+            default:
+            $final_month="Mois inconnu";   
 
-  public function upload_file($allowed_types,$upload_path,$max_size,$file_uploading){
-          $config['upload_path'] = $upload_path;
-          $config['allowed_types'] = $allowed_types;
-          $config['max_size'] = $max_size;
-          $this->load->library('upload', $config);
-          $this->upload->initialize($config);
-           if ($this->upload->do_upload($file_uploading) == TRUE)
-                return true;
-           else
-                return false;
-  }
+                
+        }
+        
+        return $final_month;
+    }   
+        
+
 
   public function uploader() {
           $today=date('m/Y');

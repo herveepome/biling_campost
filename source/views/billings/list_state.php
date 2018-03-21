@@ -43,7 +43,14 @@
                                   
                                   
                                   <td class="actions">
-                                        <a href="<?php if($state->type=='FF'){echo site_url("billing/".$state->id."/read");}else{echo site_url("state/".$state->id."/preview");}  ?>" class="hidden on-editing save-row" data-toggle="tooltip" data-placement="top" title="" data-original-title="Visualiser"><i class="ti-eye"></i></a>
+                                        <a href="<?php if($state->type=='F' || $state->type=='LF' ){
+                                            echo base_url($state->file_path);
+                                            }elseif($state->type=='FF'){
+                                            echo site_url("billing/".$state->id."/read");
+                                            }else{
+                                                echo site_url("state/".$state->id."/preview");}  ?>" 
+                                            class="hidden on-editing save-row" data-toggle="tooltip" 
+                                            data-placement="top" title="" data-original-title="Visualiser"><i class="ti-eye"></i></a>
                                         
                                         <a href="#custom-modal<?php echo $state->id ?>" class="hidden on-editing cancel-row" data-animation="fadein" data-plugin="custommodal" data-original-title="Delete" data-overlaySpeed="200" data-overlayColor="#36404a"><i class="fa fa-times"></i></a>
                                   </td>
