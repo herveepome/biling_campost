@@ -452,8 +452,8 @@ class BillingManager extends MainController {
                         }
 
                     } else {
-                        if(is_int(trim($bill->weight))){
-                            $size = trim($bill->weight) ;
+                        if(is_int(str_replace(' ', '', $bill->weight))){
+                            $size = str_replace(' ', '', $bill->weight) ;
                             if ($size > 30){
                                 $extra = $size - 30 ;
                                 $poid = $poids30[0]->id;
