@@ -217,9 +217,7 @@ class StateManager extends MainController {
             $customer_id = $this->customer_model->getALL(array("name" => $customer));
 
             $state_file_id = ($this->state_model->getALL(array("period" => $period, "type" => "FO", "customerID" => $customer_id[0]->id)));
-            $operation_id=$this->state_model->getALL(array("type" =>"FO","period"=>$period,"customerID"=>$customer_id[0]->id));
-            $versement_id=$this->state_model->getALL(array("type" =>"FV","period"=>$period,"customerID"=>$customer_id[0]->id));
-            $state_croisement_id = ($this->state_model->getALL(array("period" => $period, "type" => "FV", "customerID" => $customer_id[0]->id)));
+           $state_croisement_id = ($this->state_model->getALL(array("period" => $period, "type" => "FV", "customerID" => $customer_id[0]->id)));
             
             //var_dump($period,$customer_id,$state_file_id);die;
             $name = "opérations";
@@ -260,9 +258,7 @@ class StateManager extends MainController {
             $customer_id = $this->customer_model->getALL(array("name" => $customer));
 
             $state_file_id = ($this->state_model->getALL(array("period" => $period, "type" => "FO", "customerID" => $customer_id[0]->id)));
-            $operation_id=$this->state_model->getALL(array("type" =>"FO","period"=>$period,"customerID"=>$customer_id[0]->id));
-            $versement_id=$this->state_model->getALL(array("type" =>"FV","period"=>$period,"customerID"=>$customer_id[0]->id));
-            $state_croisement_id = ($this->state_model->getALL(array("period" => $period, "type" => "FV", "customerID" => $customer_id[0]->id)));
+             $state_croisement_id = ($this->state_model->getALL(array("period" => $period, "type" => "FV", "customerID" => $customer_id[0]->id)));
             
             //var_dump($period,$customer_id,$state_file_id);die;
             $name = "opérations";
@@ -303,9 +299,7 @@ class StateManager extends MainController {
             $customer_id = $this->customer_model->getALL(array("name" => $customer));
 
             $state_file_id = ($this->state_model->getALL(array("period" => $period, "type" => "FO", "customerID" => $customer_id[0]->id)));
-            $operation_id=$this->state_model->getALL(array("type" =>"FO","period"=>$period,"customerID"=>$customer_id[0]->id));
-            $versement_id=$this->state_model->getALL(array("type" =>"FV","period"=>$period,"customerID"=>$customer_id[0]->id));
-            $state_croisement_id = ($this->state_model->getALL(array("period" => $period, "type" => "FV", "customerID" => $customer_id[0]->id)));
+             $state_croisement_id = ($this->state_model->getALL(array("period" => $period, "type" => "FV", "customerID" => $customer_id[0]->id)));
             
             //var_dump($period,$customer_id,$state_file_id);die;
             $name = "opérations";
@@ -337,14 +331,28 @@ class StateManager extends MainController {
         $this->list_file("billing");
     }
 
-    public function listing() {
+    public function list_listing() {
 
         $this->list_file("listing");
     }
+    
+    public function list_facture() {
+
+        $this->list_file("facture");
+    }
+    
+    
+    
+    
 
     public function list_file($file_name, $message = null) {
         $name = null;
-
+        
+        if ($file_name == "facture") {
+            $data["states"] = $this->state_model->getALL(array("type" => "F"));
+            $name = "des factures";
+        }
+        
         if ($file_name == "listing") {
             $data["states"] = $this->state_model->getALL(array("type" => "LF"));
             $name = "des listings de facturation";
@@ -740,6 +748,7 @@ class StateManager extends MainController {
                 $reader->close();
             }
             $this->operation_model->insert_many_rows($data);
+            
 
             $this->operation_model->executeQuery("CREATE TEMPORARY TABLE IF NOT exists doublons  "
                 . "AS(SELECT  id FROM operation t1 WHERE t1.tracking_number "
