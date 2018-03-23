@@ -368,7 +368,7 @@ class BillingManager extends MainController {
 
 //générer la facture
     public function createBill() {
-        $this->create_file("Listing", "bill_file", 'billings/new_state.php', 'billing/generate_bill_file');
+        $this->create_file("LISTING et de la FACTURE", "bill_file", 'billings/new_state.php', 'billing/generate_bill_file');
     }
 
     public function generate_bill_file()
@@ -577,34 +577,16 @@ class BillingManager extends MainController {
                     
                   
                     $test = "listing";
-                    $this->generate_listing($test, $name_file, $name, $listing_facture, $type, $file_text_name, $facturation_date, $file_name, $customer_id, $period, $headers, $file, $newfilelisting, $newfilefact, $path, $name,$file_type,$billing_id);
+                    $this->generate_facture($test, $name_file, $name, $listing_facture, $type, $file_text_name, $facturation_date, $file_name, $customer_id, $period, $headers, $file, $newfilelisting, $newfilefact, $path, $name,$file_type,$billing_id);
        
 
-                $name = "facturation";
-                $file_type = "Listing de facturation";
-                $file_name = "listing";
-                $path = "billing/generate_bill_file";
-                $file = "./upload/model/listing.xlsx";
-                $newfilelisting = "./upload/billing/listing_" . $period . ".xlsx";
-                $newfilefact = "./upload/billing/listing_" . $period . ".xlsx";
-                $billing_id = $state_id[0]->id;
-                $type = "LF";
-                $facturation_date = $data['period'];
-                $headers = array('No', 'Date de collecte', 'Numéro de commande', 'No colis AIGE', 'Destination', 'Poids', 'Statut final', 'Date statut final');
-                $file_text_name = "Listing de facturation";
-                $name_file = "listing_file";
-                $namlisting = "listing_" . $period;
-                $namfacture = "facture" . $period;
-                $test = "listing";
-                $this->generate_listing($test, $name_file, $namlisting, $namfacture, $rows, $state_id[0]->id, $type, $file_text_name, $facturation_date, $file_name, $customer_id, $period, $headers, $file, $newfilelisting, $newfilefact, $path, $name, $file_type, $billing_id);
             }
         }
     }
 
-    
+   
 
-
-    public function generate_listing($test, $name_file, $name, $data, $type, $file_text_name, $facturation_date, $file_name, $customer_id, $period, $headers, $file, $newfilelisting, $newfilefact, $path, $name, $file_type, $billing_id = null) {
+    public function generate_facture($test, $name_file, $name, $data, $type, $file_text_name, $facturation_date, $file_name, $customer_id, $period, $headers, $file, $newfilelisting, $newfilefact, $path, $name, $file_type, $billing_id = null) {
         $error = null;
         
         if ($billing_id == null) {
@@ -640,86 +622,15 @@ class BillingManager extends MainController {
             if ($data["facture"] != null && !empty($data["facture"])) 
             $this->facture_file($data["facture"],$name["facture"],$bill_number,
            "PERIODE: ".$this->monthinFrench(date('F', mktime(0, 0, 0, substr ($period,2,2))))." ".substr ($period,4),$customer_id[0] );
-            
-            
-            
-            
-      
-            /*if ($data != null && !empty($data)) {
-
-                $data_listing = "";
-                foreach ($data as $list) {
-                    $data_listing = $data_listing . "<tr class=\"font-14\" ><td>" . $list['Num'] . "</td>
-                                                        <td>" . $list['Date_de_collecte'] . "</td>
-                                                        <td>" . $list['Numero_de_commande'] . "</td>
-                                                        <td>" . $list['Num_colis_AIGE'] . "</td>
-                                                        <td>" . $list['Destination'] . "</td>
-                                                        <td>" . $list['Poids'] . "</td>
-                                                        <td>" . $list['Statut_final'] . "</td>
-                                                        <td>" . $list['Date_statut_final'] . "</td>
-                                                        <td>" . $list['Tarif_domicile'] . "</td>
-                                                        <td>" . $list['Tarif_en_point_relais'] . "</td>
-                                                        <td>" . $list['Tarif_rejets'] . "</td>
-                                                        <td>" . $list['Tarif_retours'] . "</td>
-                                                        <td>" . $list['Tarif_echecs'] . "</td>
-                                                        <td>" . $list['Cash_collecte'] . "</td>
-                                                        <td>" . $list['Commission_sur_cash_collecte'] . "</td>
-                                                        </tr>";
-                }
-                //var_dump($data_listing); die;
-                $listing = "<table ><thead><tr>
-                            <th>Num</th>
-                            <th>Date de collecte</th>
-                            <th>Num commande</th>
-                            <th>Num colis</th>
-                            <th>Destination</th>
-                            <th>Poids</th>
-                            <th>Statut final</th>
-                            <th>Date statut final</th>
-                            <th>Tarif livraison à domicile</th>
-                            <th>Tarif livraison en point relais</th>
-                            <th>Tarif rejet</th>
-                            <th>Tarif retour</th>
-                            <th>Tarif échec</th>
-                            <th>Cash collecté</th>
-                            <th>Commission sur cash collecté</th>
-                        </tr>
-                        </thead> 
-                        <tbody>" . $data_listing . "</tbody></table>";
-            }
-            // exporter les données html du listing au format excell
-            header('Content-type: application/excel');
-            $file_listing = $namlisting . ".xls";
-            header('Content-Disposition: attachment; filename=' . $file_listing);
-            $data = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">
-                    <head>
-                        <!--[if gte mso 9]>
-                        <xml>
-                            <x:ExcelWorkbook>
-                                <x:ExcelWorksheets>
-                                    <x:ExcelWorksheet>
-                                        <x:Name>LISTING</x:Name>
-                                        <x:WorksheetOptions>
-                                            <x:Print>
-                                                <x:ValidPrinterInfo/>
-                                            </x:Print>
-                                        </x:WorksheetOptions>
-                                    </x:ExcelWorksheet>
-                                </x:ExcelWorksheets>
-                            </x:ExcelWorkbook>
-                        </xml>
-                        <![endif]-->
-                    </head><body>' . $listing . '</body></html>';
-
-
-
-
-            //renseigne la base de données de la création d'une nouvelle facture
-            //$this->state_model->insert(array("file_path" => $newfilefact . $period . ".xlsx", "type" => 'F', "facturation_date" => $facturation_date, "period" => $period, "customerID" => $customer_id[0]->id, "name" => $namfacture));
-        */
-            
+            $this->list_facture("Facture","test");   
                 }
     }
+    
+     public function list_facture($file_name,$message) {
+         
+          redirect("billing/list_facture_file/".$file_name."/".$message);
+    }
+     
 
     
     public function listing_file($data, $filename) {

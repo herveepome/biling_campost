@@ -84,6 +84,7 @@ $route['billing/read']['get'] = 'billings/BillingManager/read';
 $route['state/list_billing_file']['get'] = 'state/StateManager/list_billing';
 $route['bill/create']['get'] = 'billings/BillingManager/createBill';
 $route['billing/generate_bill_file']['post'] = 'billings/BillingManager/generate_bill_file';
+$route['billing/list_facture_file/(:any)']['get'] = 'billings/StateManager/list_file/$1';
 
 //files and state
 $route['files/create_versement_file']['get'] = 'state/StateManager/create_versement_file';
@@ -108,6 +109,7 @@ $route['state/list_delivery_file']['get'] = 'state/StateManager/list_delivery';
 $route['state/create_croised_file']['get'] = 'state/StateManager/create_croised';
 $route['state/generate_croised_file']['post'] = 'state/StateManager/generate_croised';
 $route['state/list_croised_file']['get'] = 'state/StateManager/list_croised';
+
 
 
 $route['state/create_rejected_file']['get'] = 'state/StateManager/create_rejected';
