@@ -59,18 +59,18 @@
                     <?php foreach ($customers as $customer) {?>
                     
                     <!-- Custom Modal -->
-        <div id="custom-modal<?php echo $customer->id ?>" class="modal-demo">
-            <button type="button" class="close" onclick="Custombox.close();">
-                <span>&times;</span><span class="sr-only">Close</span>
-            </button>
-            <h4 class="custom-modal-title">Attention</h4>
-            <div class="custom-modal-text">
-             <?php echo "Voulez vous vraiment supprimer  le client ".$customer->name." ?" ?>
-                 <a class="btn btn-primary waves-effect waves-light btn-md" href="<?php echo site_url('customer/'.$customer->id .'/delete'); ?>">oui</a>
-                  <a class="btn btn-danger waves-effect waves-light" href="<?php echo site_url('customers'); ?>">Non</a>
-                    
-            </div>
-        </div>
+                        <div id="custom-modal<?php echo $customer->id ?>" class="modal-demo">
+                            <button type="button" class="close" onclick="Custombox.close();">
+                                <span>&times;</span><span class="sr-only">Close</span>
+                            </button>
+                            <h4 class="custom-modal-title">Attention</h4>
+                            <div class="custom-modal-text">
+                             <?php echo "Voulez vous vraiment supprimer  le client ".$customer->name." ?" ?>
+                                 <a class="btn btn-primary waves-effect waves-light btn-md" href="<?php echo site_url('customer/'.$customer->id .'/delete'); ?>">oui</a>
+                                  <a class="btn btn-danger waves-effect waves-light" href="<?php echo site_url('customers'); ?>">Non</a>
+
+                            </div>
+                        </div>
                     
                     <?php 
                                   }} ?>

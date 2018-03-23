@@ -101,23 +101,23 @@
 
         </script>
         <script>
-            function move() {
-                var elem = document.getElementById("myBar");
-                var finalMessage = document.getElementById('finalMessage');
-                var timer = document.getElementById('time').value;
-                var width = 1;
-                var id = setInterval(frame, 5000);
-                function frame() {
-                    if (width >= timer) {
-                        clearInterval(id);
-                        return true;
-                    } else {
-                        width++;
-                        finalMessage.innerHTML = "Veuillez patienter, Chargement du fichier en cours";
-                        elem.style.width = width  + '%';
-                        elem.innerHTML = width * 2  + '%';
-                    }
-                }
+
+    function move() {
+        var elem = document.getElementById("myBar");
+        var finalMessage = document.getElementById('finalMessage');
+        var timer = document.getElementById('time').value;
+        //alert(timer);
+        var width = 1;
+        var id = setInterval(frame, timer);
+        function frame() {
+            if (width >= 100) {
+                finalMessage.innerHTML = "Veuillez patienter, Chargement du fichier en cours ...";
+                return true;
+            } else {
+                width++;
+                finalMessage.innerHTML = "Veuillez patienter, Chargement du fichier en cours";
+                elem.style.width = width + '%';
+
             }
 
         </script>
