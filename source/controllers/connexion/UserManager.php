@@ -1,0 +1,58 @@
+<?php
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ * Description of StateManager
+ *
+ * @author hepomenzengue
+ */
+if (!defined('BASEPATH'))
+    exit('No direct script access allowed');
+require_once APPPATH . 'third_party/spout/src/spout/Autoloader/autoload.php';
+//require_once APPPATH ."controller/lib/html2pdf.php";
+libxml_disable_entity_loader(false);
+
+
+
+include_once (APPPATH . 'controllers/MainController.php');
+
+class UserManager extends MainController{
+
+
+    public function __construct() {
+        parent::__construct();
+        $this->load->model('user_model');
+        $this->load->model('customer_model');
+    }
+
+    public function index() {
+
+
+    }
+
+    public function login(){
+        $data['customers'] = $this->customer_model->getALL(array("deleted"=>0)) ;
+        if ($this->input->post()){
+            $error = null;
+            extract($this->input->post(NULL, TRUE));
+            $user  = $this->user_model->getALL(array("login"=>$login,"password"=>$password));
+            if (isset($user) && !empty($user)&& $user!=null){
+                $this->load->view('general/header.php');
+                $this->load->view('general/accueil.php',$data);
+                $this->load->view('general/footer.php');
+            }
+            else{
+                $data['message'] = "votre login ou mot de passe est incorrect; essayez de nouveau!"  ;
+                $this->load->view('general/login.php',$data);
+                $this->load->view('general/footer.php');
+            }
+
+
+        }
+    }
+}
