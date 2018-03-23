@@ -359,7 +359,7 @@ class StateManager extends MainController {
         }
         if ($file_name == "billing") {
             $data["states"] = $this->state_model->getALL(array("type" => "FF"));
-            $name = "des fichiers de facturation";
+            $name = "de facturation";
         }
         if ($file_name == "returned") {
             $data["states"] = $this->state_model->getALL(array("type" => "FR"));
@@ -401,10 +401,11 @@ class StateManager extends MainController {
         
         $state = $this->state_model->getALL(array("id" => $id));
         
+        
         $operation_id=$this->state_model->getALL(array("type" =>"FO","period"=>$state[0]->period,"customerID"=>$state[0]->customerID));
         $versement_id=$this->state_model->getALL(array("type" =>"FV","period"=>$state[0]->period,"customerID"=>$state[0]->customerID));
         
-        
+        //var_dump($operation_id, $versement_id);die;
         $data = array();
 
         if ($state[0]->type == "FR") {
@@ -456,7 +457,7 @@ class StateManager extends MainController {
             ." where s.tracking_number<>t.reference AND t.id in (select A.id from "
             ."(SELECT v.id,o.tracking_number FROM versement v LEFT join operation o "
             ."ON o.tracking_number=v.reference AND o.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id." ORDER BY o.order)A where A.tracking_number IS NULL) "
-            ."AND s.tracking_number IS NOT NULL)");
+            ."AND s.tracking_number IS NOT NULL AND s.state_file_id=".$operation_id[0]->id." AND t.state_file_id=".$versement_id[0]->id. ")");
             
             $this->operation_model->executeQuery("CREATE  TEMPORARY TABLE IF NOT EXISTS alternatifs_egaux AS"
             ."(SELECT * FROM `alternatifs`A "
@@ -479,7 +480,7 @@ class StateManager extends MainController {
             . "left join operation o on o.order=a.order where a.amount_collected in (select T.credit "
             . "from(select sum(cast(c.amount_to_collect as unsigned integer)) as credit,"
             . "c.order from operation c group by c.order)T where o.order=T.order) "
-            . "order by a.order))");
+            . "order by a.order)AND m.state_file_id=".$operation_id[0]->id." AND v.state_file_id=".$versement_id[0]->id.")");
            
             
         if ($state[0]->type == "FC") {
@@ -503,6 +504,7 @@ class StateManager extends MainController {
             $this->operation_model->executeQuery("DROP TABLE alternatifs_egaux");
             $this->operation_model->executeQuery("DROP TABLE alternatifs_differents");
             $this->operation_model->executeQuery("DROP TABLE alternatifs_superieur");
+            //$data["rows"]=$alternatifs_egaux;
             $data["rows"]=  array_merge($nominal,$alternatifs_egaux,$alternatifs_differents);
             
             
@@ -632,9 +634,9 @@ class StateManager extends MainController {
     public function create_file($file_to_upload, $file_name, $view, $link, $error = null) {
         
         if ($file_name == "versement_file")
-            $data['time'] = 15000;
+            $data['time'] = 200000;
         if ($file_name == "operation_file")
-            $data['time'] = 125000;
+            $data['time'] = 100000;
 
         $data['link'] = $link;
         $data['file_to_upload'] = $file_to_upload;
@@ -663,7 +665,7 @@ class StateManager extends MainController {
         }
     }
 
-    public function excel_to_sql($state_file_id, $file_type, $file) {
+   public function excel_to_sql($state_file_id, $file_type, $file) {
 
 
         $reader = ReaderFactory::create(Type::XLSX); // for XLSX files
@@ -685,8 +687,8 @@ class StateManager extends MainController {
                             'libelle' => $row['2'],
                             'reference' => $row['3'],
                             'bureau' => $row['4'],
-                            'debit' =>str_replace(' ', '',$row['5']) ,
-                            'credit' =>str_replace(' ', '',$row['6']),
+                            'debit' => str_replace(' ', '', $row['5']),
+                            'credit' => str_replace(' ', '', $row['6']),
                             'solde' => $row['7'],
                         );
 
@@ -701,15 +703,15 @@ class StateManager extends MainController {
             foreach ($reader->getSheetIterator() as $sheet) {
                 foreach ($sheet->getRowIterator() as $row) {
                     //var_dump($row['30']);die;
-                    if(isset($row['30']) && $row['30']=="Warehouse")
-                        $deposit_local="Bureau de poste";
+                    if (isset($row['30']) && $row['30'] == "Warehouse")
+                        $deposit_local = "Bureau de poste";
                     else
-                        $deposit_local="A domicile";
+                        $deposit_local = "A domicile";
 
-                    if(isset($row['4']) && $row['4']==null || $row['4']=="" )
-                        $size='SMALL';
+                    if (isset($row['4']) && $row['4'] == null || $row['4'] == "")
+                        $size = 'SMALL';
                     else
-                        $size=$row['4'];
+                        $size = $row['4'];
 
                     if ($row["0"] != "Shipment Provider") {
                         $result = array(
@@ -748,21 +750,25 @@ class StateManager extends MainController {
                 $reader->close();
             }
             $this->operation_model->insert_many_rows($data);
-            
+
 
             $this->operation_model->executeQuery("CREATE TEMPORARY TABLE IF NOT exists doublons  "
-                . "AS(SELECT  id FROM operation t1 WHERE t1.tracking_number "
-                . "IN ( SELECT t2.tracking_number FROM operation t2 where t2.start_time=t1.start_time "
-                . "and t2.tracking_number=t1.tracking_number and t1.amount_to_collect=t2.amount_to_collect "
-                . " and t2.state_file_id= ".$state_file_id." GROUP BY t2.tracking_number "
-                . "HAVING COUNT(t2.tracking_number)>1 )  GROUP BY t1.tracking_number "
-                . "HAVING COUNT(t1.tracking_number)>1)");
+                    . "AS(SELECT  id FROM operation t1 WHERE t1.tracking_number "
+                    . "IN ( SELECT t2.tracking_number FROM operation t2 where t2.start_time=t1.start_time "
+                    . "and t2.tracking_number=t1.tracking_number and t1.amount_to_collect=t2.amount_to_collect "
+                    . " and t2.state_file_id= " . $state_file_id . " GROUP BY t2.tracking_number "
+                    . "HAVING COUNT(t2.tracking_number)>1 )  GROUP BY t1.tracking_number "
+                    . "HAVING COUNT(t1.tracking_number)>1)");
 
             $this->operation_model->executeQuery("DELETE FROM operation where id in (select id from doublons)");
             $this->operation_model->executeQuery("DROP TABLE doublons");
         }
+        
+        unlink($file);
     }
 
+    // $this->unlink($file);
+    
 
     public function upload_file($file_name, $allowed_types, $upload_path, $max_size, $file_uploading) {
         //var_dump($file_uploading);die;

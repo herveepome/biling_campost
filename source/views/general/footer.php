@@ -101,6 +101,7 @@
 
         </script>
         <script>
+
     function move() {
         var elem = document.getElementById("myBar");
         var finalMessage = document.getElementById('finalMessage');
@@ -116,8 +117,8 @@
                 width++;
                 finalMessage.innerHTML = "Veuillez patienter, Chargement du fichier en cours";
                 elem.style.width = width + '%';
+
             }
-        }
-    }
-</script>
+
+        </script>
 
