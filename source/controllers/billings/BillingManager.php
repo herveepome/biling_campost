@@ -309,42 +309,45 @@ class BillingManager extends MainController {
 
 
     public function read($id=null) {
-      $infos = $_SESSION['item'];
-       if ($id==null){
-        
+        if(isset($_SESSION['item']) && $_SESSION['item']!=null){
+            $infos = $_SESSION['item'];
+            if ($id==null){
 
-        $id=$this->state_model->insert(array("file_path" => $infos['newfile'], "type" => $infos['type'] ,"facturation_date" => $infos['date_de_facturation'], "period" => $infos['period'], "customerID" => $infos['customer'], "name" => $infos['name']));
 
-        $tempo_bill  = $this->operation_model->getCroisedRows("select * from tempo_bill t1 where t1.id not in (SELECT s.id from (SELECT * from tempo_bill t2 where t2.region='' or t2.region not in (select r.name from regions r)  )s)");
+                $id=$this->state_model->insert(array("file_path" => $infos['newfile'], "type" => $infos['type'] ,"facturation_date" => $infos['date_de_facturation'], "period" => $infos['period'], "customerID" => $infos['customer'], "name" => $infos['name']));
 
-        foreach ($tempo_bill as $tempo){
-            if($tempo->deposit_local=="")
-                $tempo->deposit_local = "A domicile";
-            $rows[] = array(
-                'date_collected'=>$tempo->date_collected,
-                'tracking_number'=>$tempo->tracking_number,
-                'destination'=>$tempo->destination,
-                'region'=>$tempo->region,
-                'order_number'=>$tempo->order_number,
-                'weight'=>$tempo->weight,
-                'state_file_id'=>$id,
-                'final_status'=>$tempo->final_status,
-                'final_status_date'=>$tempo->final_status_date,
-                'deleted'=>0,
-                'amount_to_collect'=>$tempo->amount_to_collect,
-                'amount_collected'=>$tempo->amount_collected,
-                'deposit_local'=>$tempo->deposit_local
-            );
+                $tempo_bill  = $this->operation_model->getCroisedRows("select * from tempo_bill t1 where t1.id not in (SELECT s.id from (SELECT * from tempo_bill t2 where t2.region='' or t2.region not in (select r.name from regions r)  )s)");
 
+                foreach ($tempo_bill as $tempo){
+                    if($tempo->deposit_local=="")
+                        $tempo->deposit_local = "A domicile";
+                    $rows[] = array(
+                        'date_collected'=>$tempo->date_collected,
+                        'tracking_number'=>$tempo->tracking_number,
+                        'destination'=>$tempo->destination,
+                        'region'=>$tempo->region,
+                        'order_number'=>$tempo->order_number,
+                        'weight'=>$tempo->weight,
+                        'state_file_id'=>$id,
+                        'final_status'=>$tempo->final_status,
+                        'final_status_date'=>$tempo->final_status_date,
+                        'deleted'=>0,
+                        'amount_to_collect'=>$tempo->amount_to_collect,
+                        'amount_collected'=>$tempo->amount_collected,
+                        'deposit_local'=>$tempo->deposit_local
+                    );
+
+                }
+
+                $this->operation_model->executeQuery("DROP TABLE IF EXISTS tempo_bill  " );
+                $this->billing_model->insert_many_rows($rows);
+            }
+            $data['file_text_name'] ='Fichier de facturation de la période du ' .$infos['period'] ;
         }
-
-        $this->operation_model->executeQuery("DROP TABLE IF EXISTS tempo_bill  " );
-        $this->billing_model->insert_many_rows($rows);
-       }
-       
+        else
+            $data['file_text_name'] ='Fichier de facturation ' ;
         $data['billing']=$this->billing_model->getALL(array("deleted"=>0, "state_file_id"=>$id));
 
-        $data['file_text_name'] ='Fichier de facturation de la période du ' .$infos['period'] ;
         $this->load->view('general/header.php');
         $this->load->view('billings/read_billing.php', $data);
         $this->load->view('general/footer.php');
@@ -578,25 +581,7 @@ class BillingManager extends MainController {
                   
                     $test = "listing";
                     $this->generate_listing($test, $name_file, $name, $listing_facture, $type, $file_text_name, $facturation_date, $file_name, $customer_id, $period, $headers, $file, $newfilelisting, $newfilefact, $path, $name,$file_type,$billing_id);
-       
 
-                $name = "facturation";
-                $file_type = "Listing de facturation";
-                $file_name = "listing";
-                $path = "billing/generate_bill_file";
-                $file = "./upload/model/listing.xlsx";
-                $newfilelisting = "./upload/billing/listing_" . $period . ".xlsx";
-                $newfilefact = "./upload/billing/listing_" . $period . ".xlsx";
-                $billing_id = $state_id[0]->id;
-                $type = "LF";
-                $facturation_date = $data['period'];
-                $headers = array('No', 'Date de collecte', 'Numéro de commande', 'No colis AIGE', 'Destination', 'Poids', 'Statut final', 'Date statut final');
-                $file_text_name = "Listing de facturation";
-                $name_file = "listing_file";
-                $namlisting = "listing_" . $period;
-                $namfacture = "facture" . $period;
-                $test = "listing";
-                $this->generate_listing($test, $name_file, $namlisting, $namfacture, $rows, $state_id[0]->id, $type, $file_text_name, $facturation_date, $file_name, $customer_id, $period, $headers, $file, $newfilelisting, $newfilefact, $path, $name, $file_type, $billing_id);
             }
         }
     }
@@ -604,7 +589,7 @@ class BillingManager extends MainController {
     
 
 
-    public function generate_listing($test, $name_file, $name, $data, $type, $file_text_name, $facturation_date, $file_name, $customer_id, $period, $headers, $file, $newfilelisting, $newfilefact, $path, $name, $file_type, $billing_id = null) {
+    public function generate_listing($test, $name_file, $name, $data, $type, $file_text_name, $facturation_date, $file_name, $customer_id, $period, $headers, $file, $newfilelisting, $newfilefact, $path, $file_type, $billing_id = null) {
         $error = null;
         
         if ($billing_id == null) {

@@ -359,7 +359,7 @@ class StateManager extends MainController {
         }
         if ($file_name == "billing") {
             $data["states"] = $this->state_model->getALL(array("type" => "FF"));
-            $name = "des fichiers de facturation";
+            $name = "de facturation";
         }
         if ($file_name == "returned") {
             $data["states"] = $this->state_model->getALL(array("type" => "FR"));
