@@ -52,7 +52,7 @@
                     <!-- Logo container-->
                     <div class="logo">
                         <!-- Text Logo -->
-                        <a href="<?php echo site_url('billings'); ?>" class="logo">
+                        <a href="<?php echo site_url(''); ?>" class="logo">
                             <img src="<?php echo base_url('assets/images/billpost3.jpg') ?>" alt="" height="80px" class="logo-lg">
                         </a>
                     </div>
@@ -136,8 +136,8 @@
                                 <a href="#"><i class="ion-document-text"></i>FACTURES</a>
                                 <ul class="submenu">
                                     
-                                    <li><a href="components-carousel.html"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Listing mensuel</a></li>
-                                    <li><a href="components-nestable-list.html"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Historique</a></li>
+                                    <li><a href="<?php echo site_url('billing/list_listing_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Listing mensuel</a></li>
+                                    <li><a href="<?php echo site_url('billing/list_facture_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Historique des Factures</a></li>
                                 </ul>
                             </li>
                         </ul>

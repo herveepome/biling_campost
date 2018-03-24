@@ -4,7 +4,7 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="page-title-box">
-                    <h4 class="page-title"><?php echo "Liste des fichiers ".$name ?></h4>
+                    <h4 class="page-title"><?php echo "Liste ".$name ?></h4>
                 </div>
             </div>
         </div>
@@ -24,7 +24,7 @@
                               <thead>
                               <tr>
                                   <th>Fichier</th>
-                                  <th>Type</th>
+                     
                                   <th>Période</th>
                                   <th>Actions</th>
                                   
@@ -38,7 +38,7 @@
                                   <?php foreach ($states as $state) {?>
                              <tr>
                                <td><?php echo $state->name ?></td>
-                                  <td><?php echo $state->type ?></td>
+                                  
                                   <td><?php echo $state->period ?></td>
                                   
                                   
@@ -52,7 +52,9 @@
                                             class="hidden on-editing save-row" data-toggle="tooltip" 
                                             data-placement="top" title="" data-original-title="Visualiser"><i class="ti-eye"></i></a>
                                         
-                                        <a href="#custom-modal<?php echo $state->id ?>" class="hidden on-editing cancel-row" data-animation="fadein" data-plugin="custommodal" data-original-title="Delete" data-overlaySpeed="200" data-overlayColor="#36404a"><i class="fa fa-times"></i></a>
+                                        <?php if($state->type!='F' && $state->type!='LF' ){ ?>
+                                      <a href="#custom-modal<?php echo $state->id ?>" class="hidden on-editing cancel-row" data-animation="fadein" data-plugin="custommodal" data-original-title="Delete" data-overlaySpeed="200" data-overlayColor="#36404a"><i class="fa fa-times"></i></a>
+                                        <?php } ?>
                                   </td>
                               </tr>
                              <?php 

@@ -560,7 +560,7 @@ class BillingManager extends MainController {
                     $file_name = "listing";
                     $path = "billing/generate_bill_file";
                     $file = "./upload/model/listing.xlsx";
-                    $newfilelisting = "/upload/listing/listing_" . $period . ".xls";
+                    $newfilelisting = "/upload/listing/listing_" . $period . ".xlsx";
                     $newfilefact = "./upload/billing/facture_" . $period . ".xls";
                     
                     $billing_id=null;
@@ -578,6 +578,9 @@ class BillingManager extends MainController {
                     $name["facture"] = "facture_" .str_replace(' ', '',$customer_id[0]->name)."_".$period;
                     
                     
+                    $newfilelisting = "/upload/listing/" . $name["namlisting"] . ".xlsx";
+                    $newfilefact = "./upload/bill/". $name["facture"]. ".xls";
+                   
                   
                     $test = "listing";
 
@@ -614,7 +617,7 @@ class BillingManager extends MainController {
             $this->listing_file($data["listing_rows"],$name["namlisting"]);
             
             //renseigne dans la base de données la création de la facture
-            $id_facture=$this->state_model->insert(array("file_path" => $newfilelisting,
+            $id_facture=$this->state_model->insert(array("file_path" => $newfilefact,
                 "type" => "F", "facturation_date" => $facturation_date, 
                 "period" => $period, "customerID" => $customer_id[0]->id, 
                 "name" => $name["facture"]));
@@ -628,13 +631,13 @@ class BillingManager extends MainController {
             if ($data["facture"] != null && !empty($data["facture"])) 
             $this->facture_file($data["facture"],$name["facture"],$bill_number,
            "PERIODE: ".$this->monthinFrench(date('F', mktime(0, 0, 0, substr ($period,2,2))))." ".substr ($period,4),$customer_id[0] );
-            $this->list_facture("Facture","test");   
+            $this->list_facture($fact=1);   
                 }
     }
     
-     public function list_facture($file_name,$message) {
+     public function list_facture($file_name) {
          
-          redirect("billing/list_facture_file/".$file_name."/".$message);
+          redirect("billing/list_facture_file/".$file_name);
     }
      
 
@@ -648,7 +651,7 @@ class BillingManager extends MainController {
         
         $writer->setShouldUseInlineStrings(true)
                 ->openToFile("./upload/listing/" . $filename.".xlsx")
-                ->addRow(["Num", "Date de collecte", "Num commande", "Num commande"
+                ->addRow(["Num", "Date de collecte", "Num commande"
                     , "Num colis", "Poids", "Statut final", "Date statut final", "Tarif livraison à domicile"
                     , "Tarif livraison en point relais", "Tarif livraison en point relais"
                     , "Tarif retour", "Tarif échec", "Tarif rejet", "Cash collecté"
@@ -676,9 +679,7 @@ class BillingManager extends MainController {
            $total_letter=  explode(".", (string)$ttt);
            $total_letter="Arrêté la présente facture à la somme de "
                     .numfmt_create('fr_FR', NumberFormatter::SPELLOUT)->format($total_letter[0])
-                    ." virgule "
-                    .numfmt_create('fr_FR', NumberFormatter::SPELLOUT)->format($total_letter[1]).
-                    " Francs C.F.A. TTC./-";
+                    ." Francs C.F.A. TTC./-";
         }else{
             $total_letter="Arrêté la présente facture à la somme de "
                     .numfmt_create('fr_FR', NumberFormatter::SPELLOUT)->format($ttt).

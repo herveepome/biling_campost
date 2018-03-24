@@ -348,10 +348,16 @@ class StateManager extends MainController {
     public function list_file($file_name, $message = null) {
         $name = null;
         
-        if ($file_name == "facture") {
+        if ($file_name ==1 ) {
+            $data["states"] = $this->state_model->getALL(array("type" => "F"));
+            $name = "des factures";
+            $message="Votre facture a bien été générée. Veuillez la consulter dans la liste ci-dessous";
+        }
+        if ($file_name =="facture" ) {
             $data["states"] = $this->state_model->getALL(array("type" => "F"));
             $name = "des factures";
         }
+        
         
         if ($file_name == "listing") {
             $data["states"] = $this->state_model->getALL(array("type" => "LF"));
@@ -359,31 +365,31 @@ class StateManager extends MainController {
         }
         if ($file_name == "billing") {
             $data["states"] = $this->state_model->getALL(array("type" => "FF"));
-            $name = "de facturation";
+            $name = "des fichiers de facturation";
         }
         if ($file_name == "returned") {
             $data["states"] = $this->state_model->getALL(array("type" => "FR"));
-            $name = "des produis retournés";
+            $name = "des fichiers des produits retournés";
         }
         if ($file_name == "paidonline") {
             $data["states"] = $this->state_model->getALL(array("type" => "FPO"));
-            $name = "des produis payés en ligne";
+            $name = "des fichiers des produis payés en ligne";
         }
         if ($file_name == "cashondelivery") {
             $data["states"] = $this->state_model->getALL(array("type" => "FCD"));
-            $name = "des produis payés à la livraison";
+            $name = "des fichiers des produis payés à la livraison";
         }
         if ($file_name == "croised") {
             $data["states"] = $this->state_model->getALL(array("type" => "FC"));
-            $name = "croisés";
+            $name = "des fichiers croisés";
         }
         if ($file_name == "rejected") {
             $data["states"] = $this->state_model->getALL(array("type" => "FRT"));
-            $name = "produits rejetés";
+            $name = "des fichiers desproduits rejetés";
         }
         if ($file_name == "unvoiced") {
             $data["states"] = $this->state_model->getALL(array("type" => "FUV"));
-            $name = "produits non facturés";
+            $name = "des fichiers des produits non facturés";
         }
 
 
