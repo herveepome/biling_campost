@@ -82,13 +82,17 @@ class BillingManager extends MainController {
       // var_dump($period); die;
         if (empty($versement_id) || empty($operation_id)) {
             $error = "Ce fichier ne peut pas encore être généré car au moins un des fichiers requis  correspondant à ces critères n'a pas encore été chargé. Veuillez le(s) charger et réessayer";
-            $this->create_file($file_type, $file_name, 'billings/new_state.php', $path, $error);
+            $this->session->message = $error ;
+             redirect("billing/create");
+            
         } elseif (empty($operation_id)) {
             
              } elseif (!empty($this->state_model->getALL(array("period" => $period, "type" => $type, "customerID" => $customer_id[0]->id)))) {
             $error = "un fichier correspondant à ces critères existe déjà. Veuillez le supprimer et réessayer ou changez de critères";
-            $this->create_file($file_type, $file_name, 'billings/new_state.php', $path, $error);
-        } else {
+            $this->session->message = $error ;
+            redirect("billing/create");
+            
+             } else {
         
             $name = $name . "_" . $period . ".xlsx";
 
@@ -600,13 +604,17 @@ class BillingManager extends MainController {
         
         if ($billing_id == null) {
             $error = "Ce fichier ne peut pas encore être généré car le fichier requis  correspondant à ces critères n'a pas encore été chargé. Veuillez le charger et réessayer";
-            $this->create_file($file_type, $file_name, 'billings/new_state.php', $path, $error);
+            $this->session->message = $error ;
+            redirect("bill/create");
+            
         } elseif (!empty($this->state_model->getALL(array("period" => $period, "type" => "LF", "customerID" => $customer_id[0]->id)))
                 ||!empty($this->state_model->getALL(array("period" => $period, "type" => "F", "customerID" => $customer_id[0]->id)))
                ) {
-            $error = "un fichier correspondant à ces critères existe déjà. Veuillez le supprimer et réessayer ou changez de critères";
-            $this->create_file($file_type, $file_name, 'billings/new_state.php', $path, $error);
-        } else {
+            $error = "un fichier correspondant à ces critères existe déjà. Changez de critères et réessayez!";
+            $this->session->message = $error ;
+            redirect("bill/create");
+            
+               } else {
             //renseigne la base de données de la création d'un nouveau litiong
             $this->state_model->insert(array("file_path" => $newfilelisting,
                 "type" => "LF", "facturation_date" => $facturation_date, 
