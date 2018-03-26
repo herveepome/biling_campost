@@ -639,7 +639,20 @@ class BillingManager extends MainController {
             if ($data["facture"] != null && !empty($data["facture"])) 
             $this->facture_file($data["facture"],$name["facture"],$bill_number,
            "PERIODE: ".$this->monthinFrench(date('F', mktime(0, 0, 0, substr ($period,2,2))))." ".substr ($period,4),$customer_id[0] );
-            $this->list_facture($fact=1);   
+            $this->list_facture($fact=1); 
+            
+            /*$inputFileType = PHPExcel_IOFactory::identify("./upload/bill/" . $name["facture"].".xls");
+            $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+            $objPHPExcel = $objReader->load("./upload/bill/" . $name["facture"].".xls");
+            $name_facture=$name["facture"].".pdf";
+            
+            header('Content-Type: application/pdf');
+            header("Content-Disposition: attachment;filename=\"" . $name_facture . "\"");
+            header('Cache-Control: max-age=0');
+
+            $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'PDF');
+            //$objWriter->save('php://output');*/
+            
                 }
     }
     
@@ -653,7 +666,7 @@ class BillingManager extends MainController {
     public function listing_file($data, $filename) {
         
        
-      copy("./upload/model/listing.xlsx", "./upload/listing/" . $filename.".xlsx");
+      copy(base_url("./upload/model/listing.xlsx"), "./upload/listing/" . $filename.".xlsx");
        
         $writer = WriterFactory::create(Type::XLSX);
         
@@ -671,8 +684,9 @@ class BillingManager extends MainController {
     public function facture_file($data,$filename,$bil_number,$period,$customer) {
         //var_dump($bil_number,$period,$customer);die;
               
-        copy($_SERVER['DOCUMENT_ROOT']."bil_campost/upload/model/facture.xls", $_SERVER['DOCUMENT_ROOT']."bil_campost/upload/bill/" . $filename.".xls");
-        chmod($_SERVER['DOCUMENT_ROOT']."bil_campost/upload/bill/" . $filename.".xls", 0755);
+        copy("./upload/model/facture.xls", "./upload/bill/" . $filename.".xls");
+        
+        chmod("./upload/bill/" . $filename.".xls", 0755);
         
         $tht=0;
         $ttt=0;
@@ -697,9 +711,9 @@ class BillingManager extends MainController {
         
         
         
-        $inputFileType = PHPExcel_IOFactory::identify($_SERVER['DOCUMENT_ROOT']."bil_campost//upload/bill/" . $filename.".xls");
+        $inputFileType = PHPExcel_IOFactory::identify("./upload/bill/" . $filename.".xls");
         $objReader = PHPExcel_IOFactory::createReader($inputFileType);
-        $objPHPExcel = $objReader->load($_SERVER['DOCUMENT_ROOT']."bil_campost/upload/bill/" . $filename.".xls");
+        $objPHPExcel = $objReader->load("./upload/bill/" . $filename.".xls");
         
         $objPHPExcel->setActiveSheetIndex(0);
         
@@ -722,7 +736,7 @@ class BillingManager extends MainController {
                     ->setCellValue('A25',$total_letter);
         
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-        $objWriter->save($_SERVER['DOCUMENT_ROOT']."bil_campost/upload/bill/" . $filename.".xls");
+        $objWriter->save("./upload/bill/" . $filename.".xls");
        
         
         
