@@ -29,7 +29,6 @@ class MainController extends CI_Controller {
 
         public function index()
 	{
-       // $data['register'] = $this->load->view('general/register.php', null, true);
         $this->load->view('general/login.php');
         $this->load->view('general/footer.php');
 	}

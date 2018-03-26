@@ -77,7 +77,7 @@
             <div class="col-12">
                 <div class="input-group">
                     <span class="input-group-addon"><i class="mdi mdi-email"></i></span>
-                    <input class="form-control" type="email" required="" placeholder="Email">
+                    <input class="form-control" name="email" type="email" required="" placeholder="Email">
                 </div>
             </div>
         </div>
@@ -86,7 +86,7 @@
             <div class="col-12">
                 <div class="input-group">
                     <span class="input-group-addon"><i class="mdi mdi-account"></i></span>
-                    <input class="form-control" type="text" required="" placeholder="Username">
+                    <input class="form-control" name="login" type="text" required="" placeholder="Username">
                 </div>
             </div>
         </div>
@@ -95,7 +95,7 @@
             <div class="col-12">
                 <div class="input-group">
                     <span class="input-group-addon"><i class="mdi mdi-key"></i></span>
-                    <input class="form-control" type="password" required="" placeholder="Password">
+                    <input class="form-control" name="password" type="password" required="" placeholder="Password">
                 </div>
             </div>
         </div>
@@ -119,7 +119,7 @@
 
         <div class="form-group row m-t-30">
             <div class="col-12 text-center">
-                <a href="<?php if(isset($login))  echo $login ; ?>" class="text-muted">Already have account?</a>
+                <a href="<?php echo site_url("login_form") ; ?>" class="text-muted">Already have account?</a>
             </div>
         </div>
 

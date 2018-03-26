@@ -125,7 +125,8 @@
                      <a href="pages-recoverpw.html" class="text-muted"><i class="fa fa-lock m-r-5"></i> Mot de passe oublié?</a>
                  </div> !-->
                  <div class="col-sm-5 text-right">
-                     <a href="<?php $this->view('register') ;?>" class="text-muted">Créer un compte</a>
+                         <a href="<?php echo  site_url("register_form") ;?>" class="text-muted">Créer un compte</a>
+
                  </div>
              </div>
          </form>

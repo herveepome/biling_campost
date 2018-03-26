@@ -57,13 +57,23 @@ class UserManager extends MainController{
         }
     }
 
+    public function registerForm(){
+        $this->load->view('general/register.php');
+        $this->load->view('general/footer.php');
+    }
+
+    public function loginForm(){
+        $this->load->view('general/login.php');
+        $this->load->view('general/footer.php');
+    }
+
     public function register(){
         $data['customers'] = $this->customer_model->getALL(array("deleted"=>0)) ;
         $data['login'] = $this->load->view('general/login.php', null, true);
         if ($this->input->post()){
             $error = null;
             extract($this->input->post(NULL, TRUE));
-            $user = array("username"=>$username,"login"=>$login,"password"=>sha1($password));
+            $user = array("email"=>$email,"login"=>$login,"password"=>sha1($password));
             $this->user_model->insert($user);
             $this->load->view('general/header.php');
             $this->load->view('general/accueil.php',$data);
