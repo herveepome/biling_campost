@@ -37,6 +37,7 @@ class UserManager extends MainController{
 
     public function login(){
         $data['customers'] = $this->customer_model->getALL(array("deleted"=>0)) ;
+        $data['register'] = $this->load->view('general/register.php', null, true);
         if ($this->input->post()){
             $error = null;
             extract($this->input->post(NULL, TRUE));
@@ -47,11 +48,26 @@ class UserManager extends MainController{
                 $this->load->view('general/footer.php');
             }
             else{
-                $data['message'] = "votre login ou mot de passe est incorrect; essayez de nouveau!"  ;
+                $data['error'] = "votre login et/ou mot de passe est incorrect; essayez de nouveau!"  ;
                 $this->load->view('general/login.php',$data);
                 $this->load->view('general/footer.php');
             }
 
+
+        }
+    }
+
+    public function register(){
+        $data['customers'] = $this->customer_model->getALL(array("deleted"=>0)) ;
+        $data['login'] = $this->load->view('general/login.php', null, true);
+        if ($this->input->post()){
+            $error = null;
+            extract($this->input->post(NULL, TRUE));
+            $user = array("username"=>$username,"login"=>$login,"password"=>sha1($password));
+            $this->user_model->insert($user);
+            $this->load->view('general/header.php');
+            $this->load->view('general/accueil.php',$data);
+            $this->load->view('general/footer.php');
 
         }
     }

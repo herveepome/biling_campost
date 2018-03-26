@@ -68,25 +68,25 @@
 <div class="wrapper-page">
 
     <div class="text-center">
-       <span class="logo-lg">Se connecter à billpost</span>
+        <a href="index.html" class="logo-lg"><i class="mdi mdi-radar"></i> <span>Billpost/création de compte</span> </a>
     </div>
 
-    <form class="form-horizontal m-t-20" action="<?php echo site_url('login'); ?>" method="post">
+    <form class="form-horizontal m-t-20" action="<?php echo site_url('register'); ?>" method="post">
 
-        <?php if (isset($error) && $error!=null): ?>
-
-                    <div class="alert alert-danger" >
-
-                        <font style="color:black;"><?php echo $error; ?><br></p></font>
-
-                    </div>
-        <?php endif; ?>
+        <div class="form-group row">
+            <div class="col-12">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="mdi mdi-email"></i></span>
+                    <input class="form-control" type="email" required="" placeholder="Email">
+                </div>
+            </div>
+        </div>
 
         <div class="form-group row">
             <div class="col-12">
                 <div class="input-group">
                     <span class="input-group-addon"><i class="mdi mdi-account"></i></span>
-                    <input class="form-control" name="login" value="" type="text" required="" placeholder="Login">
+                    <input class="form-control" type="text" required="" placeholder="Username">
                 </div>
             </div>
         </div>
@@ -94,41 +94,34 @@
         <div class="form-group row">
             <div class="col-12">
                 <div class="input-group">
-                    <span class="input-group-addon"><i class="mdi mdi-radar"></i></span>
-                    <input class="form-control" name="password" value="" type="password" required="" placeholder="Mot de passe">
+                    <span class="input-group-addon"><i class="mdi mdi-key"></i></span>
+                    <input class="form-control" type="password" required="" placeholder="Password">
                 </div>
             </div>
         </div>
 
-        <!--   <div class="form-group row">
+        <div class="form-group row">
             <div class="col-12">
                 <div class="checkbox checkbox-primary">
-                    <input id="checkbox-signup" type="checkbox">
+                    <input id="checkbox-signup" type="checkbox" checked="checked">
                     <label for="checkbox-signup">
-                        Se souvenir de moi
+                        I accept <a href="#">Terms and Conditions</a>
                     </label>
                 </div>
-
             </div>
-        </div>  !-->
+        </div>
 
         <div class="form-group text-right m-t-20">
-
             <div class="col-xs-12">
-                <button class="btn btn-primary btn-custom w-md waves-effect waves-light" type="submit">Se connecter
-                </button>
+                <button class="btn btn-primary btn-custom waves-effect waves-light w-md" type="submit">Register</button>
             </div>
         </div>
 
         <div class="form-group row m-t-30">
-            <!--     <div class="col-sm-7">
-                     <a href="pages-recoverpw.html" class="text-muted"><i class="fa fa-lock m-r-5"></i> Mot de passe oublié?</a>
-                 </div> !-->
-                 <div class="col-sm-5 text-right">
-                     <a href="<?php $this->view('register') ;?>" class="text-muted">Créer un compte</a>
-                 </div>
-             </div>
-         </form>
-     </div>
+            <div class="col-12 text-center">
+                <a href="<?php if(isset($login))  echo $login ; ?>" class="text-muted">Already have account?</a>
+            </div>
+        </div>
 
-
+    </form>
+</div>

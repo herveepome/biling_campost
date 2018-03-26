@@ -55,6 +55,7 @@ $route['translate_uri_dashes'] = FALSE;
 // accueil
 $route['get_file']['POST'] = 'MainController/getFiles';
 $route['login']['POST'] = 'connexion/UserManager/login';
+$route['register']['POST'] = 'connexion/UserManager/register';
 
 // customers
 $route['customers']['get'] = 'customers/CustomerManager';
