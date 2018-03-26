@@ -671,8 +671,8 @@ class BillingManager extends MainController {
     public function facture_file($data,$filename,$bil_number,$period,$customer) {
         //var_dump($bil_number,$period,$customer);die;
               
-        copy($_SERVER['DOCUMENT_ROOT']."bil_campost/upload/model/facture.xls", $_SERVER['DOCUMENT_ROOT']."bil_campost/upload/bill/" . $filename.".xls");
-        chmod($_SERVER['DOCUMENT_ROOT']."bil_campost/upload/bill/" . $filename.".xls", 0755);
+        copy($_SERVER['DOCUMENT_ROOT']/upload/model/facture.xls", $_SERVER['DOCUMENT_ROOT']."/bil_campost/upload/bill/" . $filename.".xls");
+        chmod($_SERVER['DOCUMENT_ROOT']."/bil_campost/upload/bill/" . $filename.".xls", 0755);
         
         $tht=0;
         $ttt=0;
