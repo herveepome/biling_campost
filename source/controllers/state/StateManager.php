@@ -699,89 +699,74 @@ class StateManager extends MainController {
             $this->versement_model->insert_many_rows($data);
         }
 
-        if ($file_type == "operation") {
-            foreach ($reader->getSheetIterator() as $sheet) {
-                foreach ($sheet->getRowIterator() as $row) {
-                    if(is_a($row['6'], 'DateTime') )
-                        $last_failed_attempt_date = $row['6']->format('d/m/Y') ;
-                    else
-                        $last_failed_attempt_date =  $row['6'];
-                    if(is_a($row['2'], 'DateTime'))
-                        $start_time = $row['2']->format('d/m/Y') ;
-                    else
-                        $start_time = $row['2'] ;
-                    if(is_a($row['5'],'DateTime'))
-                        $delivered_date = $row['5']->format('d/m/Y');
-                    else
-                        $delivered_date = $row['5'] ;
-                    if(is_a($row['9'],'DateTime'))
-                        $order_date = $row['9']->format('d/m/Y');
-                    else
-                        $order_date = $row['9'] ;
-                    if(isset($row['30']) && $row['30']=="Warehouse")
-                        $deposit_local="Bureau de poste";
-                    else
-                        $deposit_local="A domicile";
+       if ($file_type == "operation") {
+           foreach ($reader->getSheetIterator() as $sheet) {
+               foreach ($sheet->getRowIterator() as $row) {
+                   //var_dump($row['30']);die;
+                   if(isset($row['30']) && $row['30']=="Warehouse")
+                       $deposit_local="Bureau de poste";
+                   else
+                       $deposit_local="A domicile";
 
-                    if(isset($row['4']) && $row['4']==null || $row['4']=="" )
-                        $size='SMALL';
-                    else
-                        $size=$row['4'];
+                   if(isset($row['4']) && $row['4']==null || $row['4']=="" )
+                       $size='SMALL';
+                   else
+                       $size=$row['4'];
 
-                    if ($row["0"] != "Shipment Provider") {
-                        $result = array(
-                            'state_file_id' => $state_file_id,
-                            'shipment_provider' => $row['0'],
-                            'status' => $row['1'],
+                   if ($row["0"] != "Shipment Provider") {
+                       $result = array(
+                           'state_file_id' => $state_file_id,
+                           'shipment_provider' => $row['0'],
+                           'status' => $row['1'],
+                           'start_time' => $row['2']->format('d/m/Y'),
+                           'tracking_number' => $row['3'],
+                           'size' => $size,
+                           'delivered_date' => $row['5']->format('d/m/Y'),
+                           'last_failed_attempt_date' => $row['6']->format('d/m/Y'),
+                           'flow' => $row['7'],
+                           'order' => $row['8'],
+                           'order_date' => $row['9']->format('d/m/Y'),
+                           'phone_number' => $row['10'],
+                           'customer_name' => $row['11'],
+                           'address' => $row['12'],
+                           'city' => $row['13'],
+                           'ward' => $row['14'],
+                           'postcode' => $row['15'],
+                           'region' => $row['16'],
+                           'payment_method' => $row['17'],
+                           'amount_to_collect' => str_replace(' ', '', $row['18']),
+                           'delivery_run' => $row['19'],
+                           'delivery_run_create' => $row['20'],
+                           'bureau' => $row['21'],
+                           'date_operation' => $row['22'],
+                           'deposit_local' => $deposit_local,
+                       );
 
-                            'start_time' => $start_time,
-                            'tracking_number' => $row['3'],
-
-                            'size' => $size,
-                            'delivered_date' => $delivered_date ,
-                            'last_failed_attempt_date' => $last_failed_attempt_date,
-                            'flow' => $row['7'],
-                            'order' => $row['8'],
-                            'order_date' => $order_date,
-
-                            'phone_number' => $row['10'],
-                            'customer_name' => $row['11'],
-                            'address' => $row['12'],
-                            'city' => $row['13'],
-                            'ward' => $row['14'],
-                            'postcode' => $row['15'],
-                            'region' => $row['16'],
-                            'payment_method' => $row['17'],
-                            'amount_to_collect' => str_replace(' ', '', $row['18']),
-                            'delivery_run' => $row['20'],
-                            'delivery_run_create' => $row['21'],
-                            'bureau' => $row['22'],
-                            'date_operation' => $row['23'],
-                            'deposit_local' => $deposit_local,
-                        );
-
-                    }
-                }
+                       $data[] = $result;
+                   }
+               }
 
 
-                $reader->close();
-            }
-            $this->operation_model->insert_many_rows($data);
-            
+               $reader->close();
+           }
+           $this->operation_model->insert_many_rows($data);
 
-            $this->operation_model->executeQuery("CREATE TEMPORARY TABLE IF NOT exists doublons  "
-                . "AS(SELECT  id FROM operation t1 WHERE t1.tracking_number "
-                . "IN ( SELECT t2.tracking_number FROM operation t2 where t2.start_time=t1.start_time "
-                . "and t2.tracking_number=t1.tracking_number and t1.amount_to_collect=t2.amount_to_collect "
-                . " and t2.state_file_id= ".$state_file_id." GROUP BY t2.tracking_number "
-                . "HAVING COUNT(t2.tracking_number)>1 )  GROUP BY t1.tracking_number "
-                . "HAVING COUNT(t1.tracking_number)>1)");
 
-            $this->operation_model->executeQuery("DELETE FROM operation where id in (select id from doublons)");
-            $this->operation_model->executeQuery("DROP TABLE doublons");
+           $this->operation_model->executeQuery("CREATE TEMPORARY TABLE IF NOT exists doublons  "
+               . "AS(SELECT  id FROM operation t1 WHERE t1.tracking_number "
+               . "IN ( SELECT t2.tracking_number FROM operation t2 where t2.start_time=t1.start_time "
+               . "and t2.tracking_number=t1.tracking_number and t1.amount_to_collect=t2.amount_to_collect "
+               . " and t2.state_file_id= ".$state_file_id." GROUP BY t2.tracking_number "
+               . "HAVING COUNT(t2.tracking_number)>1 )  GROUP BY t1.tracking_number "
+               . "HAVING COUNT(t1.tracking_number)>1)");
 
-        }
-      // $this->unlink($file);
+           $this->operation_model->executeQuery("DELETE FROM operation where id in (select id from doublons)");
+           $this->operation_model->executeQuery("DROP TABLE doublons");
+       }
+
+
+
+       unlink($file);
     }
 
     public function upload_file($file_name, $allowed_types, $upload_path, $max_size, $file_uploading) {

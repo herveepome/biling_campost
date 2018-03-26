@@ -105,7 +105,7 @@
                                                 <div class="form-group row">
                                                     <label class="col-4 col-form-label" for="example-email"> [ <?php echo $cash->interval ; ?> ] </label>
 
-                                                        <input class="col-6" type="number" value="<?php if (isset($cash_collected)){   echo($cash_collected[$i]->amount); $i++;}   ?>" id="example-email"  name="amount[]" class="form-control" placeholder="commission" required>
+                                                        <input class="col-6" type="text" value="<?php if (isset($cash_collected)){   echo($cash_collected[$i]->amount); $i++;}   ?>" id="example-email"  name="amount[]" class="form-control" placeholder="commission" required>
 
 
                                                 </div>
@@ -131,7 +131,7 @@
                                                         <label class="col-4 col-form-label" for="example-email">
                                                             [ <?php echo $zone->zone; ?> ][<?php echo $poid->weight; ?>] </label>
 
-                                                            <input class="col-6" type="number" value="<?php if (isset($domicile_collected)){echo($domicile_collected[$i]->amount); $i++;}   ?>" id="example-email"  name="tarifdomicile[]" class="form-control"
+                                                            <input class="col-6" type="text" value="<?php if (isset($domicile_collected)){echo($domicile_collected[$i]->amount); $i++;}   ?>" id="example-email"  name="tarifdomicile[]" class="form-control"
                                                                    placeholder="tarif à domicile"
                                                                    required>
 
@@ -160,7 +160,7 @@
                                                             <label class="col-4 col-form-label" for="example-email">
                                                                 [ <?php echo $zone->zone; ?> ][<?php echo $poid->weight; ?>] </label>
 
-                                                                <input class="col-6" type="number" value="<?php if (isset($bureau_collected)){echo($bureau_collected[$i]->amount); $i++;}   ?>" id="example-email"  name="tarifbureau[]" class="form-control"
+                                                                <input class="col-6" type="text" value="<?php if (isset($bureau_collected)){echo($bureau_collected[$i]->amount); $i++;}   ?>" id="example-email"  name="tarifbureau[]" class="form-control"
                                                                        placeholder="tarif au bureau de poste"
                                                                        required>
 
