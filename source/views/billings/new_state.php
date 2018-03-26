@@ -25,18 +25,18 @@
                                 
                                     <form action="<?php echo site_url($link); ?>"   method="POST" class="form-horizontal" >
        
-                                   <?php if (isset($error) && $error!=null): ?>
+                                   <?php if (isset($_SESSION["message"]) && $_SESSION["message"] != null): ?>
                                           <div class="form-group row">
                                         
                                         <div class="col-10">
                                              <div class="alert alert-danger" >
                                 
-                                <font style="color:black;"><?php echo $error; ?><br></p></font>
+                                <font style="color:black;"><?php echo $_SESSION["message"]; ?><br></p></font>
                            
                                 </div>
                                               </div>
                                     </div>
-                                   <?php endif; ?>
+                                   <?php unset($_SESSION["message"]);endif; ?>
                                      <br>
                                     <div class="form-group row">
                                         

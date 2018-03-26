@@ -116,6 +116,7 @@ class StateManager extends MainController {
             $name_file = "returned";
             $nam = "returned_" . $period;
             $test = "operations";
+            
             $this->generate_file($test, $name_file, $nam, $state_file_id, "FR", "Fichiers des retours", "returned", $customer_id, $customer, $period, $headers, $file, $newfile, $path, $file_name, $name, $state_croisement_id = null);
         }
     }
@@ -209,7 +210,8 @@ class StateManager extends MainController {
     }
 
     public function generate_croised() {
-        //var_dump($this->input->post());die;
+        
+        
         if ($this->input->post()) {
             $error = null;
             extract($this->input->post(NULL, TRUE));
@@ -219,7 +221,7 @@ class StateManager extends MainController {
             $state_file_id = ($this->state_model->getALL(array("period" => $period, "type" => "FO", "customerID" => $customer_id[0]->id)));
            $state_croisement_id = ($this->state_model->getALL(array("period" => $period, "type" => "FV", "customerID" => $customer_id[0]->id)));
             
-            //var_dump($period,$customer_id,$state_file_id);die;
+           
             $name = "opérations";
             $file_type = "Fichier croisé";
             $file_name = "croised_file";
@@ -612,16 +614,63 @@ class StateManager extends MainController {
     public function generate_file($test, $name_file, $nam, $state_file_id, $type, $file_type, $file_name, $customer_id, $type_file_required, $period, $headers, $file, $newfile, $path, $name, $state_croisement_id = null) {
         
         $error = null;
-
+        
         if ($state_croisement_id != null && empty($state_croisement_id) || empty($state_file_id)) {
-            $error = "Ce fichier ne peut pas encore être généré car au moins un des fichiers requis  correspondant à ces critères n'a pas encore été chargé. Veuillez le(s) charger et réessayer";
-            $this->create_file($file_type, $file_name, 'billings/new_state.php', $path, $error);
+          $error = "Ce fichier ne peut pas encore être généré car au moins un des fichiers requis  correspondant à ces critères n'a pas encore été chargé. Veuillez le(s) charger et réessayer";
+          $this->session->message = $error ;
+          
+          
+           
+          if($type=="FR")
+          redirect("state/create_returned_file");
+          if($type=="FPO")
+          redirect("state/create_paidonline_file");
+          if($type=="FCD")
+          redirect("state/create_delivery_file");
+          if($type=="FC")
+          redirect("state/create_croised_file");
+          if($type=="FRT")
+          redirect("state/create_rejected_file");
+          if($type=="FUV")
+          redirect("state/create_unvoiced_file");
+         
+            
         } elseif (empty($state_file_id)) {
-            $error = "Ce fichier ne peut pas encore être généré car fichier des " . $name . " correspondant à ces critères n'a pas encore été chargé. Veuillez le charger et réessayer";
-            $this->create_file($file_type, $file_name, 'billings/new_state.php', $path, $error);
+           $error = "Ce fichier ne peut pas encore être généré car fichier des " . $name . " correspondant à ces critères n'a pas encore été chargé. Veuillez le charger et réessayer";
+         $this->session->message = $error ;
+          
+          if($type=="FR")
+          redirect("state/create_returned_file");
+          if($type=="FPO")
+          redirect("state/create_paidonline_file");
+          if($type=="FCD")
+          redirect("state/create_delivery_file");
+          if($type=="FC")
+          redirect("state/create_croised_file");
+          if($type=="FRT")
+          redirect("state/create_rejected_file");
+          if($type=="FUV")
+          redirect("state/create_unvoiced_file");
+          
+            
         } elseif (!empty($this->state_model->getALL(array("period" => $period, "type" => $type, "customerID" => $customer_id[0]->id)))) {
             $error = "un fichier correspondant à ces critères existe déjà. Veuillez le supprimer et réessayer ou changez de critères";
-            $this->create_file($file_type, $file_name, 'billings/new_state.php', $path, $error);
+            
+          $this->session->message = $error ;
+          if($type=="FR")
+          redirect("state/create_returned_file");
+          if($type=="FPO")
+          redirect("state/create_paidonline_file");
+          if($type=="FCD")
+          redirect("state/create_delivery_file");
+          if($type=="FC")
+          redirect("state/create_croised_file");
+          if($type=="FRT")
+          redirect("state/create_rejected_file");
+          if($type=="FUV")
+          redirect("state/create_unvoiced_file");
+          
+                 
         } else {
 
             $name = $name . "_" . $period . ".xlsx";
@@ -658,8 +707,16 @@ class StateManager extends MainController {
 
 
         if (!empty($this->state_model->getALL(array("period" => $period, "type" => $file_type, "customerID" => $customer)))) {
-            $this->create_file($file_to_upload, $file_name, $view, $link, "un fichier correspondant à ces critères existe déjà. Veuillez le supprimer et réessayer ou changez de critères");
+            //$this->create_file($file_to_upload, $file_name, $view, $link, "un fichier correspondant à ces critères existe déjà. Veuillez le supprimer et réessayer ou changez de critères");
+            
+            $this->session->message = "un fichier correspondant à ces critères existe déjà. Veuillez le supprimer et réessayer ou changez de critères";
+          
+          if($file_type=="FO")
+          redirect("files/create_operation_file");
+          if($file_type=="FV")
+          redirect("files/create_versement_file");
         } else {
+            
             if ($this->upload_file($name, 'xlsx|xls', './upload/operations_versment/', '2048', $uploading_file) == true) {
                 $file_id = $this->state_model->insert(array("file_path" => $filepath, "period" => $period, "type" => $file_type, "facturation_date" => $facturation_date, "period" => $period, "customerID" => $customer, "name" => $name));
                 $this->excel_to_sql($file_id, $operation_type, $filepath);
@@ -753,7 +810,7 @@ class StateManager extends MainController {
                 }
 
 
-                $reader->close();
+                
             }
             $this->operation_model->insert_many_rows($data);
 
@@ -768,8 +825,9 @@ class StateManager extends MainController {
 
             $this->operation_model->executeQuery("DELETE FROM operation where id in (select id from doublons)");
             $this->operation_model->executeQuery("DROP TABLE doublons");
+            
         }
-        
+        $reader->close();
         unlink($file);
     }
 
@@ -803,28 +861,26 @@ class StateManager extends MainController {
         $this->state_model->delete($id);
 
         if ($file[0]->type == "FF") {
-            redirect('state/StateManager/list_billing');
+            redirect('state/list_billing_file');
         }
-        if ($file[0]->type == "LF") {
-            redirect('state/StateManager/listing');
-        }
+       
         if ($file[0]->type == "FR") {
-            redirect('state/StateManager/list_returned');
+            redirect('state/list_returned_file');
         }
         if ($file[0]->type == "FPO") {
-            redirect('state/StateManager/list_paidonline');
+            redirect('state/list_paidonline_file');
         }
         if ($file[0]->type == "FCD") {
-             redirect('state/StateManager/list_delivery');
+             redirect('generate_delivery_file');
         }
         if ($file[0]->type == "FC") {
-            redirect('state/StateManager/list_croised');
+            redirect('state/list_croised_file');
         }
         if ($file[0]->type == "FRT") {
-            redirect('state/StateManager/list_rejected');
+            redirect('state/list_rejected_file');
         }
         if ($file[0]->type == "FUV") {
-            redirect('state/StateManager/list_unvoiced_file');
+            redirect('state/list_unvoiced_file');
         }
     }
 
