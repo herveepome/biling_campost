@@ -584,7 +584,7 @@ class BillingManager extends MainController {
                   
                     $test = "listing";
 
-                    $this->generate_facture($test, $name_file, $name, $listing_facture, $type, $file_text_name, $facturation_date, $file_name, $customer_id, $period, $headers, $file, $newfilelisting, $newfilefact, $path, $name,$file_type,$billing_id);
+                    $this->generate_facture($test, $name_file, $name, $listing_facture, $type, $file_text_name, $facturation_date, $file_name, $customer_id, $period, $headers, $file, $newfilelisting, $newfilefact, $path,$file_type,$billing_id);
        
 
             }
@@ -594,7 +594,7 @@ class BillingManager extends MainController {
    
 
 
-    public function generate_facture($test, $name_file, $name, $data, $type, $file_text_name, $facturation_date, $file_name, $customer_id, $period, $headers, $file, $newfilelisting, $newfilefact, $path, $name, $file_type, $billing_id = null) {
+    public function generate_facture($test, $name_file, $name, $data, $type, $file_text_name, $facturation_date, $file_name, $customer_id, $period, $headers, $file, $newfilelisting, $newfilefact, $path, $file_type, $billing_id = null) {
 
         $error = null;
         
