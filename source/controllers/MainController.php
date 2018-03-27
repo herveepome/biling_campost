@@ -23,6 +23,7 @@ class MainController extends CI_Controller {
         $this->load->model('customer_model');
         $this->load->model('state_model');
         $this->load->library('excel');
+        $this->load->library('session');
 
 	}
 

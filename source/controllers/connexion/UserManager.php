@@ -28,6 +28,7 @@ class UserManager extends MainController{
         parent::__construct();
         $this->load->model('user_model');
         $this->load->model('customer_model');
+        $this->load->library('session');
     }
 
     public function index() {
@@ -43,6 +44,9 @@ class UserManager extends MainController{
             extract($this->input->post(NULL, TRUE));
             $user  = $this->user_model->getALL(array("login"=>$login,"password"=>$password));
             if (isset($user) && !empty($user)&& $user!=null){
+                $_SESSION['user'] = $login;
+                $_SESSION['start'] = time(); // récupérer le temps auquel l'utilisateur se connecte
+                $_SESSION['expire'] = $_SESSION['start'] + (2 * 60); // la session s'expire après 30mn
                 $this->load->view('general/header.php');
                 $this->load->view('general/accueil.php',$data);
                 $this->load->view('general/footer.php');

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -120,15 +121,15 @@
             </div>
         </div>
 
-        <div class="form-group row m-t-30">
-            <!--     <div class="col-sm-7">
+        <!-- <div class="form-group row m-t-30">
+                <div class="col-sm-7">
                      <a href="pages-recoverpw.html" class="text-muted"><i class="fa fa-lock m-r-5"></i> Mot de passe oublié?</a>
-                 </div> !-->
+                 </div>
                  <div class="col-sm-5 text-right">
-                         <a href="<?php echo  site_url("register_form") ;?>" class="text-muted">Créer un compte</a>
+                         <a href=" <?php // echo  site_url("register_form") ;?>" class="text-muted">Créer un compte</a>
 
                  </div>
-             </div>
+             </div>!-->
          </form>
      </div>
 
