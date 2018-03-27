@@ -5,13 +5,7 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="col-sm-5 m-t-20">
-                    <div class="progress m-b-20">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated" id="myBar" role="progressbar"  aria-valuemax="100" style="height: 70px" > 1% </div>
-                        
-                        <input type="hidden" id="time" value="<?php if (isset($time) && $time != null && !empty($time)) echo $time; ?>" >
-                        
-                    </div>
-                    <h4 id="finalMessage"></h4>
+                    
                 </div>
             </div>
         </div>
@@ -30,19 +24,19 @@
                                     <?php //else: ?>
 
                                     <?php //endif; ?>
-                                    <?php //endif; ?>
-                                    <?php if (isset($error) && $error != null): ?>
+                                    <?php  ?>
+                                    <?php if (isset($_SESSION["message"]) && $_SESSION["message"] != null): ?>
                                         <div class="form-group row">
 
                                             <div class="col-10">
                                                 <div class="alert alert-danger" >
 
-                                                    <font style="color:black;"><?php echo $error; ?><br></p></font>
+                                                    <font style="color:black;"><?php echo $_SESSION["message"]; ?><br></p></font>
 
                                                 </div>
                                             </div>
                                         </div>
-                                    <?php endif; ?>
+                                    <?php unset($_SESSION["message"]); endif; ?>
                                     <div class="form-group row">
                                         <label class="col-2 col-form-label">Nom du client</label>
                                         <div class="col-2">

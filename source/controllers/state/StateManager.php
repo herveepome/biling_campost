@@ -116,6 +116,7 @@ class StateManager extends MainController {
             $name_file = "returned";
             $nam = "returned_" . $period;
             $test = "operations";
+            
             $this->generate_file($test, $name_file, $nam, $state_file_id, "FR", "Fichiers des retours", "returned", $customer_id, $customer, $period, $headers, $file, $newfile, $path, $file_name, $name, $state_croisement_id = null);
         }
     }
@@ -209,7 +210,8 @@ class StateManager extends MainController {
     }
 
     public function generate_croised() {
-        //var_dump($this->input->post());die;
+        
+        
         if ($this->input->post()) {
             $error = null;
             extract($this->input->post(NULL, TRUE));
@@ -219,7 +221,7 @@ class StateManager extends MainController {
             $state_file_id = ($this->state_model->getALL(array("period" => $period, "type" => "FO", "customerID" => $customer_id[0]->id)));
            $state_croisement_id = ($this->state_model->getALL(array("period" => $period, "type" => "FV", "customerID" => $customer_id[0]->id)));
             
-            //var_dump($period,$customer_id,$state_file_id);die;
+           
             $name = "opérations";
             $file_type = "Fichier croisé";
             $file_name = "croised_file";
@@ -348,10 +350,16 @@ class StateManager extends MainController {
     public function list_file($file_name, $message = null) {
         $name = null;
         
-        if ($file_name == "facture") {
+        if ($file_name ==1 ) {
+            $data["states"] = $this->state_model->getALL(array("type" => "F"));
+            $name = "des factures";
+            $message="Votre facture a bien été générée. Veuillez la consulter dans la liste ci-dessous";
+        }
+        if ($file_name =="facture" ) {
             $data["states"] = $this->state_model->getALL(array("type" => "F"));
             $name = "des factures";
         }
+        
         
         if ($file_name == "listing") {
             $data["states"] = $this->state_model->getALL(array("type" => "LF"));
@@ -359,31 +367,31 @@ class StateManager extends MainController {
         }
         if ($file_name == "billing") {
             $data["states"] = $this->state_model->getALL(array("type" => "FF"));
-            $name = "de facturation";
+            $name = "des fichiers de facturation";
         }
         if ($file_name == "returned") {
             $data["states"] = $this->state_model->getALL(array("type" => "FR"));
-            $name = "des produis retournés";
+            $name = "des fichiers des produits retournés";
         }
         if ($file_name == "paidonline") {
             $data["states"] = $this->state_model->getALL(array("type" => "FPO"));
-            $name = "des produis payés en ligne";
+            $name = "des fichiers des produis payés en ligne";
         }
         if ($file_name == "cashondelivery") {
             $data["states"] = $this->state_model->getALL(array("type" => "FCD"));
-            $name = "des produis payés à la livraison";
+            $name = "des fichiers des produis payés à la livraison";
         }
         if ($file_name == "croised") {
             $data["states"] = $this->state_model->getALL(array("type" => "FC"));
-            $name = "croisés";
+            $name = "des fichiers croisés";
         }
         if ($file_name == "rejected") {
             $data["states"] = $this->state_model->getALL(array("type" => "FRT"));
-            $name = "produits rejetés";
+            $name = "des fichiers desproduits rejetés";
         }
         if ($file_name == "unvoiced") {
             $data["states"] = $this->state_model->getALL(array("type" => "FUV"));
-            $name = "produits non facturés";
+            $name = "des fichiers des produits non facturés";
         }
 
 
@@ -606,16 +614,63 @@ class StateManager extends MainController {
     public function generate_file($test, $name_file, $nam, $state_file_id, $type, $file_type, $file_name, $customer_id, $type_file_required, $period, $headers, $file, $newfile, $path, $name, $state_croisement_id = null) {
         
         $error = null;
-
+        
         if ($state_croisement_id != null && empty($state_croisement_id) || empty($state_file_id)) {
-            $error = "Ce fichier ne peut pas encore être généré car au moins un des fichiers requis  correspondant à ces critères n'a pas encore été chargé. Veuillez le(s) charger et réessayer";
-            $this->create_file($file_type, $file_name, 'billings/new_state.php', $path, $error);
+          $error = "Ce fichier ne peut pas encore être généré car au moins un des fichiers requis  correspondant à ces critères n'a pas encore été chargé. Veuillez le(s) charger et réessayer";
+          $this->session->message = $error ;
+          
+          
+           
+          if($type=="FR")
+          redirect("state/create_returned_file");
+          if($type=="FPO")
+          redirect("state/create_paidonline_file");
+          if($type=="FCD")
+          redirect("state/create_delivery_file");
+          if($type=="FC")
+          redirect("state/create_croised_file");
+          if($type=="FRT")
+          redirect("state/create_rejected_file");
+          if($type=="FUV")
+          redirect("state/create_unvoiced_file");
+         
+            
         } elseif (empty($state_file_id)) {
-            $error = "Ce fichier ne peut pas encore être généré car fichier des " . $name . " correspondant à ces critères n'a pas encore été chargé. Veuillez le charger et réessayer";
-            $this->create_file($file_type, $file_name, 'billings/new_state.php', $path, $error);
+           $error = "Ce fichier ne peut pas encore être généré car fichier des " . $name . " correspondant à ces critères n'a pas encore été chargé. Veuillez le charger et réessayer";
+         $this->session->message = $error ;
+          
+          if($type=="FR")
+          redirect("state/create_returned_file");
+          if($type=="FPO")
+          redirect("state/create_paidonline_file");
+          if($type=="FCD")
+          redirect("state/create_delivery_file");
+          if($type=="FC")
+          redirect("state/create_croised_file");
+          if($type=="FRT")
+          redirect("state/create_rejected_file");
+          if($type=="FUV")
+          redirect("state/create_unvoiced_file");
+          
+            
         } elseif (!empty($this->state_model->getALL(array("period" => $period, "type" => $type, "customerID" => $customer_id[0]->id)))) {
             $error = "un fichier correspondant à ces critères existe déjà. Veuillez le supprimer et réessayer ou changez de critères";
-            $this->create_file($file_type, $file_name, 'billings/new_state.php', $path, $error);
+            
+          $this->session->message = $error ;
+          if($type=="FR")
+          redirect("state/create_returned_file");
+          if($type=="FPO")
+          redirect("state/create_paidonline_file");
+          if($type=="FCD")
+          redirect("state/create_delivery_file");
+          if($type=="FC")
+          redirect("state/create_croised_file");
+          if($type=="FRT")
+          redirect("state/create_rejected_file");
+          if($type=="FUV")
+          redirect("state/create_unvoiced_file");
+          
+                 
         } else {
 
             $name = $name . "_" . $period . ".xlsx";
@@ -652,8 +707,16 @@ class StateManager extends MainController {
 
 
         if (!empty($this->state_model->getALL(array("period" => $period, "type" => $file_type, "customerID" => $customer)))) {
-            $this->create_file($file_to_upload, $file_name, $view, $link, "un fichier correspondant à ces critères existe déjà. Veuillez le supprimer et réessayer ou changez de critères");
+            //$this->create_file($file_to_upload, $file_name, $view, $link, "un fichier correspondant à ces critères existe déjà. Veuillez le supprimer et réessayer ou changez de critères");
+            
+            $this->session->message = "un fichier correspondant à ces critères existe déjà. Veuillez le supprimer et réessayer ou changez de critères";
+          
+          if($file_type=="FO")
+          redirect("files/create_operation_file");
+          if($file_type=="FV")
+          redirect("files/create_versement_file");
         } else {
+            
             if ($this->upload_file($name, 'xlsx|xls', './upload/operations_versment/', '2048', $uploading_file) == true) {
                 $file_id = $this->state_model->insert(array("file_path" => $filepath, "period" => $period, "type" => $file_type, "facturation_date" => $facturation_date, "period" => $period, "customerID" => $customer, "name" => $name));
                 $this->excel_to_sql($file_id, $operation_type, $filepath);
@@ -687,8 +750,8 @@ class StateManager extends MainController {
                             'libelle' => $row['2'],
                             'reference' => $row['3'],
                             'bureau' => $row['4'],
-                            'debit' =>str_replace(' ', '',$row['5']) ,
-                            'credit' =>str_replace(' ', '',$row['6']),
+                            'debit' => str_replace(' ', '', $row['5']),
+                            'credit' => str_replace(' ', '', $row['6']),
                             'solde' => $row['7'],
                         );
 
@@ -698,76 +761,79 @@ class StateManager extends MainController {
             }
             $this->versement_model->insert_many_rows($data);
         }
+       
+        if ($file_type == "operation") {
+            foreach ($reader->getSheetIterator() as $sheet) {
+                foreach ($sheet->getRowIterator() as $row) {
+                    //var_dump($row['30']);die;
+                    if (isset($row['30']) && $row['30'] == "Warehouse")
+                        $deposit_local = "Bureau de poste";
+                    else
+                        $deposit_local = "A domicile";
 
-       if ($file_type == "operation") {
-           foreach ($reader->getSheetIterator() as $sheet) {
-               foreach ($sheet->getRowIterator() as $row) {
-                   //var_dump($row['30']);die;
-                   if(isset($row['30']) && $row['30']=="Warehouse")
-                       $deposit_local="Bureau de poste";
-                   else
-                       $deposit_local="A domicile";
+                    if (isset($row['4']) && $row['4'] == null || $row['4'] == "")
+                        $size = 'SMALL';
+                    else
+                        $size = $row['4'];
 
-                   if(isset($row['4']) && $row['4']==null || $row['4']=="" )
-                       $size='SMALL';
-                   else
-                       $size=$row['4'];
+                    if ($row["0"] != "Shipment Provider") {
+                        $result = array(
+                            'state_file_id' => $state_file_id,
+                            'shipment_provider' => $row['0'],
+                            'status' => $row['1'],
+                            'start_time' => $row['2']->format('d/m/Y'),
+                            'tracking_number' => $row['3'],
+                            'size' => $size,
+                            'delivered_date' => $row['5']->format('d/m/Y'),
+                            'last_failed_attempt_date' => $row['6']->format('d/m/Y'),
+                            'flow' => $row['7'],
+                            'order' => $row['8'],
+                            'order_date' => $row['9']->format('d/m/Y'),
+                            'phone_number' => $row['10'],
+                            'customer_name' => $row['11'],
+                            'address' => $row['12'],
+                            'city' => $row['13'],
+                            'ward' => $row['14'],
+                            'postcode' => $row['15'],
+                            'region' => $row['16'],
+                            'payment_method' => $row['17'],
+                            'amount_to_collect' => str_replace(' ', '', $row['18']),
+                            'delivery_run' => $row['19'],
+                            'delivery_run_create' => $row['20'],
+                            'bureau' => $row['21'],
+                            'date_operation' => $row['22'],
+                            'deposit_local' => $deposit_local,
+                        );
 
-                   if ($row["0"] != "Shipment Provider") {
-                       $result = array(
-                           'state_file_id' => $state_file_id,
-                           'shipment_provider' => $row['0'],
-                           'status' => $row['1'],
-                           'start_time' => $row['2']->format('d/m/Y'),
-                           'tracking_number' => $row['3'],
-                           'size' => $size,
-                           'delivered_date' => $row['5']->format('d/m/Y'),
-                           'last_failed_attempt_date' => $row['6']->format('d/m/Y'),
-                           'flow' => $row['7'],
-                           'order' => $row['8'],
-                           'order_date' => $row['9']->format('d/m/Y'),
-                           'phone_number' => $row['10'],
-                           'customer_name' => $row['11'],
-                           'address' => $row['12'],
-                           'city' => $row['13'],
-                           'ward' => $row['14'],
-                           'postcode' => $row['15'],
-                           'region' => $row['16'],
-                           'payment_method' => $row['17'],
-                           'amount_to_collect' => str_replace(' ', '', $row['18']),
-                           'delivery_run' => $row['19'],
-                           'delivery_run_create' => $row['20'],
-                           'bureau' => $row['21'],
-                           'date_operation' => $row['22'],
-                           'deposit_local' => $deposit_local,
-                       );
-
-                       $data[] = $result;
-                   }
-               }
-
-
-               $reader->close();
-           }
-           $this->operation_model->insert_many_rows($data);
+                        $data[] = $result;
+                    }
+                }
 
 
-           $this->operation_model->executeQuery("CREATE TEMPORARY TABLE IF NOT exists doublons  "
-               . "AS(SELECT  id FROM operation t1 WHERE t1.tracking_number "
-               . "IN ( SELECT t2.tracking_number FROM operation t2 where t2.start_time=t1.start_time "
-               . "and t2.tracking_number=t1.tracking_number and t1.amount_to_collect=t2.amount_to_collect "
-               . " and t2.state_file_id= ".$state_file_id." GROUP BY t2.tracking_number "
-               . "HAVING COUNT(t2.tracking_number)>1 )  GROUP BY t1.tracking_number "
-               . "HAVING COUNT(t1.tracking_number)>1)");
-
-           $this->operation_model->executeQuery("DELETE FROM operation where id in (select id from doublons)");
-           $this->operation_model->executeQuery("DROP TABLE doublons");
-       }
+                
+            }
+            $this->operation_model->insert_many_rows($data);
 
 
+            $this->operation_model->executeQuery("CREATE TEMPORARY TABLE IF NOT exists doublons  "
+                    . "AS(SELECT  id FROM operation t1 WHERE t1.tracking_number "
+                    . "IN ( SELECT t2.tracking_number FROM operation t2 where t2.start_time=t1.start_time "
+                    . "and t2.tracking_number=t1.tracking_number and t1.amount_to_collect=t2.amount_to_collect "
+                    . " and t2.state_file_id= " . $state_file_id . " GROUP BY t2.tracking_number "
+                    . "HAVING COUNT(t2.tracking_number)>1 )  GROUP BY t1.tracking_number "
+                    . "HAVING COUNT(t1.tracking_number)>1)");
 
-       unlink($file);
+            $this->operation_model->executeQuery("DELETE FROM operation where id in (select id from doublons)");
+            $this->operation_model->executeQuery("DROP TABLE doublons");
+            
+        }
+        $reader->close();
+        unlink($file);
+
     }
+
+    // $this->unlink($file);
+    
 
     public function upload_file($file_name, $allowed_types, $upload_path, $max_size, $file_uploading) {
         //var_dump($file_uploading);die;
@@ -796,28 +862,26 @@ class StateManager extends MainController {
         $this->state_model->delete($id);
 
         if ($file[0]->type == "FF") {
-            redirect('state/StateManager/list_billing');
+            redirect('state/list_billing_file');
         }
-        if ($file[0]->type == "LF") {
-            redirect('state/StateManager/listing');
-        }
+       
         if ($file[0]->type == "FR") {
-            redirect('state/StateManager/list_returned');
+            redirect('state/list_returned_file');
         }
         if ($file[0]->type == "FPO") {
-            redirect('state/StateManager/list_paidonline');
+            redirect('state/list_paidonline_file');
         }
         if ($file[0]->type == "FCD") {
-             redirect('state/StateManager/list_delivery');
+             redirect('generate_delivery_file');
         }
         if ($file[0]->type == "FC") {
-            redirect('state/StateManager/list_croised');
+            redirect('state/list_croised_file');
         }
         if ($file[0]->type == "FRT") {
-            redirect('state/StateManager/list_rejected');
+            redirect('state/list_rejected_file');
         }
         if ($file[0]->type == "FUV") {
-            redirect('state/StateManager/list_unvoiced_file');
+            redirect('state/list_unvoiced_file');
         }
     }
 

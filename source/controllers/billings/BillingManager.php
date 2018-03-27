@@ -82,14 +82,18 @@ class BillingManager extends MainController {
       // var_dump($period); die;
         if (empty($versement_id) || empty($operation_id)) {
             $error = "Ce fichier ne peut pas encore être généré car au moins un des fichiers requis  correspondant à ces critères n'a pas encore été chargé. Veuillez le(s) charger et réessayer";
-            $this->create_file($file_type, $file_name, 'billings/new_state.php', $path, $error);
+            $this->session->message = $error ;
+             redirect("billing/create");
+
         } elseif (empty($operation_id)) {
-            
+
              } elseif (!empty($this->state_model->getALL(array("period" => $period, "type" => $type, "customerID" => $customer_id[0]->id)))) {
             $error = "un fichier correspondant à ces critères existe déjà. Veuillez le supprimer et réessayer ou changez de critères";
-            $this->create_file($file_type, $file_name, 'billings/new_state.php', $path, $error);
-        } else {
-        
+            $this->session->message = $error ;
+            redirect("billing/create");
+
+             } else {
+
             $name = $name . "_" . $period . ".xlsx";
 
              foreach ($data as $row) {
@@ -371,7 +375,7 @@ class BillingManager extends MainController {
 
 //générer la facture
     public function createBill() {
-        $this->create_file("Listing", "bill_file", 'billings/new_state.php', 'billing/generate_bill_file');
+        $this->create_file("LISTING et de la FACTURE", "bill_file", 'billings/new_state.php', 'billing/generate_bill_file');
     }
 
     public function generate_bill_file()
@@ -382,7 +386,7 @@ class BillingManager extends MainController {
             $error = null;
             extract($this->input->post(NULL, TRUE));
             $period = substr($data['period'], 3, 2) . substr($data['period'], 0, 2) . substr($data['period'], 6);
-            
+
             $customer_id = $this->customer_model->getALL(array("name" => $data['customer']));
             // l'id du state pour ce client à cette période
             $state_id = $this->state_model->getALL(array("period" => $period, "customerID" => $customer_id[0]->id, "type" => 'FF'));
@@ -390,20 +394,20 @@ class BillingManager extends MainController {
             // le fichier de facturation pour ce client à cette périod
             if(!empty($state_id))
             $bill_file = $this->billing_model->getALL(array("state_file_id" => $state_id[0]->id));
-           
+
             $intervals = $this->configuration_model->all('cash_interval');
-            $totalCommissions = 0; 
+            $totalCommissions = 0;
             $totalDomicile = 0;
             $totalRejets = 0;
             $totalRetours = 0;
-            $totalEchecs = 0; 
+            $totalEchecs = 0;
             $totalRelais = 0;
             $interval_poids = $this->configuration_model->all('weight');
          $listing_rows=array();
          $facture=array();
-         
+
           if(!empty($bill_file)){
-           
+
                 foreach ($bill_file as $bill) {
                     // gestion des commissions sur les cash collectés
                     if ($bill->amount_collected == "")
@@ -502,19 +506,24 @@ class BillingManager extends MainController {
 
                             $tarifRetours = 0.5*(float)$tarifDomicile;
 
-                    } else if (($bill->final_status == 'Reversed') || ($bill->final_status == 'Failed') || ($bill->final_status == 'Lost') || ($bill->final_status == 'On the way to hub') || ($bill->final_status == 'Partially delivered')) {
+                    } else if (($bill->final_status == 'Reversed') || ($bill->final_status == 'Failed') || ($bill->final_status == 'Lost')  || ($bill->final_status == 'Partially delivered')) {
                         if ($tarifDomicile == 0) {
-                            $tarifRejets = $tarifBureau;
                             $tarifEchecs = $tarifBureau;
                         } else {
-                            $tarifRejets = $tarifDomicile;
                             $tarifEchecs = $tarifDomicile;
                         }
 
                     }
+                    else if($bill->final_status == 'On the way to hub'){
+                        if ($tarifDomicile == 0) {
+                            $tarifRejets = $tarifBureau;
+                        } else {
+                            $tarifRejets = $tarifDomicile;
+                        }
+                    }
 
                 // les données du listing et de la facture
-                  
+
                     $listing_rows[] = array("Num" => $bill->id,
 
                         "Date_de_collecte" => $bill->date_collected,
@@ -526,9 +535,9 @@ class BillingManager extends MainController {
                         "Date_statut_final" => $bill->final_status_date,
                         "Tarif_domicile" => $tarifDomicile,
                         "Tarif_en_point_relais" => $tarifBureau,
-                        "Tarif_rejets" => $tarifRejets,
                         "Tarif_retours" => $tarifRetours,
                         "Tarif_echecs" => $tarifEchecs,
+                        "Tarif_rejets" => $tarifRejets,
                         "Cash_collecte" => $bill->amount_collected,
                         "Commission_sur_cash_collecte" => $commissions,
                     );
@@ -541,227 +550,179 @@ class BillingManager extends MainController {
                 $totalRejets+= (float)$tarifRejets;
                 $totalRelais += (float)$tarifBureau;
                 $totalRetours += (float)$tarifRetours ;
-                
+
              }
-        
+
                 $facture["totalCommissions"] = $totalCommissions;
                 $facture["totalDomicile"] = $totalDomicile;
                 $facture["totalEchecs"] = $totalEchecs;
                 $facture["totalRejets"]= $totalRejets;
                 $facture["totalRelais"] = $totalRelais;
                 $facture["totalRetours"] = $totalRetours ;
-                
-                
+
+
                 $listing_facture["listing_rows"]=$listing_rows;
                 $listing_facture["facture"]=$facture;
-                
+
                     $name = "facturation";
                     $file_type = "Listing de facturation";
                     $file_name = "listing";
                     $path = "billing/generate_bill_file";
                     $file = "./upload/model/listing.xlsx";
-                    $newfilelisting = "/upload/listing/listing_" . $period . ".xls";
+                    $newfilelisting = "/upload/listing/listing_" . $period . ".xlsx";
                     $newfilefact = "./upload/billing/facture_" . $period . ".xls";
-                    
+
                     $billing_id=null;
                     if(!empty($state_id))
                     $billing_id = $state_id[0]->id ;
-                    
+
                     $type = "LF";
                     $facturation_date = $data['period'] ;
                     $headers = array('No', 'Date de collecte', 'Numéro de commande', 'No colis AIGE', 'Destination', 'Poids', 'Statut final', 'Date statut final');
                     $file_text_name = "Listing de facturation";
                     $name_file = "listing_file";
                     $name=array();
-                    
+
                     $name["namlisting"] = "listing_" .str_replace(' ', '',$customer_id[0]->name)."_".$period;
                     $name["facture"] = "facture_" .str_replace(' ', '',$customer_id[0]->name)."_".$period;
-                    
-                    
-                  
+
+
+                    $newfilelisting = "/upload/listing/" . $name["namlisting"] . ".xlsx";
+                    $newfilefact = "./upload/bill/". $name["facture"]. ".xls";
+
+
                     $test = "listing";
-                    $this->generate_listing($test, $name_file, $name, $listing_facture, $type, $file_text_name, $facturation_date, $file_name, $customer_id, $period, $headers, $file, $newfilelisting, $newfilefact, $path, $name,$file_type,$billing_id);
+
+                    $this->generate_facture($test, $name_file, $name, $listing_facture, $type, $file_text_name, $facturation_date, $file_name, $customer_id, $period, $headers, $file, $newfilelisting, $newfilefact, $path,$file_type,$billing_id);
+
 
             }
         }
     }
 
-    
 
 
-    public function generate_listing($test, $name_file, $name, $data, $type, $file_text_name, $facturation_date, $file_name, $customer_id, $period, $headers, $file, $newfilelisting, $newfilefact, $path, $file_type, $billing_id = null) {
+
+    public function generate_facture($test, $name_file, $name, $data, $type, $file_text_name, $facturation_date, $file_name, $customer_id, $period, $headers, $file, $newfilelisting, $newfilefact, $path, $file_type, $billing_id = null) {
+
         $error = null;
-        
+
         if ($billing_id == null) {
             $error = "Ce fichier ne peut pas encore être généré car le fichier requis  correspondant à ces critères n'a pas encore été chargé. Veuillez le charger et réessayer";
-            $this->create_file($file_type, $file_name, 'billings/new_state.php', $path, $error);
+            $this->session->message = $error ;
+            redirect("bill/create");
+
         } elseif (!empty($this->state_model->getALL(array("period" => $period, "type" => "LF", "customerID" => $customer_id[0]->id)))
                 ||!empty($this->state_model->getALL(array("period" => $period, "type" => "F", "customerID" => $customer_id[0]->id)))
                ) {
-            $error = "un fichier correspondant à ces critères existe déjà. Veuillez le supprimer et réessayer ou changez de critères";
-            $this->create_file($file_type, $file_name, 'billings/new_state.php', $path, $error);
-        } else {
+            $error = "un fichier correspondant à ces critères existe déjà. Changez de critères et réessayez!";
+            $this->session->message = $error ;
+            redirect("bill/create");
+
+               } else {
             //renseigne la base de données de la création d'un nouveau litiong
             $this->state_model->insert(array("file_path" => $newfilelisting,
-                "type" => "LF", "facturation_date" => $facturation_date, 
-                "period" => $period, "customerID" => $customer_id[0]->id, 
+                "type" => "LF", "facturation_date" => $facturation_date,
+                "period" => $period, "customerID" => $customer_id[0]->id,
                 "name" => $name["namlisting"]));
             //création du listing
-            if ($data["listing_rows"] != null && !empty($data["listing_rows"])) 
+            if ($data["listing_rows"] != null && !empty($data["listing_rows"]))
             $this->listing_file($data["listing_rows"],$name["namlisting"]);
-            
+
             //renseigne dans la base de données la création de la facture
-            $id_facture=$this->state_model->insert(array("file_path" => $newfilelisting,
-                "type" => "F", "facturation_date" => $facturation_date, 
-                "period" => $period, "customerID" => $customer_id[0]->id, 
+            $id_facture=$this->state_model->insert(array("file_path" => $newfilefact,
+                "type" => "F", "facturation_date" => $facturation_date,
+                "period" => $period, "customerID" => $customer_id[0]->id,
                 "name" => $name["facture"]));
-            
+
             $bill_number=$this->bill_number_model->insert(array("bill_id" => $id_facture));
             $bill_number="FACTURE N°".$bill_number."/".$customer_id[0]->name."/".substr ($period,2);
-            
+
             //var_dump("PERIODE: ".$this->monthinFrench(substr ($period,2,2))." ".substr ($period,6),$customer_id[0]);die;
-            
+
             //création de la facture
-            if ($data["facture"] != null && !empty($data["facture"])) 
+            if ($data["facture"] != null && !empty($data["facture"]))
             $this->facture_file($data["facture"],$name["facture"],$bill_number,
            "PERIODE: ".$this->monthinFrench(date('F', mktime(0, 0, 0, substr ($period,2,2))))." ".substr ($period,4),$customer_id[0] );
-            
-            
-            
-            
-      
-            /*if ($data != null && !empty($data)) {
+            $this->list_facture($fact=1);
 
-                $data_listing = "";
-                foreach ($data as $list) {
-                    $data_listing = $data_listing . "<tr class=\"font-14\" ><td>" . $list['Num'] . "</td>
-                                                        <td>" . $list['Date_de_collecte'] . "</td>
-                                                        <td>" . $list['Numero_de_commande'] . "</td>
-                                                        <td>" . $list['Num_colis_AIGE'] . "</td>
-                                                        <td>" . $list['Destination'] . "</td>
-                                                        <td>" . $list['Poids'] . "</td>
-                                                        <td>" . $list['Statut_final'] . "</td>
-                                                        <td>" . $list['Date_statut_final'] . "</td>
-                                                        <td>" . $list['Tarif_domicile'] . "</td>
-                                                        <td>" . $list['Tarif_en_point_relais'] . "</td>
-                                                        <td>" . $list['Tarif_rejets'] . "</td>
-                                                        <td>" . $list['Tarif_retours'] . "</td>
-                                                        <td>" . $list['Tarif_echecs'] . "</td>
-                                                        <td>" . $list['Cash_collecte'] . "</td>
-                                                        <td>" . $list['Commission_sur_cash_collecte'] . "</td>
-                                                        </tr>";
-                }
-                //var_dump($data_listing); die;
-                $listing = "<table ><thead><tr>
-                            <th>Num</th>
-                            <th>Date de collecte</th>
-                            <th>Num commande</th>
-                            <th>Num colis</th>
-                            <th>Destination</th>
-                            <th>Poids</th>
-                            <th>Statut final</th>
-                            <th>Date statut final</th>
-                            <th>Tarif livraison à domicile</th>
-                            <th>Tarif livraison en point relais</th>
-                            <th>Tarif rejet</th>
-                            <th>Tarif retour</th>
-                            <th>Tarif échec</th>
-                            <th>Cash collecté</th>
-                            <th>Commission sur cash collecté</th>
-                        </tr>
-                        </thead> 
-                        <tbody>" . $data_listing . "</tbody></table>";
-            }
-            // exporter les données html du listing au format excell
-            header('Content-type: application/excel');
-            $file_listing = $namlisting . ".xls";
-            header('Content-Disposition: attachment; filename=' . $file_listing);
-            $data = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">
-                    <head>
-                        <!--[if gte mso 9]>
-                        <xml>
-                            <x:ExcelWorkbook>
-                                <x:ExcelWorksheets>
-                                    <x:ExcelWorksheet>
-                                        <x:Name>LISTING</x:Name>
-                                        <x:WorksheetOptions>
-                                            <x:Print>
-                                                <x:ValidPrinterInfo/>
-                                            </x:Print>
-                                        </x:WorksheetOptions>
-                                    </x:ExcelWorksheet>
-                                </x:ExcelWorksheets>
-                            </x:ExcelWorkbook>
-                        </xml>
-                        <![endif]-->
-                    </head><body>' . $listing . '</body></html>';
+            /*$inputFileType = PHPExcel_IOFactory::identify("./upload/bill/" . $name["facture"].".xls");
+            $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+            $objPHPExcel = $objReader->load("./upload/bill/" . $name["facture"].".xls");
+            $name_facture=$name["facture"].".pdf";
 
+            header('Content-Type: application/pdf');
+            header("Content-Disposition: attachment;filename=\"" . $name_facture . "\"");
+            header('Cache-Control: max-age=0');
 
+            $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'PDF');
+            //$objWriter->save('php://output');*/
 
-
-            //renseigne la base de données de la création d'une nouvelle facture
-            //$this->state_model->insert(array("file_path" => $newfilefact . $period . ".xlsx", "type" => 'F', "facturation_date" => $facturation_date, "period" => $period, "customerID" => $customer_id[0]->id, "name" => $namfacture));
-        */
-            
                 }
     }
 
-    
+     public function list_facture($file_name) {
+
+          redirect("billing/list_facture_file/".$file_name);
+    }
+
+
+
     public function listing_file($data, $filename) {
-        
-       
-      copy("./upload/model/listing.xlsx", "./upload/listing/" . $filename.".xlsx");
-       
+
+
+      copy(FCPATH."upload\\model\\listing.xlsx", "upload\\listing\\" . $filename.".xlsx");
+
         $writer = WriterFactory::create(Type::XLSX);
-        
+
         $writer->setShouldUseInlineStrings(true)
-                ->openToFile("./upload/listing/" . $filename.".xlsx")
-                ->addRow(["Num", "Date de collecte", "Num commande", "Num commande"
-                    , "Num colis", "Poids", "Statut final", "Date statut final", "Tarif livraison à domicile"
-                    , "Tarif livraison en point relais", "Tarif livraison en point relais"
+                ->openToFile(FCPATH."upload\\listing\\" . $filename.".xlsx")
+                ->addRow(["Num", "Date de collecte", "Num commande"
+                    , "Num colis", "Poids", "Destination", "Statut final", "Date statut final", "Tarif livraison à domicile"
+                    , "Tarif livraison en point relais"
                     , "Tarif retour", "Tarif échec", "Tarif rejet", "Cash collecté"
                     , "Commission sur cash collecté"])
                 ->addRows($data)
-                ->close();      
+                ->close();
     }
-    
+
     public function facture_file($data,$filename,$bil_number,$period,$customer) {
         //var_dump($bil_number,$period,$customer);die;
-              
-        copy($_SERVER['DOCUMENT_ROOT']."bil_campost/upload/model/facture.xls", $_SERVER['DOCUMENT_ROOT']."bil_campost/upload/bill/" . $filename.".xls");
-        chmod($_SERVER['DOCUMENT_ROOT']."bil_campost/upload/bill/" . $filename.".xls", 0755);
-        
+
+
+        copy(FCPATH."upload\\model\\facture.xls", FCPATH."upload\\bill\\" . $filename.".xls");
+
+        chmod(FCPATH."upload\\bill\\" . $filename.".xls", 0755);
+
         $tht=0;
         $ttt=0;
-        
+
         $tht=$data["totalCommissions"]+$data["totalDomicile"]+
                 $data["totalEchecs"]+$data["totalRejets"]+
-                $data["totalRelais"]+$data["totalRetours"]; 
+                $data["totalRelais"]+$data["totalRetours"];
         $tva=round(($tht*19.25)/100,3);
         $ttt=round($tht+$tva,3);
-        
+
         if (is_float($ttt)){
            $total_letter=  explode(".", (string)$ttt);
            $total_letter="Arrêté la présente facture à la somme de "
                     .numfmt_create('fr_FR', NumberFormatter::SPELLOUT)->format($total_letter[0])
-                    ." virgule "
-                    .numfmt_create('fr_FR', NumberFormatter::SPELLOUT)->format($total_letter[1]).
-                    " Francs C.F.A. TTC./-";
+                    ." Francs C.F.A. TTC./-";
         }else{
             $total_letter="Arrêté la présente facture à la somme de "
                     .numfmt_create('fr_FR', NumberFormatter::SPELLOUT)->format($ttt).
                     " Francs C.F.A. TTC./-";
         }
-            
-        
-        
-        
-        $inputFileType = PHPExcel_IOFactory::identify($_SERVER['DOCUMENT_ROOT']."bil_campost//upload/bill/" . $filename.".xls");
+
+
+
+
+        $inputFileType = PHPExcel_IOFactory::identify(FCPATH."upload\\bill\\" . $filename.".xls");
         $objReader = PHPExcel_IOFactory::createReader($inputFileType);
-        $objPHPExcel = $objReader->load($_SERVER['DOCUMENT_ROOT']."bil_campost/upload/bill/" . $filename.".xls");
-        
+        $objPHPExcel = $objReader->load(FCPATH."upload\\bill\\" . $filename.".xls");
+
         $objPHPExcel->setActiveSheetIndex(0);
-        
+
         $objPHPExcel->getActiveSheet()
                     ->setCellValue('A8',$bil_number)
                     ->setCellValue('A10',$period)
@@ -779,76 +740,76 @@ class BillingManager extends MainController {
                     ->setCellValue('H21',$tva)
                     ->setCellValue('H22',$ttt)
                     ->setCellValue('A25',$total_letter);
-        
+
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-        $objWriter->save($_SERVER['DOCUMENT_ROOT']."bil_campost/upload/bill/" . $filename.".xls");
-       
-        
-        
+        $objWriter->save(FCPATH."upload\bill\\" . $filename.".xls");
+
+
+
     }
-   
+
     public function monthinFrench($month) {
         $final_month="";
         switch ($month) {
-            
+
             case "January":
             $final_month="Janvier";
             break;
-        
+
             case "February":
             $final_month="Février";
             break;
-        
+
             case "March":
             $final_month="Mars";
             break;
-        
+
             case "April":
             $final_month="Avril";
             break;
-        
+
             case "May":
             $final_month="Mai";
             break;
-        
+
             case "June":
             $final_month="Juin";
             break;
-        
+
             case "July":
             $final_month="Juillet";
             break;
-        
+
             case "August":
             $final_month="Août";
             break;
-        
+
             case "September":
             $final_month="Septembre";
             break;
-        
+
             case "October":
             $final_month="Octobre";
             break;
-        
+
             case "November":
             $final_month="Novembre";
             break;
-        
+
             case "December":
             $final_month="Décembre";
             break;
-        
-            default:
-            $final_month="Mois inconnu";   
 
-                
+            default:
+            $final_month="Mois inconnu";
+
+
         }
-        
+
         return $final_month;
     }
 
-    
-    
+
+
 }
-    
+
