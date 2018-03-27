@@ -36,7 +36,6 @@ class MainController extends CI_Controller {
 
 	public function getFiles(){
 
-
         $data['customers'] = $this->customer_model->getALL(array("deleted"=>0)) ;
         if($this->input->post()){
             $error = null;
