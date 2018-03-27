@@ -666,12 +666,12 @@ class BillingManager extends MainController {
     public function listing_file($data, $filename) {
         
        
-      copy(base_url("./upload/model/listing.xlsx"), "./upload/listing/" . $filename.".xlsx");
+      copy(FCPATH."upload\model\listing.xlsx", "upload\listing\\" . $filename.".xlsx");
        
         $writer = WriterFactory::create(Type::XLSX);
         
         $writer->setShouldUseInlineStrings(true)
-                ->openToFile("./upload/listing/" . $filename.".xlsx")
+                ->openToFile(FCPATH."upload\listing\\" . $filename.".xlsx")
                 ->addRow(["Num", "Date de collecte", "Num commande"
                     , "Num colis", "Poids", "Statut final", "Date statut final", "Tarif livraison à domicile"
                     , "Tarif livraison en point relais", "Tarif livraison en point relais"
@@ -685,9 +685,9 @@ class BillingManager extends MainController {
         //var_dump($bil_number,$period,$customer);die;
               
 
-        copy("./upload/model/facture.xls", "./upload/bill/" . $filename.".xls");
+        copy(FCPATH."upload\model\facture.xls", FCPATH."upload\bill\\" . $filename.".xls");
         
-        chmod("./upload/bill/" . $filename.".xls", 0755);
+        chmod(FCPATH."upload\bill\\" . $filename.".xls", 0755);
         
         $tht=0;
         $ttt=0;
@@ -712,9 +712,9 @@ class BillingManager extends MainController {
         
         
         
-        $inputFileType = PHPExcel_IOFactory::identify("./upload/bill/" . $filename.".xls");
+        $inputFileType = PHPExcel_IOFactory::identify(FCPATH."upload\bill\\" . $filename.".xls");
         $objReader = PHPExcel_IOFactory::createReader($inputFileType);
-        $objPHPExcel = $objReader->load("./upload/bill/" . $filename.".xls");
+        $objPHPExcel = $objReader->load(FCPATH."upload\bill\\" . $filename.".xls");
         
         $objPHPExcel->setActiveSheetIndex(0);
         
@@ -737,7 +737,7 @@ class BillingManager extends MainController {
                     ->setCellValue('A25',$total_letter);
         
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-        $objWriter->save("./upload/bill/" . $filename.".xls");
+        $objWriter->save(FCPATH."upload\bill\\" . $filename.".xls");
        
         
         

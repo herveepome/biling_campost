@@ -34,7 +34,7 @@ Class FinalBillManager extends MainController{
         //echo base_url("/upload/bill/test.php");
       //date_default_timezone_set('Europe/Paris');
       //setlocale (LC_TIME, 'fr_FR.utf8','fra');
-          echo $_SERVER['DOCUMENT_ROOT'];die;
+          echo FCPATH."upload\model\listing.xlsx";die;
       
 
 
