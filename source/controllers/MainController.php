@@ -23,21 +23,18 @@ class MainController extends CI_Controller {
         $this->load->model('customer_model');
         $this->load->model('state_model');
         $this->load->library('excel');
+        $this->load->library('session');
 
 	}
 
 
         public function index()
 	{
-        $data['customers'] = $this->customer_model->getALL(array("deleted"=>0)) ;
-
-        $this->load->view('general/header.php');
-        $this->load->view('general/accueil.php', $data);
+        $this->load->view('general/login.php');
         $this->load->view('general/footer.php');
 	}
 
 	public function getFiles(){
-
 
         $data['customers'] = $this->customer_model->getALL(array("deleted"=>0)) ;
         if($this->input->post()){

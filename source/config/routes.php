@@ -54,6 +54,10 @@ $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 // accueil
 $route['get_file']['POST'] = 'MainController/getFiles';
+$route['login']['POST'] = 'connexion/UserManager/login';
+$route['register']['POST'] = 'connexion/UserManager/register';
+$route['register_form']['get'] = 'connexion/UserManager/registerForm';
+$route['login_form']['get'] = 'connexion/UserManager/loginForm';
 
 // customers
 $route['customers']['get'] = 'customers/CustomerManager';

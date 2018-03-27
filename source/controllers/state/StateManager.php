@@ -761,7 +761,7 @@ class StateManager extends MainController {
             }
             $this->versement_model->insert_many_rows($data);
         }
-       
+
         if ($file_type == "operation") {
             foreach ($reader->getSheetIterator() as $sheet) {
                 foreach ($sheet->getRowIterator() as $row) {
