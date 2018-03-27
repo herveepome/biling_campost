@@ -506,15 +506,19 @@ class BillingManager extends MainController {
 
                             $tarifRetours = 0.5*(float)$tarifDomicile;
 
-                    } else if (($bill->final_status == 'Reversed') || ($bill->final_status == 'Failed') || ($bill->final_status == 'Lost') || ($bill->final_status == 'On the way to hub') || ($bill->final_status == 'Partially delivered')) {
+                    } else if (($bill->final_status == 'Reversed') || ($bill->final_status == 'Failed') || ($bill->final_status == 'Lost')  || ($bill->final_status == 'Partially delivered')) {
                         if ($tarifDomicile == 0) {
-                            $tarifRejets = $tarifBureau;
                             $tarifEchecs = $tarifBureau;
                         } else {
-                            $tarifRejets = $tarifDomicile;
                             $tarifEchecs = $tarifDomicile;
                         }
 
+                    }else if($bill->final_status == 'On the way to hub'){
+                        if ($tarifDomicile == 0) {
+                            $tarifRejets = $tarifBureau;
+                        } else {
+                            $tarifRejets = $tarifDomicile;
+                        }
                     }
 
                 // les données du listing et de la facture
@@ -530,9 +534,9 @@ class BillingManager extends MainController {
                         "Date_statut_final" => $bill->final_status_date,
                         "Tarif_domicile" => $tarifDomicile,
                         "Tarif_en_point_relais" => $tarifBureau,
-                        "Tarif_rejets" => $tarifRejets,
                         "Tarif_retours" => $tarifRetours,
                         "Tarif_echecs" => $tarifEchecs,
+                        "Tarif_rejets" => $tarifRejets,
                         "Cash_collecte" => $bill->amount_collected,
                         "Commission_sur_cash_collecte" => $commissions,
                     );
@@ -666,16 +670,16 @@ class BillingManager extends MainController {
     public function listing_file($data, $filename) {
         
        
-      copy(FCPATH."upload\model\listing.xlsx", "upload\listing\\" . $filename.".xlsx");
+      copy(FCPATH."upload\\model\\listing.xlsx", FCPATH."upload\\listing\\" . $filename.".xlsx");
        
         $writer = WriterFactory::create(Type::XLSX);
         
         $writer->setShouldUseInlineStrings(true)
-                ->openToFile(FCPATH."upload\listing\\" . $filename.".xlsx")
+                ->openToFile(FCPATH."upload\\listing\\" . $filename.".xlsx")
                 ->addRow(["Num", "Date de collecte", "Num commande"
-                    , "Num colis", "Poids", "Statut final", "Date statut final", "Tarif livraison à domicile"
-                    , "Tarif livraison en point relais", "Tarif livraison en point relais"
-                    , "Tarif retour", "Tarif échec", "Tarif rejet", "Cash collecté"
+                    , "Num colis","Destination", "Poids", "Statut final", "Date statut final", "Tarif livraison à domicile"
+                    , "Tarif livraison en point relais",
+                    "Tarif retour", "Tarif échec", "Tarif rejet", "Cash collecté"
                     , "Commission sur cash collecté"])
                 ->addRows($data)
                 ->close();      
@@ -685,9 +689,9 @@ class BillingManager extends MainController {
         //var_dump($bil_number,$period,$customer);die;
               
 
-        copy(FCPATH."upload\model\facture.xls", FCPATH."upload\bill\\" . $filename.".xls");
+        copy(FCPATH."upload\\model\\facture.xls", FCPATH."upload\\bill\\" . $filename.".xls");
         
-        chmod(FCPATH."upload\bill\\" . $filename.".xls", 0755);
+        chmod(FCPATH."upload\\bill\\" . $filename.".xls", 0755);
         
         $tht=0;
         $ttt=0;
