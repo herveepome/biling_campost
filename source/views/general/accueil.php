@@ -32,6 +32,18 @@ if (isset($_SESSION['user'])) {
                                               </div>
                                     </div>
                                    <?php unset($_SESSION["message"]);endif; ?>
+                            
+                             <div class="col-sm-12">
+                <div class="page-title-box">
+                    <div class="btn-group pull-right">
+
+                    </div>
+                    <?php if (isset($message)) {?>
+                    <div class="alert alert-success">
+                    <?php  echo $message; ?>
+                    </div>
+                    <?php } ?>
+               
                             <h4 class="page-title">BILPOST</h4>
                         </div>
                     </div>
