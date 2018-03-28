@@ -71,5 +71,12 @@ class MainController extends CI_Controller {
 
     }
 
+    public function accueil(){
+        $data['customers'] = $this->customer_model->getALL(array("deleted"=>0)) ;
+        $this->load->view('general/header.php');
+        $this->load->view('general/accueil.php', $data);
+        $this->load->view('general/footer.php');
+    }
+
 }
 

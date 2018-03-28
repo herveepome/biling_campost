@@ -53,7 +53,7 @@
                     <!-- Logo container-->
                     <div class="logo">
                         <!-- Text Logo -->
-                        <a href="<?php echo site_url(''); ?>" class="logo">
+                        <a href="<?php echo site_url('accueil'); ?>" class="logo">
                             <img src="<?php echo base_url('assets/images/billpost3.jpg') ?>" alt="" height="80px" class="logo-lg">
                         </a>
                     </div>
@@ -70,7 +70,7 @@
                         <ul class="navigation-menu">
 
                             <li class="has-submenu">
-                                <a href="<?php echo site_url(''); ?>"><i class="ion-home"></i>ACCUEIL</a>
+                                <a href="<?php echo site_url('accueil'); ?>"><i class="ion-home"></i>ACCUEIL</a>
                                 <ul class="submenu">
                                     <li class="has-submenu">
                                         <a href="#"><i class="ion-ios7-paper">&nbsp;&nbsp;</i> Charger le fichier des </a>
