@@ -18,6 +18,8 @@ if (isset($_SESSION['user'])) {
                             <div class="btn-group pull-right">
 
                             </div>
+                            
+                            
                             <?php if (isset($_SESSION["message"]) && $_SESSION["message"] != null): ?>
                                           <div class="form-group row">
                                         
