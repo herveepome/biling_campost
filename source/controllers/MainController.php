@@ -36,21 +36,24 @@ class MainController extends CI_Controller {
             extract($this->input->post(NULL, TRUE));
             $customer_id = $this->customer_model->getALL(array("name" => $customer))[0]->id;
             $periode = substr($period, 3, 2) . substr($period, 0, 2) . substr($period, 6);
-            if ($file = 'Facture') {
-                $file = $this->state_model->getALL(array("period" => $periode, "type" => 'F', "customerID" => $customer_id, "deleted" => 0));
 
-                if (isset($file) && !empty($file) && $file != null) {
-                    $path = base_url() . 'upload/bill/' . $file[0]->name . '.xls';
+            if (  $file == 'Facture') {
+
+                $fichier= $this->state_model->getALL(array("period" => $periode, "type" => 'F', "customerID" => $customer_id, "deleted" => 0));
+
+                if (isset($fichier) && !empty($fichier) && $fichier != null) {
+                    $path = base_url() . 'upload/bill/' . $fichier[0]->name . '.xls';
                     $this->downloadFile($path);
                 } else{
                     $this->session->message = "Ce fichier n'existe pas encore. Vérifiez les critères et réessayez!";
                     redirect('accueil');
                     
-                } }else {
-                $file = $this->state_model->getALL(array("period" => $periode, "type" => 'LF', "customerID" => $customer_id));
+                }
+            }else {
+                $fichier = $this->state_model->getALL(array("period" => $periode, "type" => 'LF', "customerID" => $customer_id,"deleted" => 0));
 
-                if (isset($file) && !empty($file) && $file != null) {
-                    $path = base_url() . 'upload/listing/' . $file[0]->name . '.xlsx';
+                if (isset($fichier) && !empty($fichier) && $fichier != null) {
+                    $path = base_url() . 'upload/listing/' . $fichier[0]->name . '.xlsx';
                     $this->downloadFile($path);
                 } else{
                     $this->session->message = "Ce fichier n'existe pas encore. Vérifiez les critères et réessayez!";

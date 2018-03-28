@@ -1,4 +1,14 @@
+<?php
 
+if (isset($_SESSION['user'])) {
+
+    $now = time(); // Checking the time now when home page starts.
+    // var_dump($_SESSION['start']) ; var_dump($_SESSION['expire']) ; var_dump($now);  die;
+    if ($now > $_SESSION['expire']) {
+        session_destroy();
+        redirect ("login_form");
+    } else {
+        ?>
 <div class="wrapper">
     <div class="container-fluid">
 
@@ -192,4 +202,5 @@
 </div>
 <!-- end wrapper -->
 
-
+<?php }
+}?>

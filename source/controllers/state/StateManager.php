@@ -27,7 +27,7 @@ class StateManager extends MainController {
 
     public function __construct() {
         parent::__construct();
-        ini_set("memory_limit", "256M");
+        ini_set('max_execution_time', 0);
         $this->load->model('customer_model');
         $this->load->model('state_model');
         $this->load->model('operation_model');
@@ -443,11 +443,12 @@ class StateManager extends MainController {
             $data["headers"] = array('Order','Tracking Number', 'Status', 'SIZE', 'Region', 'Payment Method',
                 'Amount to collect');
             $rows = $this->operation_model->getCroisedRows("SELECT DISTINCT o.shipment_provider,o.status,  o.tracking_number,o.size,o.order,o.region,o.payment_method,o.amount_to_collect,o.bureau,o.date_operation FROM operation o
-                                                            WHERE amount_to_collect<>0 AND status <> 'Returned' AND status <> 'Lost' AND status <> 'Reversed' AND status <> 'Being returned' AND status <> 'At the hub' AND status <> 'At the hub - requested'
+                                                            WHERE amount_to_collect<>0 AND o.payment_method = 'CashOnDelivery'
                                                              AND SUBSTR(REPLACE(o.start_time,'/',''),3,6)=".substr($state[0]->period,2,6)." AND state_file_id =" .$operation_id[0]->id.
                                                             " ORDER  BY o.order "); 
             
             $data["rows"] = $rows;
+
         }
         if ($state[0]->type == "FC" || $state[0]->type == "FRT" || $state[0]->type == "FUV") {
             $this->operation_model->executeQuery("CREATE  TEMPORARY TABLE IF NOT EXISTS nominal AS ("
@@ -566,6 +567,7 @@ class StateManager extends MainController {
             $this->operation_model->executeQuery("DROP TABLE alternatifs_superieur");
             $this->operation_model->executeQuery("DROP TABLE rejets");
             $data["rows"]=  $unvoiced;
+
             
         }
         }
