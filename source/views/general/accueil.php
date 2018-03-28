@@ -6,7 +6,7 @@ if (isset($_SESSION['user'])) {
    // var_dump($_SESSION['start']) ; var_dump($_SESSION['expire']) ; var_dump($now);  die;
     if ($now > $_SESSION['expire']) {
         session_destroy();
-        echo site_url("login_form");
+        redirect ("login_form");
     } else {
         ?>
 
@@ -18,11 +18,18 @@ if (isset($_SESSION['user'])) {
                             <div class="btn-group pull-right">
 
                             </div>
-                            <?php if (isset($message)) { ?>
-                                <div class="alert alert-success">
-                                    <?php echo $message; ?>
+                            <?php if (isset($_SESSION["message"]) && $_SESSION["message"] != null): ?>
+                                          <div class="form-group row">
+                                        
+                                        <div class="col-10">
+                                             <div class="alert alert-danger" >
+                                
+                                <font style="color:black;"><?php echo $_SESSION["message"]; ?><br></p></font>
+                           
                                 </div>
-                            <?php } ?>
+                                              </div>
+                                    </div>
+                                   <?php unset($_SESSION["message"]);endif; ?>
                             <h4 class="page-title">BILPOST</h4>
                         </div>
                     </div>
