@@ -48,6 +48,7 @@ class StateManager extends MainController {
 
     public function uploading_versement_file() {
         if ($this->input->post()) {
+            
             extract($this->input->post(NULL, TRUE));
             //nouveaux noms des fichiers d'opérations et de versement
 
