@@ -818,7 +818,7 @@ class StateManager extends MainController {
             $this->operation_model->insert_many_rows($data);
 
 
-            $this->operation_model->executeQuery("CREATE TEMPORARY TABLE IF NOT exists doublons  "
+         /*   $this->operation_model->executeQuery("CREATE TEMPORARY TABLE IF NOT exists doublons  "
                     . "AS(SELECT  id FROM operation t1 WHERE t1.tracking_number "
                     . "IN ( SELECT t2.tracking_number FROM operation t2 where t2.start_time=t1.start_time "
                     . "and t2.tracking_number=t1.tracking_number and t1.amount_to_collect=t2.amount_to_collect "
@@ -827,7 +827,7 @@ class StateManager extends MainController {
                     . "HAVING COUNT(t1.tracking_number)>1)");
 
             $this->operation_model->executeQuery("DELETE FROM operation where id in (select id from doublons)");
-            $this->operation_model->executeQuery("DROP TABLE doublons");
+            $this->operation_model->executeQuery("DROP TABLE doublons"); */
             
         }
         $reader->close();
