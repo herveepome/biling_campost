@@ -87,6 +87,35 @@ class StateManager extends MainController {
             $this->uploading_file("file", $operations_name, $customer_id[0]->id, $operation_file, $period, "FO", "operation", "operation_file", $facturation_date, "Fichier des opérations", "operation_file", "billings/new_operation_versment.php", "files/create_operation_file");
         }
     }
+    
+    public function duplicate_items_number($state_file_id) {
+        $this->operation_model->executeQuery("CREATE TEMPORARY TABLE IF NOT exists doublons"
+                    . " AS(SELECT id FROM operation where state_file_id=".$state_file_id
+                    . " GROUP BY tracking_number,start_time,amount_to_collect HAVING "
+                    . "COUNT(tracking_number)>1)");
+
+        $dup_item_number = $this->operation_model->executeQuery("Select * from doublons");
+        
+        $data["dup_item_number"] = $dup_item_number->num_rows();
+        $data['customers'] = $this->customer_model->getALL(array("deleted" => 0));
+        
+        $this->load->view('general/header.php');
+        $this->load->view('general/accueil.php', $data);
+        $this->load->view('general/footer.php');
+    }
+    
+    public function deleting_duplicate_items() {
+        
+        $this->operation_model->executeQuery("DELETE FROM operation where id in (select id from doublons)");
+        $this->operation_model->executeQuery("DROP TABLE doublons");
+
+        
+        $data['customers'] = $this->customer_model->getALL(array("deleted" => 0));
+        $data['message']="Opéraion de suppression des doublons réussie";
+        $this->load->view('general/header.php');
+        $this->load->view('general/accueil.php', $data);
+        $this->load->view('general/footer.php');
+    }
 
     public function create_returned_file() {
         $this->create_file("Fichier des retours", "returned_file", 'billings/new_state.php', 'state/generate_returned_file');
@@ -219,7 +248,7 @@ class StateManager extends MainController {
             $period = substr($period, 3, 2) . substr($period, 0, 2) . substr($period, 6);
             $customer_id = $this->customer_model->getALL(array("name" => $customer));
 
-            $state_file_id = ($this->state_model->getALL(array("period" => $period, "type" => "FO", "customerID" => $customer_id[0]->id)));
+           $state_file_id = ($this->state_model->getALL(array("period" => $period, "type" => "FO", "customerID" => $customer_id[0]->id)));
            $state_croisement_id = ($this->state_model->getALL(array("period" => $period, "type" => "FV", "customerID" => $customer_id[0]->id)));
             
            
@@ -722,8 +751,13 @@ class StateManager extends MainController {
             
             if ($this->upload_file($name, 'xlsx|xls', './upload/operations_versment/', '2048', $uploading_file) == true) {
                 $file_id = $this->state_model->insert(array("file_path" => $filepath, "period" => $period, "type" => $file_type, "facturation_date" => $facturation_date, "period" => $period, "customerID" => $customer, "name" => $name));
-                $this->excel_to_sql($file_id, $operation_type, $filepath);
-                $data = array("message" => "Votre fichier " . $name . " a bien été chargé.");
+                $nb_rows=$this->excel_to_sql($file_id, $operation_type, $filepath);
+                
+                if($file_type=="FO" && $nb_rows>=0)
+                //$data["doublons"]="doublons";
+                $data['customers'] = $this->customer_model->getALL(array("deleted" => 0));
+                //$data['state_file_id']=$file_id;
+                $data["message"] =  "Votre fichier " . $name . " a bien été chargé.";
                 $this->load->view('general/header.php');
                 $this->load->view('general/accueil.php', $data);
                 $this->load->view('general/footer.php');
@@ -762,7 +796,7 @@ class StateManager extends MainController {
                     }
                 }
             }
-            $this->versement_model->insert_many_rows($data);
+            $nb_rows=$this->versement_model->insert_many_rows($data);
         }
 
         if ($file_type == "operation") {
@@ -815,16 +849,14 @@ class StateManager extends MainController {
 
                 
             }
-            $this->operation_model->insert_many_rows($data);
+    
+            $nb_rows=$this->operation_model->insert_many_rows($data);
+            
 
-
-            $this->operation_model->executeQuery("CREATE TEMPORARY TABLE IF NOT exists doublons  "
-                    . "AS(SELECT  id FROM operation t1 WHERE t1.tracking_number "
-                    . "IN ( SELECT t2.tracking_number FROM operation t2 where t2.start_time=t1.start_time "
-                    . "and t2.tracking_number=t1.tracking_number and t1.amount_to_collect=t2.amount_to_collect "
-                    . " and t2.state_file_id= " . $state_file_id . " GROUP BY t2.tracking_number "
-                    . "HAVING COUNT(t2.tracking_number)>1 )  GROUP BY t1.tracking_number "
-                    . "HAVING COUNT(t1.tracking_number)>1)");
+            $this->operation_model->executeQuery("CREATE TEMPORARY TABLE IF NOT exists doublons"
+                    . " AS(SELECT id FROM operation where state_file_id=".$state_file_id
+                    . " GROUP BY tracking_number,start_time,amount_to_collect HAVING "
+                    . "COUNT(tracking_number)>1)");
 
             $this->operation_model->executeQuery("DELETE FROM operation where id in (select id from doublons)");
             $this->operation_model->executeQuery("DROP TABLE doublons");
@@ -832,6 +864,7 @@ class StateManager extends MainController {
         }
         $reader->close();
         unlink($file);
+        return $nb_rows;
 
     }
 

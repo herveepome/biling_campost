@@ -99,6 +99,8 @@ $route['files/create_versement_file']['get'] = 'state/StateManager/create_versem
 $route['files/uploading_versement_file']['post'] = 'state/StateManager/uploading_versement_file';
 $route['files/create_operation_file']['get'] = 'state/StateManager/create_operation_file';
 $route['files/uploading_operation_file']['post'] = 'state/StateManager/uploading_operation_file';
+$route['files/operation_file/duplicate_items_number/(:num)']['get']='state/StateManager/duplicate_items_number/$1';
+$route['files/operation_file/deleting_duplicate_items']['get']='state/StateManager/deleting_duplicate_items';
 $route['state/(:num)/preview']['get'] = 'state/StateManager/show/$1';
 
 

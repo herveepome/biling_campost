@@ -34,14 +34,20 @@ Class FinalBillManager extends MainController{
         //echo base_url("/upload/bill/test.php");
       //date_default_timezone_set('Europe/Paris');
       //setlocale (LC_TIME, 'fr_FR.utf8','fra');
-          echo FCPATH."upload\model\listing.xlsx";die;
-      
+          //echo FCPATH."upload\model\listing.xlsx";die;
+      /*$tab=array();
+      $tab[]=array("1");
+      $tab[]=array("1");
+      $tab[]=array("2");
+      $array = array(1, "hello", 1, "world", "hello");
+      print_r(array_count_values($array));
+      //var_dump(array_count_values($tab));*/
 
 
 
-        /*$this->load->view('general/header.php');
-    $this->load->view('files/list_cross_file.php');
-    $this->load->view('general/footer.php');*/
+    $this->load->view('general/header.php');
+    $this->load->view('test.php');
+    $this->load->view('general/footer.php');
 	}
         
      public function monthinFrench($month) {
