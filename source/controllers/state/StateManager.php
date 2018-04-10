@@ -860,7 +860,7 @@ class StateManager extends MainController {
 
 
             $this->operation_model->executeQuery("DELETE FROM operation where id in (select id from doublons)");
-            $this->operation_model->executeQuery("DROP TABLE doublons"); */
+            $this->operation_model->executeQuery("DROP TABLE doublons"); 
             
         }
         $reader->close();
