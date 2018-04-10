@@ -29,6 +29,7 @@ class UserManager extends MainController{
         $this->load->model('user_model');
         $this->load->model('customer_model');
         $this->load->library('session');
+         $this->load->helper('cookie');
     }
 
     public function index() {
@@ -36,9 +37,10 @@ class UserManager extends MainController{
 
     }
 
-    public function login(){
+    public function login($request_uri = null){
+        //die('tata');
         $data['customers'] = $this->customer_model->getALL(array("deleted"=>0)) ;
-        $data['register'] = $this->load->view('general/register.php', null, true);
+        //$data['register'] = $this->load->view('general/register.php', null, true);
         if ($this->input->post()){
             $error = null;
             extract($this->input->post(NULL, TRUE));
@@ -46,10 +48,27 @@ class UserManager extends MainController{
             if (isset($user) && !empty($user)&& $user!=null){
                 $_SESSION['user'] = $login;
                 $_SESSION['start'] = time(); // récupérer le temps auquel l'utilisateur se connecte
-                $_SESSION['expire'] = $_SESSION['start'] + (15 * 60); // la session s'expire après 15mn
-                $this->load->view('general/header.php');
-                $this->load->view('general/accueil.php',$data);
-                $this->load->view('general/footer.php');
+                $_SESSION['expire'] = $_SESSION['start'] + (1 * 60); // la session s'expire après 15mn
+                
+                if($request_uri ==null){
+                    $this->load->view('general/header.php');
+                    $this->load->view('general/accueil.php',$data);
+                    $this->load->view('general/footer.php');
+                }
+                elseif($request_uri=='accueil'){
+                    $this->load->view('general/header.php');
+                    $this->load->view('general/accueil.php',$data);
+                    $this->load->view('general/footer.php');
+                }
+                else{
+
+                    $request_uri = str_replace('-', '/', $request_uri)  ;
+                    $this->load->view('general/header.php');
+                    redirect($request_uri) ;
+                    $this->load->view('general/footer.php');
+                }
+
+                
             }
             else{
                 $data['error'] = "votre login et/ou mot de passe est incorrect; essayez de nouveau!"  ;
@@ -66,8 +85,9 @@ class UserManager extends MainController{
         $this->load->view('general/footer.php');
     }
 
-    public function loginForm(){
-        $this->load->view('general/login.php');
+    public function loginForm($request_uri){
+        $data['request_uri'] = $request_uri ;
+        $this->load->view('general/login.php', $data);
         $this->load->view('general/footer.php');
     }
 

@@ -53,7 +53,7 @@
             <!-- Logo container-->
             <div class="logo">
                 <!-- Text Logo -->
-                <a href="<?php echo site_url('billings'); ?>" class="logo">
+                <a href="<?php echo site_url(''); ?>" class="logo">
                     <img src="<?php echo base_url('assets/images/billpost3.jpg') ?>" alt="" height="80px" class="logo-lg">
                 </a>
             </div>
@@ -62,19 +62,23 @@
         </div> <!-- end container -->
     </div>
     <!-- end topbar-main -->
-
-
 </header><br>
 
 <div class="wrapper-page">
 
     <div class="text-center">
-       <span class="logo-lg">Se connecter à billpost</span>
+       <span class="logo-lg">Connexion</span>
     </div>
+    <?php
 
-    <form class="form-horizontal m-t-20" action="<?php echo site_url('login'); ?>" method="post">
+        if(isset($request_uri) && $request_uri!=null){?>
+             <form class="form-horizontal m-t-20" action="<?php echo site_url('accueil/'.$request_uri); ?>" method="post">
 
-        <?php if (isset($error) && $error!=null): ?>
+    <?php }   else {?>
+             <form class="form-horizontal m-t-20" action="<?php echo site_url('accueil'); ?>" method="post">
+       <?php } 
+
+          if (isset($error) && $error!=null): ?>
 
                     <div class="alert alert-danger" >
 
@@ -100,19 +104,6 @@
                 </div>
             </div>
         </div>
-
-        <!--   <div class="form-group row">
-            <div class="col-12">
-                <div class="checkbox checkbox-primary">
-                    <input id="checkbox-signup" type="checkbox">
-                    <label for="checkbox-signup">
-                        Se souvenir de moi
-                    </label>
-                </div>
-
-            </div>
-        </div>  !-->
-
         <div class="form-group text-right m-t-20">
 
             <div class="col-xs-12">
@@ -120,17 +111,6 @@
                 </button>
             </div>
         </div>
-
-        <!-- <div class="form-group row m-t-30">
-                <div class="col-sm-7">
-                     <a href="pages-recoverpw.html" class="text-muted"><i class="fa fa-lock m-r-5"></i> Mot de passe oublié?</a>
-                 </div>
-                 <div class="col-sm-5 text-right">
-                         <a href=" <?php // echo  site_url("register_form") ;?>" class="text-muted">Créer un compte</a>
-
-                 </div>
-             </div>!-->
-         </form>
-     </div>
-
+        </form>  
+</div>
 

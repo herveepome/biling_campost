@@ -858,8 +858,9 @@ class StateManager extends MainController {
                     . " GROUP BY tracking_number,start_time,amount_to_collect HAVING "
                     . "COUNT(tracking_number)>1)");
 
+
             $this->operation_model->executeQuery("DELETE FROM operation where id in (select id from doublons)");
-            $this->operation_model->executeQuery("DROP TABLE doublons");
+            $this->operation_model->executeQuery("DROP TABLE doublons"); */
             
         }
         $reader->close();
