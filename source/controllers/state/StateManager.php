@@ -28,6 +28,7 @@ class StateManager extends MainController {
     public function __construct() {
         parent::__construct();
         ini_set('max_execution_time', 0);
+        $config['max_size'] = 102400;
         $this->load->model('customer_model');
         $this->load->model('state_model');
         $this->load->model('operation_model');
