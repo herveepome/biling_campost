@@ -48,7 +48,7 @@ class UserManager extends MainController{
             if (isset($user) && !empty($user)&& $user!=null){
                 $_SESSION['user'] = $login;
                 $_SESSION['start'] = time(); // récupérer le temps auquel l'utilisateur se connecte
-                $_SESSION['expire'] = $_SESSION['start'] + (1 * 60); // la session s'expire après 15mn
+                $_SESSION['expire'] = $_SESSION['start'] + (30 * 60); // la session s'expire après 15mn
                 
                 if($request_uri ==null){
                     $this->load->view('general/header.php');
