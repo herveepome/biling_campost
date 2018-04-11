@@ -43,11 +43,15 @@ Class FinalBillManager extends MainController{
       print_r(array_count_values($array));
       //var_dump(array_count_values($tab));*/
 
+          $registrationDate=   date_create_from_format('d/m/Y', "11/10/2016"); 
+          var_dump ($registrationDate);
+        if ($registrationDate instanceof DateTime)
+            var_dump ($registrationDate);
+            die;
 
-
-    $this->load->view('general/header.php');
+    /*$this->load->view('general/header.php');
     $this->load->view('test.php');
-    $this->load->view('general/footer.php');
+    $this->load->view('general/footer.php');*/
 	}
         
      public function monthinFrench($month) {

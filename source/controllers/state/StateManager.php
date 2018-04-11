@@ -28,6 +28,7 @@ class StateManager extends MainController {
     public function __construct() {
         parent::__construct();
         ini_set('max_execution_time', 0);
+        $config['max_size'] = 102400;
         $this->load->model('customer_model');
         $this->load->model('state_model');
         $this->load->model('operation_model');
@@ -439,8 +440,9 @@ class StateManager extends MainController {
 
     public function show($id) {
         
-        $state = $this->state_model->getALL(array("id" => $id));
         
+        $state = $this->state_model->getALL(array("id" => $id));
+        var_dump($state);die;
         
         $operation_id=$this->state_model->getALL(array("type" =>"FO","period"=>$state[0]->period,"customerID"=>$state[0]->customerID));
         $versement_id=$this->state_model->getALL(array("type" =>"FV","period"=>$state[0]->period,"customerID"=>$state[0]->customerID));
@@ -448,6 +450,7 @@ class StateManager extends MainController {
         //var_dump($operation_id, $versement_id);die;
         $data = array();
 
+        
         if ($state[0]->type == "FR") {
             $data["file_text_name"] = $name = "Produits retournés de la période " . $state[0]->period;
             $data["headers"] = array('Order','Tracking Number', 'Status', 'SIZE', 'Region', 'Payment Method',
@@ -780,9 +783,9 @@ class StateManager extends MainController {
         if ($file_type == "versement") {
             foreach ($reader->getSheetIterator() as $sheet) {
                 foreach ($sheet->getRowIterator() as $row) {
-
+                     
                     if ($row["1"] != "D. Opé.") {
-
+                               
                         $result = array(
                             'state_file_id' => $state_file_id,
                             'date_operation' => $row['1'],
@@ -804,24 +807,34 @@ class StateManager extends MainController {
         if ($file_type == "operation") {
             foreach ($reader->getSheetIterator() as $sheet) {
                 foreach ($sheet->getRowIterator() as $row) {
-                    //var_dump($row['30']);die;
+                    
                     if (isset($row['2']) &&($row['2'] == "" || $row['2']==null) )
                         $start_time = "";
-                    else
+                    elseif (isset($row['2']) && $row['2'] instanceof DateTime)
                         $start_time = $row['2']->format('d/m/Y');
-                    if (isset($row['5']) &&($row['5'] == "" || $row['6']==null) )
+                    else 
+                        $start_time=$row['2'];
+                    
+                    if (isset($row['5']) &&($row['5'] == "" || $row['5']==null) )
                         $delivered_date = "";
-                    else
+                    elseif (isset($row['5']) && $row['5'] instanceof DateTime)
                         $delivered_date = $row['5']->format('d/m/Y');
+                    else
+                        $delivered_date = $row['5'];
 
                     if (isset($row['6']) &&($row['6'] == "" || $row['6']==null) )
                         $last_failed_attempt_date = "";
-                    else
+                    elseif (isset($row['6']) && $row['6'] instanceof DateTime)
                         $last_failed_attempt_date = $row['6']->format('d/m/Y');
+                    else
+                        $last_failed_attempt_date = $row['6'];
+                    
                     if (isset($row['9']) &&($row['9'] == "" || $row['9']==null) )
                         $order_date = "";
-                    else
+                     elseif (isset($row['9']) && $row['9'] instanceof DateTime)
                         $order_date = $row['9']->format('d/m/Y');
+                    else
+                        $order_date = $row['9'];
 
                      if (isset($row['30']) && $row['30'] == "Warehouse")
                         $deposit_local = "Bureau de poste";
@@ -856,10 +869,10 @@ class StateManager extends MainController {
                             'region' => $row['16'],
                             'payment_method' => $row['17'],
                             'amount_to_collect' => str_replace(' ', '', $row['18']),
-                            'delivery_run' => $row['19'],
-                            'delivery_run_create' => $row['20'],
-                            'bureau' => $row['21'],
-                            'date_operation' => $row['22'],
+                            'delivery_run' => $row['20'],
+                            'delivery_run_create' => $row['21'],
+                            'bureau' => $row['22'],
+                            'date_operation' => $row['23'],
                             'deposit_local' => $deposit_local,
                         );
 

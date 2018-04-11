@@ -49,7 +49,7 @@ class BillingManager extends MainController {
     }
 
     public function index() {
-
+         
     }
 
     // données pour la création du fichier de facturation
