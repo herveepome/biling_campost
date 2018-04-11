@@ -71,7 +71,9 @@ class StateManager extends MainController {
     }
 
     public function uploading_operation_file() {
+      
         if ($this->input->post()) {
+
             extract($this->input->post(NULL, TRUE));
             //nouveaux noms des fichiers d'opérations et de versement
             $period = substr($period, 3, 2) . substr($period, 0, 2) . substr($period, 6);
@@ -803,7 +805,25 @@ class StateManager extends MainController {
             foreach ($reader->getSheetIterator() as $sheet) {
                 foreach ($sheet->getRowIterator() as $row) {
                     //var_dump($row['30']);die;
-                    if (isset($row['30']) && $row['30'] == "Warehouse")
+                    if (isset($row['2']) &&($row['2'] == "" || $row['2']==null) )
+                        $start_time = "";
+                    else
+                        $start_time = $row['2']->format('d/m/Y');
+                    if (isset($row['5']) &&($row['5'] == "" || $row['6']==null) )
+                        $delivered_date = "";
+                    else
+                        $delivered_date = $row['5']->format('d/m/Y');
+
+                    if (isset($row['6']) &&($row['6'] == "" || $row['6']==null) )
+                        $last_failed_attempt_date = "";
+                    else
+                        $last_failed_attempt_date = $row['6']->format('d/m/Y');
+                    if (isset($row['9']) &&($row['9'] == "" || $row['9']==null) )
+                        $order_date = "";
+                    else
+                        $order_date = $row['9']->format('d/m/Y');
+
+                     if (isset($row['30']) && $row['30'] == "Warehouse")
                         $deposit_local = "Bureau de poste";
                     else
                         $deposit_local = "A domicile";
@@ -814,18 +834,19 @@ class StateManager extends MainController {
                         $size = $row['4'];
 
                     if ($row["0"] != "Shipment Provider") {
+                      //  var_dump($row['5']) ; die;
                         $result = array(
                             'state_file_id' => $state_file_id,
                             'shipment_provider' => $row['0'],
                             'status' => $row['1'],
-                            'start_time' => $row['2']->format('d/m/Y'),
+                            'start_time' => $start_time,
                             'tracking_number' => $row['3'],
                             'size' => $size,
-                            'delivered_date' => $row['5']->format('d/m/Y'),
-                            'last_failed_attempt_date' => $row['6']->format('d/m/Y'),
+                            'delivered_date' => $delivered_date,
+                            'last_failed_attempt_date' => $last_failed_attempt_date ,
                             'flow' => $row['7'],
                             'order' => $row['8'],
-                            'order_date' => $row['9']->format('d/m/Y'),
+                            'order_date' => $order_date,
                             'phone_number' => $row['10'],
                             'customer_name' => $row['11'],
                             'address' => $row['12'],
@@ -860,7 +881,7 @@ class StateManager extends MainController {
 
 
             $this->operation_model->executeQuery("DELETE FROM operation where id in (select id from doublons)");
-            $this->operation_model->executeQuery("DROP TABLE doublons"); */
+            $this->operation_model->executeQuery("DROP TABLE doublons"); 
             
         }
         $reader->close();
