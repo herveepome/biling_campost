@@ -95,8 +95,21 @@ class BillingManager extends MainController {
              } else {
 
             $name = $name . "_" . $period . ".xlsx";
-
+            $weight = $this->configuration_model->all("weight");
+            var_dump($weight); die;
              foreach ($data as $row) {
+                /*if(is_numeric($row->size)) {
+                    $i=-1 ;
+                    do {
+                            $i++;
+                            $dataInterval = explode('-', $intervals[$i]->interval);
+
+                        } while ((int)$bill->amount_collected > (int)$dataInterval[1]);
+
+                    do{
+                        $i++ ;
+                    }while()
+                } */
             	$rows[] = array(
             	   // 'id'=>$row->id,
 			    	'date_collected'=>$row->start_time,
@@ -118,19 +131,8 @@ class BillingManager extends MainController {
             // créer une table temporaire qui sera supprimée plustard et sur laquelle les éditions du FF se feront
            $req =  $this->operation_model->executeQuery("DROP TABLE IF EXISTS tempo_bill  " );
 
-            if ($this->operation_model->executeQuery("CREATE TABLE tempo_bill( `id` int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL ,
-                                                                              `date_collected` varchar(32) NOT NULL,
-                                                                              `tracking_number` varchar(32) NOT NULL,
-                                                                              `destination` varchar(32) NOT NULL,
-                                                                              `region` varchar(50) NOT NULL,
-                                                                              `order_number` varchar(50) NOT NULL,
-                                                                              `weight` varchar(50) DEFAULT NULL,
-                                                                              `final_status` varchar(50) NOT NULL,
-                                                                              `final_status_date` varchar(50) NOT NULL,
-                                                                              `deleted` varchar(5) NOT NULL DEFAULT '0',
-                                                                              `amount_to_collect` varchar(45) NOT NULL,
-                                                                              `amount_collected` varchar(45) NOT NULL,
-                                                                              `deposit_local` varchar(45) NOT NULL)"))
+            if ($this->operation_model->executeQuery("CREATE TABLE tempo_bill( `id` int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL ,`date_collected` varchar(32) NOT NULL, `tracking_number` varchar(32) NOT NULL,`destination` varchar(32) NOT NULL,`region` varchar(50) NOT NULL, `order_number` varchar(50) NOT NULL,`weight` varchar(50) DEFAULT NULL, `final_status` varchar(50) NOT NULL, `final_status_date` varchar(50) NOT NULL,`deleted` varchar(5) NOT NULL DEFAULT '0', `amount_to_collect` varchar(45) NOT NULL, `amount_collected` varchar(45) NOT NULL, `deposit_local` varchar(45) NOT NULL)"))
+
                 $this->tempo_model->insert_many_rows($rows);
 
            $result['billings'] = $this->tempo_model->getALL(array("deleted"=>0));
@@ -147,7 +149,7 @@ class BillingManager extends MainController {
 
 
 
-            $result['malformedRegion']= $this->malformedRegion();
+            $result['malformedLines']= $this->malformedLines();
 
 
             $this->load->view('general/header.php');
@@ -159,7 +161,7 @@ class BillingManager extends MainController {
         }
     }
 // les lignes dont les régions sont vides ou mal formées
-    public function malformedRegion(){
+    public function malformedLines(){
         $query = $this->operation_model->getCroisedRows("SELECT s.id from (SELECT * from tempo_bill t where t.region='' or t.region not in (select r.name from regions r)  )s ");
         return $query ;
     }
@@ -284,7 +286,7 @@ class BillingManager extends MainController {
 
         }
 
-        $data['malformedRegion']= $this->malformedRegion();
+        $data['malformedLines']= $this->malformedLines();
 
         $this->load->view('general/header.php');
         $this->load->view('billings/new_billing.php', $data);
@@ -366,7 +368,7 @@ class BillingManager extends MainController {
     }
 
     public function list_billing_file() {
-        $data['malformedRegion']= $this->malformedRegion();
+        $data['malformedLines']= $this->malformedLines();
         $data["billings"]= $this->tempo_model->getALL(array("deleted"=>0));
         $this->load->view('general/header.php');
         $this->load->view('billings/list_bill.php', $data);
@@ -426,7 +428,7 @@ class BillingManager extends MainController {
 
                         $commissions = $this->cash_model->getALL(array('cash_interval_id' => $commissionsId))[0]->amount;
                     }
-                    $poids30 = $this->configuration_model->getWhere('weight', 'weight',20-30);
+                    $poids30 = $this->configuration_model->getWhere('weight', 'weight',20000-30000);
 
                     // gestion des tarifs à domicile ou en point relais
 

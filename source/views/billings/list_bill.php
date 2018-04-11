@@ -34,7 +34,7 @@ if (isset($_SESSION['user'])) {
                          <div class="col-sm-6">
                              <div class="m-b-30">
                                  <a href="<?php echo site_url('billing/newLine'); ?>"><button id="addToTable" class="btn btn-success waves-effect waves-light">Ajouter une ligne<i class="mdi mdi-plus-circle-outline"></i></button></a>
-                                 <?php if  (isset($malformedRegion) && $malformedRegion!=null && !empty($malformedRegion)){ ?>
+                                 <?php if  (isset($malformedLines) && $malformedLines!=null && !empty($malformedLines)){ ?>
                                      <a href="#custom-modal-region" class="hidden on-editing cancel-row" data-animation="fadein" data-plugin="custommodal" data-original-title="Valider" data-overlaySpeed="200" data-overlayColor="#36404a">
                                          <button type="submit" id="addToTable" class="btn btn-primary waves-effect waves-light">Valider</button>
                                      </a>
@@ -121,12 +121,12 @@ if (isset($_SESSION['user'])) {
                             </button>
                             <h4 class="custom-modal-title">Attention</h4>
                             <div class="custom-modal-text" style="text-align: left; line-height: 3">
-                                <?php if (isset($malformedRegion) && $malformedRegion!=null && !empty($malformedRegion)){
-                                    if (count($malformedRegion)>25 ){
-                                        echo  "Vous avez " .count($malformedRegion). " lignes dont les régions sont mal écrites ou nulles; ces lignes ne seront pas facturées. Valider quand même?" ; }
+                                <?php if (isset($malformedLines) && $malformedLines!=null && !empty($malformedLines)){
+                                    if (count($malformedLines)>25 ){
+                                        echo  "Vous avez " .count($malformedLines). " lignes dont les régions sont mal écrites ou nulles; ces lignes ne seront pas facturées. Valider quand même?" ; }
                                     else{
                                         $regional='';
-                                        foreach ($malformedRegion as $region)
+                                        foreach ($malformedLines as $region)
                                             $regional=$regional.$region->id. ",";
                                         echo "Les lignes numéro ".$regional."ont les régions mal écrites 
                                         ou nulles; ces lignes ne seront pas facturées. Valider quand même?";
