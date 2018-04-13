@@ -79,6 +79,7 @@ $route['billing/generate_billing_file']['post'] = 'billings/BillingManager/gener
 $route['bill/create']['get'] = 'billings/BillingManager/createBill';
 $route['billing/generate_bill_file']['post'] = 'billings/BillingManager/generate_bill_file';
 
+$route['billing/get_malformed_lines/(:any)/(:any)']['get'] = 'billings/BillingManager/getMalformedFile/$1/$2';
 $route['billing/newLine']['get'] = 'billings/BillingManager/newLine/$1';
 $route['billing/(:num)/edit']['get'] = 'billings/BillingManager/editBilling/$1';
 $route['billing/store']['POST'] = 'billings/BillingManager/store/$1';

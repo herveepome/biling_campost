@@ -77,6 +77,7 @@
                                         <ul class="submenu">
                                             <li><a href="<?php echo site_url('files/create_versement_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Versements</a></li>
                                             <li><a href="<?php echo site_url('files/create_operation_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Operation</a></li>
+                                            <li><a href="<?php echo site_url('files/create_facturation_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Facturation</a></li>
                                         </ul>
                                     </li>
                                      <li class="has-submenu"><a href="#"><i class="ion-ios7-paper">&nbsp;&nbsp;</i> Générer le fichier </a>
