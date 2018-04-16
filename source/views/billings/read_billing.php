@@ -29,10 +29,16 @@ if (isset($_SESSION['user'])) {
 
         <div class="row">
             <div class="col-12">
+                <?php if(isset($malformedLines)&& !empty($malformedLines)){ ?>
+                        <a href="<?php echo base_url($path) ; ?>"><button id="addToTable" class="btn btn-success waves-effect waves-light">Télécharger le fichier à mettre à jour<i class="mdi mdi-plus-circle-outline"></i></button></a>
+                   <?php }
+
+                     ?>
                 <div class="card-box table-responsive">
                     <h4 class="m-t-0 header-title"><b><?php if (isset($file_text_name)) echo $file_text_name ;  ?></b></h4>
                     <br>
                     <input type="hidden" id="file_id" value="<?php if (isset($file_text_name) && $file_text_name != null && !empty($file_text_name)) echo $file_text_name ?>" >
+                    
                     <table id="datatable-buttons" class="table table-striped table-bordered" cellspacing="0" width="100%">
                         <thead>
                         <tr class="font-13">

@@ -90,6 +90,9 @@ class StateManager extends MainController {
             $this->uploading_file("file", $operations_name, $customer_id[0]->id, $operation_file, $period, "FO", "operation", "operation_file", $facturation_date, "Fichier des opérations", "operation_file", "billings/new_operation_versment.php", "files/create_operation_file");
         }
     }
+
+    
+
     
     public function duplicate_items_number($state_file_id) {
         $this->operation_model->executeQuery("CREATE TEMPORARY TABLE IF NOT exists doublons"
@@ -758,17 +761,19 @@ class StateManager extends MainController {
                 $file_id = $this->state_model->insert(array("file_path" => $filepath, "period" => $period, "type" => $file_type, "facturation_date" => $facturation_date, "period" => $period, "customerID" => $customer, "name" => $name));
                 $nb_rows=$this->excel_to_sql($file_id, $operation_type, $filepath);
                 
-                if($file_type=="FO" && $nb_rows>=0)
-                //$data["doublons"]="doublons";
-                $data['customers'] = $this->customer_model->getALL(array("deleted" => 0));
+               
+                    $data['customers'] = $this->customer_model->getALL(array("deleted" => 0));
                 //$data['state_file_id']=$file_id;
-                $data["message"] =  "Votre fichier " . $name . " a bien été chargé.";
-                $this->load->view('general/header.php');
-                $this->load->view('general/accueil.php', $data);
-                $this->load->view('general/footer.php');
+                    $data["message"] =  "Votre fichier " . $name . " a bien été chargé.";
+                    $this->load->view('general/header.php');
+                    $this->load->view('general/accueil.php', $data);
+                    $this->load->view('general/footer.php');
+                  
+                
+                }
+                }
             }
-        }
-    }
+    
 
    public function excel_to_sql($state_file_id, $file_type, $file) {
 

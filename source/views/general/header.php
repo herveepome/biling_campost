@@ -77,7 +77,7 @@
                                         <ul class="submenu">
                                             <li><a href="<?php echo site_url('files/create_versement_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Versements</a></li>
                                             <li><a href="<?php echo site_url('files/create_operation_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Operation</a></li>
-                                            <li><a href="<?php echo site_url('files/create_facturation_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Facturation</a></li>
+                                            <li><a href="<?php echo site_url('facturation/create'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Facturation</a></li>
                                         </ul>
                                     </li>
                                      <li class="has-submenu"><a href="#"><i class="ion-ios7-paper">&nbsp;&nbsp;</i> Générer le fichier </a>
@@ -100,8 +100,8 @@
                                             <li><a href="<?php echo site_url('config/adresses'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>les adresses</a></li>
                                             <li><a href="<?php echo site_url('config/zones'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>les zones</a></li>
                                             <li><a href="<?php echo site_url('config/regions'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>les régions</a></li>
-                                            <li><a href="<?php echo site_url('config/weight_intervals'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i> les intervaux de poids</a></li>
-                                            <li><a href="<?php echo site_url('config/cash_intervals'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>les intervaux de cash</a></li>
+                                            <li><a href="<?php echo site_url('config/weight_intervals'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i> les intervals de poids</a></li>
+                                            <li><a href="<?php echo site_url('config/cash_intervals'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>les intervals de cash</a></li>
                                             
                                         </ul>
                                     </li>
@@ -140,6 +140,17 @@
                                     
                                     <li><a href="<?php echo site_url('billing/list_listing_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Listing mensuel</a></li>
                                     <li><a href="<?php echo site_url('billing/list_facture_file'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Historique des Factures</a></li>
+                                </ul>
+                            </li>
+                            <li class="has-submenu" style="float: right;">
+                                <a href="#"><i class="ion-person"></i><?php echo $_SESSION['user']; ?></a>
+                                <ul class="submenu">
+                                     <?php if(isset($_SESSION['user']) && !empty($_SESSION['user']) && $_SESSION['user']=='admin'){?>
+                                            <li><a href="<?php echo site_url('register_form'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Créer un compte</a></li>
+
+                                  <?php   }?>
+                                    <li><a href="<?php echo site_url('update_password'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Changer mon mot de passe </a></li>
+                                    <li><a href="<?php echo site_url('logout '); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>Déconnexion</a></li>
                                 </ul>
                             </li>
                         </ul>

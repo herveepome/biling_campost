@@ -84,10 +84,10 @@ if (isset($_SESSION['user'])) {
 <div class="wrapper-page">
 
     <div class="text-center">
-        <a href="index.html" class="logo-lg"><i class="mdi mdi-radar"></i> <span>Création de compte</span> </a>
+        <a href="index.html" class="logo-lg"><i class="mdi mdi-radar"></i> <span>Mettre à jour son mot de passe</span> </a>
     </div>
 
-    <form class="form-horizontal m-t-20" action="<?php echo site_url('register'); ?>" method="post">
+    <form class="form-horizontal m-t-20" action="<?php echo site_url('Password/update'); ?>" method="post">
       <?php  if (isset($error) && $error!=null): ?>
 
                     <div class="alert alert-danger" >
@@ -96,20 +96,13 @@ if (isset($_SESSION['user'])) {
 
                     </div>
         <?php endif; ?>
-        <div class="form-group row">
-            <div class="col-12">
-                <div class="input-group">
-                    <span class="input-group-addon"><i class="mdi mdi-email"></i></span>
-                    <input class="form-control" name="email" type="email" required="" placeholder="Email">
-                </div>
-            </div>
-        </div>
+       
 
         <div class="form-group row">
             <div class="col-12">
                 <div class="input-group">
                     <span class="input-group-addon"><i class="mdi mdi-account"></i></span>
-                    <input class="form-control" name="login" type="text" required="" placeholder="Username">
+                    <input class="form-control" name="oldpassword" type="password" required="" placeholder="Old password">
                 </div>
             </div>
         </div>
@@ -118,7 +111,7 @@ if (isset($_SESSION['user'])) {
             <div class="col-12">
                 <div class="input-group">
                     <span class="input-group-addon"><i class="mdi mdi-key"></i></span>
-                    <input class="form-control" name="password" type="password" required="" placeholder="Password">
+                    <input class="form-control" name="password" type="password" required="" placeholder="New Password">
                 </div>
             </div>
         </div>
@@ -127,7 +120,7 @@ if (isset($_SESSION['user'])) {
             <div class="col-12">
                 <div class="input-group">
                     <span class="input-group-addon"><i class="mdi mdi-key"></i></span>
-                    <input class="form-control" name="repassword" type="password" required="" placeholder="Repeat password">
+                    <input class="form-control" name="repassword" type="password" required="" placeholder="Retype new password">
                 </div>
             </div>
         </div>
@@ -145,13 +138,13 @@ if (isset($_SESSION['user'])) {
 
         <div class="form-group text-right m-t-20">
             <div class="col-xs-12">
-                <button class="btn btn-primary btn-custom waves-effect waves-light w-md" type="submit">Register</button>
+                <button class="btn btn-primary btn-custom waves-effect waves-light w-md" type="submit">Update</button>
             </div>
         </div>
 
         <div class="form-group row m-t-30">
             <div class="col-12 text-center">
-                <a href="<?php echo site_url("login_form") ; ?>" class="text-muted">Already have account?</a>
+                <a href="<?php echo site_url("accueil") ; ?>" class="text-muted">Go to application?</a>
             </div>
         </div>
 

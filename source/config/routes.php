@@ -59,7 +59,10 @@ $route['accueil']['POST'] = 'connexion/UserManager/login';
 $route['accueil/(:any)']['POST'] = 'connexion/UserManager/login/$1';
 $route['register']['POST'] = 'connexion/UserManager/register';
 $route['register_form']['get'] = 'connexion/UserManager/registerForm';
+$route['update_password']['get'] = 'connexion/UserManager/updatePasswordForm';
 $route['login_form/(:any)']['get'] = 'connexion/UserManager/loginForm/$1';
+$route['Password/update']['post'] = 'connexion/UserManager/passwordUpdate';
+$route['logout']['get'] = 'connexion/UserManager/logout';
 
 // customers
 $route['customers']['get'] = 'customers/CustomerManager';
@@ -79,7 +82,7 @@ $route['billing/generate_billing_file']['post'] = 'billings/BillingManager/gener
 $route['bill/create']['get'] = 'billings/BillingManager/createBill';
 $route['billing/generate_bill_file']['post'] = 'billings/BillingManager/generate_bill_file';
 
-$route['billing/get_malformed_lines/(:any)/(:any)']['get'] = 'billings/BillingManager/getMalformedFile/$1/$2';
+
 $route['billing/newLine']['get'] = 'billings/BillingManager/newLine/$1';
 $route['billing/(:num)/edit']['get'] = 'billings/BillingManager/editBilling/$1';
 $route['billing/store']['POST'] = 'billings/BillingManager/store/$1';
@@ -97,6 +100,8 @@ $route['billing/list_listing_file']['get'] = 'state/StateManager/list_listing';
 
 
 //files and state
+$route['facturation/create'] ['get']= 'billings/BillingManager/create_facturation_file';
+$route['files/uploading_facturation_file']['post'] = 'billings/BillingManager/uploading_facturation_file';
 $route['files/create_versement_file']['get'] = 'state/StateManager/create_versement_file';
 $route['files/uploading_versement_file']['post'] = 'state/StateManager/uploading_versement_file';
 $route['files/create_operation_file']['get'] = 'state/StateManager/create_operation_file';

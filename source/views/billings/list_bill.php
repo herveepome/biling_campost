@@ -35,20 +35,13 @@ if (isset($_SESSION['user'])) {
                              <div class="m-b-30">
                                  <a href="<?php echo site_url('billing/newLine'); ?>"><button id="addToTable" class="btn btn-success waves-effect waves-light">Ajouter une ligne<i class="mdi mdi-plus-circle-outline"></i></button></a>
 
-                                 <?php if  (isset($malformedLines) && $malformedLines!=null && !empty($malformedLines)){ 
-                                    if(count($malformedLines) <= 10 ){?>
+                                 <?php if  (isset($malformedLines) && $malformedLines!=null && !empty($malformedLines)){ ?>
+                                   
                                             <a href="#custom-modal-region" class="hidden on-editing cancel-row" data-animation="fadein" data-plugin="custommodal" data-original-title="Valider" data-overlaySpeed="200" data-overlayColor="#36404a">
                                              <button type="submit" id="addToTable" class="btn btn-primary waves-effect waves-light">Valider</button>
-                                         </a>
-
-                                  <?php  }else{
-                                            if(isset($customer)&& $customer!=null && !empty($customer) && isset($period) && $period!=null && !empty($period)){ ?>
-                                                <a href="<?php echo site_url('billing/get_malformed_lines/'.$customer.'/'.$period ); ?>"><button id="addToTable" class="btn btn-success waves-effect waves-light">Valider<i class="mdi mdi-plus-circle-outline"></i> </button> </a>
-
-                                        <?php }
-                                   }                                          
-                                  }else { ?>
-                                     <a href="<?php echo site_url('billing/read'); ?>"><button id="addToTable" class="btn btn-success waves-effect waves-light">Ajouter une ligne<i class="mdi mdi-plus-circle-outline"></i></button></a>
+                                         </a>                              
+                                 <?php }else { ?>
+                                     <a href="<?php echo site_url('billing/read'); ?>"><button id="addToTable" class="btn btn-success waves-effect waves-light">Valider<i class="mdi mdi-plus-circle-outline"></i></button></a>
                                  <?php } ?>
                              </div>
 
@@ -131,15 +124,7 @@ if (isset($_SESSION['user'])) {
                             <h4 class="custom-modal-title">Attention</h4>
                             <div class="custom-modal-text" style="text-align: left; line-height: 3">
                                 <?php if (isset($malformedLines) && $malformedLines!=null && !empty($malformedLines)){
-                                    if(count($malformedLines)>10 ){
-                                        $line='';
-                                        foreach ($malformedLines as $lines)
-                                            $line=$line.$lines->id. ",";
-                                        echo "Les lignes numéro ".$line."ont les régions, les poids, les statuts, et/ou les lieux de dépôt nuls ou mal écrites 
-                                        ou nulles; ces lignes ne seront pas facturées. Valider quand même?";
-                                    }
-
-                                   
+                                        echo "Ce fichier contient ".count($malformedLines)." lignes dont les régions, les poids, les statuts, et/ou les lieux de dépôt sont nuls ou mal écrits. Ces lignes ne seront pas facturées. Valider quand même et télécharger un fichier contenant ces lignes, pour ensuite mettre à jour et recharger dans l'application plus tard?"; 
                                 }?>
                             </div>
                             <div class="custom-modal-text" style="text-align: right">

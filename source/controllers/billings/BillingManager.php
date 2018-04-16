@@ -60,7 +60,7 @@ class BillingManager extends MainController {
 
      public function create_file($file_to_upload, $file_name, $view, $link, $error = null) {
 
-        if ($file_name == "versement_file")
+        if ($file_name == "versement_file" or $file_name == "facturation_file")
             $data['time'] = 15000;
         if ($file_name == "operation_file")
             $data['time'] = 125000;
@@ -142,7 +142,9 @@ class BillingManager extends MainController {
            $result['billings'] = $this->tempo_model->getALL(array("deleted"=>0));
 
            $result['period'] = $period;
+
            $result['infos'] = array("customer"=>$customer_id[0]->id,
+                                    "customerName"=> str_replace(' ', '', $customer_id[0]->name) ,
                                     "name"=>$nam,
                                     "period"=>$period,
                                     "newfile"=>$newfile,
@@ -152,7 +154,7 @@ class BillingManager extends MainController {
             $this->session->item = $result['infos'];
 
             $result['malformedLines']= $this->malformedLines();
-            $result['customer'] = str_replace(' ', '', $customer_id[0]->name) ; 
+            //$result['customer'] = str_replace(' ', '', $customer_id[0]->name) ; 
 
             $this->load->view('general/header.php');
             $this->load->view('billings/list_bill.php', $result);
@@ -166,57 +168,6 @@ class BillingManager extends MainController {
         $query = $this->operation_model->getCroisedRows("SELECT * from (SELECT * from tempo_bill t where t.final_status='' or t.deposit_local='' or t.deposit_local not in (select d.name from deposit_local d) or t.weight='' or t.weight not in (select w.name from weight w) or t.region='' or t.region not in (select r.name from regions r)  )s ");
        
         return($query);
-    }
-
-    // construire le fichier pour les lignes mal formées
-
-    public function getMalformedFile( $customer, $period){
-       //var_dump($this->malformedLines()) ; die;
-        $malformedLines = $this->malformedLines();
-       foreach ($malformedLines as $lines){
-                    
-                    $rows[] = array(
-                        'date_collected'=>$lines->date_collected,
-                        'tracking_number'=>$lines->tracking_number,
-                        'destination'=>$lines->destination,
-                        'region'=>$lines->region,
-                        'order_number'=>$lines->order_number,
-                        'weight'=>$lines->weight,
-                        'final_status'=>$lines->final_status,
-                        'final_status_date'=>$lines->final_status_date,
-                        'amount_to_collect'=>$lines->amount_to_collect,
-                        'amount_collected'=>$lines->amount_collected,
-                        'deposit_local'=>$lines->deposit_local
-                    );
-
-                }
-        if(count($malformedLines)>10){
-            $filename = "billing_".$customer."_".$period ;
-            $path = base_url() . 'upload/billing/' .$filename.'.xlsx' ;
-             copy(FCPATH."upload\\model\\billing.xlsx", "upload\\billing\\" . $filename.".xlsx");
-
-            $writer = WriterFactory::create(Type::XLSX);
-
-            $writer->setShouldUseInlineStrings(true)
-                    ->openToFile(FCPATH."upload\\billing\\" . $filename.".xlsx")
-                    ->addRow(["Date de collecte","Num colis", "Destination", "region" , "Numéro de commande","Poids","Statut final", "Date statut final", "Cash à collecter", "Cash collecté"
-                        , "lieux de dépôt"])
-                    ->addRows($rows)
-                    ->close();
-            $this->read() ;
-            $this->downloadMalFormedLines($path);
-            
-        }
-
-    }
-    // télécharger le fichier des lignes mal formées
-    public function downloadMalFormedLines($path){
-        header('Content-Type: application/octet-stream');
-        header("Content-Transfer-Encoding: Binary");
-        header("Content-disposition: attachment; filename=\"" . basename($path) . "\"");
-        readfile($path); // do the double-download-dance (dirty but worky)
-
-
     }
 
 // les données nécessaires à la génération du fichier de facturation
@@ -370,14 +321,55 @@ class BillingManager extends MainController {
     public function read($id=null) {
         if(isset($_SESSION['item']) && $_SESSION['item']!=null){
             $infos = $_SESSION['item'];
+             $malformedLines = $this->malformedLines();
+             if (!empty($malformedLines)) {
+                foreach ($malformedLines as $lines){
+                    
+                    $rows[] = array(
+                        'date_collected'=>$lines->date_collected,
+                        'tracking_number'=>$lines->tracking_number,
+                        'destination'=>$lines->destination,
+                        'region'=>$lines->region,
+                        'order_number'=>$lines->order_number,
+                        'weight'=>$lines->weight,
+                        'final_status'=>$lines->final_status,
+                        'final_status_date'=>$lines->final_status_date,
+                        'amount_to_collect'=>$lines->amount_to_collect,
+                        'amount_collected'=>$lines->amount_collected,
+                        'deposit_local'=>$lines->deposit_local
+                    );
+
+                }
+           
+            $filename = "billing_".$infos['customerName']."_".$infos['period'] ;
+             $path ='upload/billing/' .$filename.'.xlsx' ;
+             $data['path'] = $path ;
+             copy(FCPATH."upload\\model\\billing.xlsx", "upload\\billing\\" . $filename.".xlsx");
+
+            $writer = WriterFactory::create(Type::XLSX);
+
+            $writer->setShouldUseInlineStrings(true)
+                    ->openToFile(FCPATH."upload\\billing\\" . $filename.".xlsx")
+                    ->addRow(["Date de collecte","Num colis", "Destination", "region" , "Numéro de commande","Poids","Statut final", "Date statut final", "Cash à collecter", "Cash collecté"
+                        , "lieux de dépôt"])
+                    ->addRows($rows)
+                    ->close();
+             }
+             
+
+             //var_dump($malformedLines) ; die;
+            
             if ($id==null){
-
-
+                //die('test') ;
                 $id=$this->state_model->insert(array("file_path" => $infos['newfile'], "type" => $infos['type'] ,"facturation_date" => $infos['date_de_facturation'], "period" => $infos['period'], "customerID" => $infos['customer'], "name" => $infos['name']));
 
+                $data['file_text_name'] ='Fichier de facturation de la période du ' .$infos['period'] ;
                 $tempo_bill  = $this->operation_model->getCroisedRows("select * from tempo_bill t1 where t1.id not in (SELECT t.id from tempo_bill t where t.final_status='' or t.deposit_local='' or t.deposit_local not in (select d.name from deposit_local d) or t.weight='' or t.weight not in (select w.name from weight w) or t.region='' or t.region not in (select r.name from regions r))   ");
-
-                foreach ($tempo_bill as $tempo){
+                    //var_dump($tempo_bill) ; die;
+               $rows = array();
+                if (!empty($tempo_bill)) {
+                    //die('test');
+                    foreach ($tempo_bill as $tempo){
                     if($tempo->deposit_local=="")
                         $tempo->deposit_local = "A domicile";
                     $rows[] = array(
@@ -397,16 +389,23 @@ class BillingManager extends MainController {
                     );
 
                 }
-
-                $this->operation_model->executeQuery("DROP TABLE IF EXISTS tempo_bill  " );
+                 $this->operation_model->executeQuery("DROP TABLE IF EXISTS tempo_bill  " );
                 $this->billing_model->insert_many_rows($rows);
+
+                }
+                else{
+
+                    $data['billing'] = $rows ;
+
+                }
+                
             }
-            $data['file_text_name'] ='Fichier de facturation de la période du ' .$infos['period'] ;
+            
         }
         else
             $data['file_text_name'] ='Fichier de facturation ' ;
         $data['billing']=$this->billing_model->getALL(array("deleted"=>0, "state_file_id"=>$id));
-
+        $data['malformedLines'] = $malformedLines ;
         $this->load->view('general/header.php');
         $this->load->view('billings/read_billing.php', $data);
         $this->load->view('general/footer.php');
@@ -779,6 +778,139 @@ class BillingManager extends MainController {
 
 
     }
+     
+     public function create_facturation_file() {
+   
+        $this->create_file("Fichier de facturation", "facturation_file", 'billings/new_operation_versment.php', 'files/uploading_facturation_file');
+    }
+
+     public function uploading_facturation_file() {
+        if ($this->input->post()) {
+            $dataInput = $this->input->post() ;
+            extract($this->input->post(NULL, TRUE));
+            //nouveaux noms des fichiers d'opérations et de versement
+
+            $period = substr($period, 3, 2) . substr($period, 0, 2) . substr($period, 6);
+
+            $billing_name = "facturation" . $period;
+
+            //récupération de l'id du client correspondant
+            $customer_id = $this->customer_model->getALL(array("name" => $customer));
+
+
+            $billing_file = './upload/operations_versment/' . $billing_name . '.xlsx';
+            //var_dump($billing_file) ;die;
+            $this->uploading_file("file", $billing_name, $customer_id[0]->id, $billing_file, $period, "FF", "facturation", "billing_file", $facturation_date, "Fichier de facturation", "facturation_file", "billings/new_operation_versment.php", "files/create_facturation_file",$dataInput);
+        }
+    }
+
+    public function uploading_file($uploading_file, $name, $customer, $filepath, $period, $file_type, $operation_type, $file, $facturation_date, $file_to_upload, $file_name, $view, $link,$dataInput) {
+
+            if ($this->upload_file($name, 'xlsx|xls', './upload/operations_versment/', '2048', $uploading_file) == true) {
+                
+                $data['billings']=$this->excel_to_sql( $operation_type, $filepath,$period,$customer,$dataInput);
+                
+                
+            }
+        
+    }
+     public function excel_to_sql($file_type, $file,$period, $customer,$dataInput) {
+
+
+        $reader = ReaderFactory::create(Type::XLSX); // for XLSX files
+
+
+        $reader->open($file);
+        $data = array();
+
+
+         if ($file_type == "facturation") {
+            foreach ($reader->getSheetIterator() as $sheet) {
+                foreach ($sheet->getRowIterator() as $row) {
+                     if ($row["0"] != "Date de collecte") {   
+                        $result = array(
+                            'date_collected' => $row['0'],
+                            'tracking_number' => $row['1'],
+                            'destination' => $row['2'],
+                            'region' => $row['3'],
+                            'order_number' => $row['4'],
+                            'weight' => $row['5'],
+                            'final_status' => $row['6'],
+                            'final_status_date' => $row['7'],
+                            'deleted' => 0 ,
+                            'amount_to_collect' => $row['8'],
+                            'amount_collected' => $row['9'],
+                            'deposit_local' => $row['10']
+                            
+                        );
+
+                        $data[] = $result;
+                }
+            }
+            
+        }
+    }
+         $name = "billing";
+            $file_type = "Fichier de facturation";
+            $newfile = "./upload/billing/billing_" . $period . ".xlsx";
+            $dateFacturation = $dataInput['period'];
+
+            $type = "FF";
+            $nam = "billing_" . $period;
+
+
+
+       // var_dump($data); die;
+        // créer la table temporaire pour y insérer les lignes du fichier uploadé
+          $req =  $this->operation_model->executeQuery("DROP TABLE IF EXISTS tempo_bill  " );
+
+            if ($this->operation_model->executeQuery("CREATE TABLE tempo_bill( `id` int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL ,`date_collected` varchar(32) NOT NULL, `tracking_number` varchar(32) NOT NULL,`destination` varchar(32) NOT NULL,`region` varchar(50) NOT NULL, `order_number` varchar(50) NOT NULL,`weight` varchar(50) DEFAULT NULL, `final_status` varchar(50) NOT NULL, `final_status_date` varchar(50) NOT NULL,`deleted` varchar(5) NOT NULL DEFAULT '0', `amount_to_collect` varchar(45) NOT NULL, `amount_collected` varchar(45) NOT NULL, `deposit_local` varchar(45) NOT NULL)"))
+
+                $this->tempo_model->insert_many_rows($data);
+
+           $result['billings'] = $this->tempo_model->getALL(array("deleted"=>0));
+
+           $result['period'] = $period;
+
+           $result['infos'] = array("customer"=>$customer,
+                                    "customerName" => str_replace(' ', '', $dataInput['customer']),
+                                    "name"=>$nam,
+                                    "period"=>$period,
+                                    "newfile"=>$newfile,
+                                    "type"=>$type,
+                                    "date_de_facturation"=>$dateFacturation,
+                                    );
+            $this->session->item = $result['infos'];
+
+            $result['malformedLines']= $this->malformedLines();
+           // $result['customer'] = str_replace(' ', '', $dataInput['customer']) ; 
+
+            $this->load->view('general/header.php');
+            $this->load->view('billings/list_bill.php', $result);
+            $this->load->view('general/footer.php');
+
+    }
+
+
+    public function upload_file($file_name, $allowed_types, $upload_path, $max_size, $file_uploading) {
+        //var_dump($file_uploading);die;
+        if ($file_name != '')
+            $config['file_name'] = $file_name;
+
+        $config['upload_path'] = $upload_path;
+        $config['allowed_types'] = $allowed_types;
+        $config['max_size'] = $max_size;
+
+        $this->load->library('upload', $config);
+        $this->upload->initialize($config);
+
+        if ($this->upload->do_upload('file') == TRUE)
+            return true;
+        else
+            echo ($this->upload->display_errors());
+        return false;
+    }
+
 
     public function monthinFrench($month) {
         $final_month="";

@@ -25,11 +25,11 @@ class MainController extends CI_Controller {
     }
 
     public function index() {
-        if (isset($_SESSION['user'])) 
-            
+        if (isset($_SESSION['user'])) {
+            $this->load->view('general/header.php');
              $this->load->view('general/accueil.php');
+        }
         else
-            
             $this->load->view('general/login.php');
         $this->load->view('general/footer.php');
     }

@@ -44,18 +44,14 @@ class UserManager extends MainController{
         if ($this->input->post()){
             $error = null;
             extract($this->input->post(NULL, TRUE));
-            $user  = $this->user_model->getALL(array("login"=>$login,"password"=>$password));
+            $user  = $this->user_model->getALL(array("login"=>$login,"password"=>sha1($password)));
             if (isset($user) && !empty($user)&& $user!=null){
+               
                 $_SESSION['user'] = $login;
                 $_SESSION['start'] = time(); // récupérer le temps auquel l'utilisateur se connecte
-                $_SESSION['expire'] = $_SESSION['start'] + (30 * 60); // la session s'expire après 15mn
+                $_SESSION['expire'] = $_SESSION['start'] + (30 * 60); // la session s'expire après 30 mn
                 
-                if($request_uri ==null){
-                    $this->load->view('general/header.php');
-                    $this->load->view('general/accueil.php',$data);
-                    $this->load->view('general/footer.php');
-                }
-                elseif($request_uri=='accueil'){
+                if($request_uri ==null or $request_uri=='accueil'){
                     $this->load->view('general/header.php');
                     $this->load->view('general/accueil.php',$data);
                     $this->load->view('general/footer.php');
@@ -85,6 +81,11 @@ class UserManager extends MainController{
         $this->load->view('general/footer.php');
     }
 
+    public function updatePasswordForm(){
+        $this->load->view('general/updatepassword.php');
+        $this->load->view('general/footer.php');
+    }
+
     public function loginForm($request_uri){
         $data['request_uri'] = $request_uri ;
         $this->load->view('general/login.php', $data);
@@ -97,12 +98,63 @@ class UserManager extends MainController{
         if ($this->input->post()){
             $error = null;
             extract($this->input->post(NULL, TRUE));
-            $user = array("email"=>$email,"login"=>$login,"password"=>sha1($password));
-            $this->user_model->insert($user);
+            if ( !empty($this->user_model->getALL(array("login"=>$login))) ){
+                $data['error'] = "un utilisateur ayant ce login existe déjà; essayez de nouveau!" ;
+                 $this->load->view('general/register.php',$data);
+                $this->load->view('general/footer.php');
+            }
+            if ($password = $repassword){
+                $user = array("email"=>$email,"login"=>$login,"password"=>sha1($password));
+                $this->user_model->insert($user);
+                $data['message'] = "Création de compte effectuée avec succès" ;
+            }
+            else{
+                $data['error'] = "vos deux mots de passe ne sont pas identiques; essayez de nouveau!" ;
+                 $this->load->view('general/register.php',$data);
+                $this->load->view('general/footer.php');
+            }
+            
             $this->load->view('general/header.php');
             $this->load->view('general/accueil.php',$data);
             $this->load->view('general/footer.php');
 
         }
+    }
+
+    public function passwordUpdate(){
+        $data['customers'] = $this->customer_model->getALL(array("deleted"=>0)) ;
+         if ($this->input->post()){
+            $error = null;
+            extract($this->input->post(NULL, TRUE));
+            $user = $this->user_model->getALL(array("login"=>$_SESSION['user'],"password"=>sha1($oldpassword)))[0] ;
+            if (isset($user) && !empty($user)){
+                if($repassword = $password){
+                $user = $this->user_model->getALL(array("login"=>$_SESSION['user']))[0] ;
+                $this->user_model->insert(array("password"=>sha1($password)),$user->id);
+                $data['message'] = "Votre mot de passe a été mis à jour avec succès" ;
+
+                }
+                 else{
+                    $data['error'] = "vos deux mots de passe ne sont pas identiques; essayez de nouveau!" ;
+                     $this->load->view('general/header.php');
+                        $this->load->view('general/updatepassword.php',$data);
+                        $this->load->view('general/footer.php');
+                }
+            }else{
+                $data['error'] = "Votre ancien mot de passe ne correspond pas; essayez de nouveau!" ;
+                $this->load->view('general/header.php');
+                $this->load->view('general/updatepassword.php',$data);
+                $this->load->view('general/footer.php');
+            }
+            $this->load->view('general/header.php');
+                $this->load->view('general/accueil.php',$data);
+                $this->load->view('general/footer.php');
+
+         }
+    }
+
+    public function logout(){
+        $_SESSION = array() ;
+        $this->loginForm("accueil") ;
     }
 }
