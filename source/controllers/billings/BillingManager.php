@@ -95,8 +95,26 @@ class BillingManager extends MainController {
              } else {
 
             $name = $name . "_" . $period . ".xlsx";
-
+            $weight = $this->configuration_model->all("weight");
              foreach ($data as $row) {
+                if(is_numeric($row->size)) {
+                    if($row->size < 30000){
+                        
+                        $i=-1 ;
+                        do {
+                            $i++;
+                            $dataSize = explode('-', $weight[$i]->weight);
+
+                        } while ($row->size > $dataSize[0]);
+                        $size = $weight[$i-1]->name ;
+                    }elseif ($row->size == 30000) {
+                        $size = "LARGE" ;
+                    }   
+                    else
+                    $size = $row->size ;      
+                } 
+                else
+                    $size = $row->size ;
             	$rows[] = array(
             	   // 'id'=>$row->id,
 			    	'date_collected'=>$row->start_time,
@@ -104,7 +122,7 @@ class BillingManager extends MainController {
 			    	'destination'=>$row->address,
 			    	'region'=>$row->region,
 			    	'order_number'=>$row->order,
-			    	'weight'=>$row->size,
+			    	'weight'=>$size,
 			    	'final_status'=>$row->status,
 			    	'final_status_date'=>$row->delivered_date,
 			    	'deleted'=>0,
@@ -114,23 +132,11 @@ class BillingManager extends MainController {
 					);
             }
 
-
             // créer une table temporaire qui sera supprimée plustard et sur laquelle les éditions du FF se feront
            $req =  $this->operation_model->executeQuery("DROP TABLE IF EXISTS tempo_bill  " );
 
-            if ($this->operation_model->executeQuery("CREATE TABLE tempo_bill( `id` int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL ,
-                                                                              `date_collected` varchar(32) NOT NULL,
-                                                                              `tracking_number` varchar(32) NOT NULL,
-                                                                              `destination` varchar(32) NOT NULL,
-                                                                              `region` varchar(50) NOT NULL,
-                                                                              `order_number` varchar(50) NOT NULL,
-                                                                              `weight` varchar(50) DEFAULT NULL,
-                                                                              `final_status` varchar(50) NOT NULL,
-                                                                              `final_status_date` varchar(50) NOT NULL,
-                                                                              `deleted` varchar(5) NOT NULL DEFAULT '0',
-                                                                              `amount_to_collect` varchar(45) NOT NULL,
-                                                                              `amount_collected` varchar(45) NOT NULL,
-                                                                              `deposit_local` varchar(45) NOT NULL)"))
+            if ($this->operation_model->executeQuery("CREATE TABLE tempo_bill( `id` int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL ,`date_collected` varchar(32) NOT NULL, `tracking_number` varchar(32) NOT NULL,`destination` varchar(32) NOT NULL,`region` varchar(50) NOT NULL, `order_number` varchar(50) NOT NULL,`weight` varchar(50) DEFAULT NULL, `final_status` varchar(50) NOT NULL, `final_status_date` varchar(50) NOT NULL,`deleted` varchar(5) NOT NULL DEFAULT '0', `amount_to_collect` varchar(45) NOT NULL, `amount_collected` varchar(45) NOT NULL, `deposit_local` varchar(45) NOT NULL)"))
+
                 $this->tempo_model->insert_many_rows($rows);
 
            $result['billings'] = $this->tempo_model->getALL(array("deleted"=>0));
@@ -145,23 +151,72 @@ class BillingManager extends MainController {
                                     );
             $this->session->item = $result['infos'];
 
-
-
-            $result['malformedRegion']= $this->malformedRegion();
-
+            $result['malformedLines']= $this->malformedLines();
+            $result['customer'] = str_replace(' ', '', $customer_id[0]->name) ; 
 
             $this->load->view('general/header.php');
             $this->load->view('billings/list_bill.php', $result);
             $this->load->view('general/footer.php');
 
 
-
         }
     }
 // les lignes dont les régions sont vides ou mal formées
-    public function malformedRegion(){
-        $query = $this->operation_model->getCroisedRows("SELECT s.id from (SELECT * from tempo_bill t where t.region='' or t.region not in (select r.name from regions r)  )s ");
-        return $query ;
+    public function malformedLines(){
+        $query = $this->operation_model->getCroisedRows("SELECT * from (SELECT * from tempo_bill t where t.final_status='' or t.deposit_local='' or t.deposit_local not in (select d.name from deposit_local d) or t.weight='' or t.weight not in (select w.name from weight w) or t.region='' or t.region not in (select r.name from regions r)  )s ");
+       
+        return($query);
+    }
+
+    // construire le fichier pour les lignes mal formées
+
+    public function getMalformedFile( $customer, $period){
+       //var_dump($this->malformedLines()) ; die;
+        $malformedLines = $this->malformedLines();
+       foreach ($malformedLines as $lines){
+                    
+                    $rows[] = array(
+                        'date_collected'=>$lines->date_collected,
+                        'tracking_number'=>$lines->tracking_number,
+                        'destination'=>$lines->destination,
+                        'region'=>$lines->region,
+                        'order_number'=>$lines->order_number,
+                        'weight'=>$lines->weight,
+                        'final_status'=>$lines->final_status,
+                        'final_status_date'=>$lines->final_status_date,
+                        'amount_to_collect'=>$lines->amount_to_collect,
+                        'amount_collected'=>$lines->amount_collected,
+                        'deposit_local'=>$lines->deposit_local
+                    );
+
+                }
+        if(count($malformedLines)>10){
+            $filename = "billing_".$customer."_".$period ;
+            $path = base_url() . 'upload/billing/' .$filename.'.xlsx' ;
+             copy(FCPATH."upload\\model\\billing.xlsx", "upload\\billing\\" . $filename.".xlsx");
+
+            $writer = WriterFactory::create(Type::XLSX);
+
+            $writer->setShouldUseInlineStrings(true)
+                    ->openToFile(FCPATH."upload\\billing\\" . $filename.".xlsx")
+                    ->addRow(["Date de collecte","Num colis", "Destination", "region" , "Numéro de commande","Poids","Statut final", "Date statut final", "Cash à collecter", "Cash collecté"
+                        , "lieux de dépôt"])
+                    ->addRows($rows)
+                    ->close();
+            $this->read() ;
+            $this->downloadMalFormedLines($path);
+            
+        }
+
+    }
+    // télécharger le fichier des lignes mal formées
+    public function downloadMalFormedLines($path){
+        header('Content-Type: application/octet-stream');
+        header("Content-Transfer-Encoding: Binary");
+        header("Content-disposition: attachment; filename=\"" . basename($path) . "\"");
+        readfile($path); // do the double-download-dance (dirty but worky)
+
+
     }
 
 // les données nécessaires à la génération du fichier de facturation
@@ -284,7 +339,7 @@ class BillingManager extends MainController {
 
         }
 
-        $data['malformedRegion']= $this->malformedRegion();
+        $data['malformedLines']= $this->malformedLines();
 
         $this->load->view('general/header.php');
         $this->load->view('billings/new_billing.php', $data);
@@ -320,7 +375,7 @@ class BillingManager extends MainController {
 
                 $id=$this->state_model->insert(array("file_path" => $infos['newfile'], "type" => $infos['type'] ,"facturation_date" => $infos['date_de_facturation'], "period" => $infos['period'], "customerID" => $infos['customer'], "name" => $infos['name']));
 
-                $tempo_bill  = $this->operation_model->getCroisedRows("select * from tempo_bill t1 where t1.id not in (SELECT s.id from (SELECT * from tempo_bill t2 where t2.region='' or t2.region not in (select r.name from regions r)  )s)");
+                $tempo_bill  = $this->operation_model->getCroisedRows("select * from tempo_bill t1 where t1.id not in (SELECT t.id from tempo_bill t where t.final_status='' or t.deposit_local='' or t.deposit_local not in (select d.name from deposit_local d) or t.weight='' or t.weight not in (select w.name from weight w) or t.region='' or t.region not in (select r.name from regions r))   ");
 
                 foreach ($tempo_bill as $tempo){
                     if($tempo->deposit_local=="")
@@ -366,7 +421,7 @@ class BillingManager extends MainController {
     }
 
     public function list_billing_file() {
-        $data['malformedRegion']= $this->malformedRegion();
+        $data['malformedLines']= $this->malformedLines();
         $data["billings"]= $this->tempo_model->getALL(array("deleted"=>0));
         $this->load->view('general/header.php');
         $this->load->view('billings/list_bill.php', $data);
@@ -420,16 +475,15 @@ class BillingManager extends MainController {
                             $i++;
                             $dataInterval = explode('-', $intervals[$i]->interval);
 
-                        } while ((int)$bill->amount_collected > (int)$dataInterval[1]);
+                        } while ((int)$bill->amount_collected > (int)$dataInterval[0]);
 
-                        $commissionsId = $intervals[$i]->id;
+                        $commissionsId = $intervals[$i-1]->id;
 
                         $commissions = $this->cash_model->getALL(array('cash_interval_id' => $commissionsId))[0]->amount;
                     }
-                    $poids30 = $this->configuration_model->getWhere('weight', 'weight',20-30);
+                    $poids30 = $this->configuration_model->getWhere('weight', 'weight',20000-30000);
 
                     // gestion des tarifs à domicile ou en point relais
-
 
                     $zone = $this->configuration_model->getWhere('regions', 'name', $bill->region)[0]->zone_id;   // id de la zone partant de la région
                     $domicile = $this->local_model->getALL(array("name" => 'A domicile'))[0]->id; // id à domicile
@@ -437,25 +491,15 @@ class BillingManager extends MainController {
 
                     if ($bill->deposit_local == "A domicile") {
 
-                        if(is_int(str_replace(' ', '', $bill->weight))){
-                            $size = str_replace(' ', '', $bill->weight) ;
-                            if ($size > 30){
-                                $extra = $size - 30 ;
+                        if(is_numeric($bill->weight)){
+                            
+                            if ((int)$bill->weight > 30000){
+                                $extra = $size - 30000 ;
                                 $poid = $poids30[0]->id;
                                 $tarifBureau = 0;
                                 $tarifDomicile = $this->deposit_model->getALL(array("zone_id" => $zone, "weight_id" => $poid, "deposit_local_id" => $domicile, "customer_id" => $customer_id[0]->id))[0]->amount + (100*$extra);
                             }
-                            else{
-                                $j = -1;
-                                do {
-                                    $j++;
-                                    $dataWeight= explode('-', $interval_poids[$i]->weight);
-
-                                } while ($size > (int)$dataWeight[1]);
-                                $poid = $interval_poids['$j']->id ;
-                                $tarifBureau = 0;
-                                $tarifDomicile = $this->deposit_model->getALL(array("zone_id" => $zone, "weight_id" => $poid, "deposit_local_id" => $domicile, "customer_id" => $customer_id[0]->id))[0]->amount;
-                            }
+                            
                         }
                         else{
                             $poid = $this->configuration_model->getWhere('weight', 'name', $bill->weight)[0]->id; // id du poids partant de son nom
@@ -464,32 +508,20 @@ class BillingManager extends MainController {
                         }
 
                     } else {
-                        if(is_int(str_replace(' ', '', $bill->weight))){
-                            $size = str_replace(' ', '', $bill->weight) ;
-                            if ($size > 30){
-                                $extra = $size - 30 ;
+                        if(is_numeric($bill->weight)){
+                            if ((int)$bill->weight > 30000){
+                                $extra = $size - 30000 ;
                                 $poid = $poids30[0]->id;
                                 $tarifDomicile = 0;
                                 $tarifBureau = $this->deposit_model->getALL(array("zone_id" => $zone, "weight_id" => $poid, "deposit_local_id" => $bureau, "customer_id" => $customer_id[0]->id))[0]->amount + (100*$extra);
                             }
-                            else{
-                                $j = -1;
-                                do {
-                                    $j++;
-                                    $dataWeight= explode('-', $interval_poids[$i]->weight);
-
-                                } while ($size > (int)$dataWeight[1]);
-                                $poid = $interval_poids['$j']->id ;
-                                $tarifDomicile = 0;
-                                $tarifBureau = $this->deposit_model->getALL(array("zone_id" => $zone, "weight_id" => $poid, "deposit_local_id" => $bureau, "customer_id" => $customer_id[0]->id))[0]->amount;
-                            }
+                            
                         }
                         else{
                             $poid = $this->configuration_model->getWhere('weight', 'name', $bill->weight)[0]->id; // id du poids partant de son nom
                             $tarifBureau = $this->deposit_model->getALL(array("zone_id" => $zone, "weight_id" => $poid, "deposit_local_id" => $bureau, "customer_id" => $customer_id[0]->id))[0]->amount;
                             $tarifDomicile = 0;
                         }
-
 
                     }
                     // gestion de la tarification retour
