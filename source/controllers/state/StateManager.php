@@ -862,6 +862,8 @@ class StateManager extends MainController {
                 $this->load->view('general/accueil.php', $data);
                 $this->load->view('general/footer.php');
             }
+        }
+    }
     
 
     public function excel_to_sql($state_file_id, $file_type, $file) {
