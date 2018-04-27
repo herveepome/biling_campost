@@ -172,3 +172,10 @@ $route['weight/create']['POST'] = 'config/ConfigurationManager/weightInterval/cr
 $route['weight/(:num)/edit']['get'] = 'config/ConfigurationManager/weightInterval/edit/$1';
 $route['weight/(:num)/update']['POST'] = 'config/ConfigurationManager/weightInterval/update/$1';
 $route['weight/(:num)/delete']['get'] = 'config/ConfigurationManager/weightInterval/delete/$1';
+
+$route['config/tarifs']['get'] = 'config/ConfigurationManager/tarifs';
+$route['tarifs/new']['get'] = 'config/ConfigurationManager/tarifs/new';
+$route['tarifs/create']['POST'] = 'config/ConfigurationManager/tarifs/create/$data';
+$route['tarifs/(:num)/edit']['get'] = 'config/ConfigurationManager/tarifs/edit/$1';
+$route['tarifs/(:num)/update']['POST'] = 'config/ConfigurationManager/tarifs/update/$1';
+$route['tarifs/(:num)/delete']['get'] = 'config/ConfigurationManager/tarifs/delete/$1';

@@ -102,6 +102,7 @@
                                             <li><a href="<?php echo site_url('config/regions'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>les régions</a></li>
                                             <li><a href="<?php echo site_url('config/weight_intervals'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i> les intervals de poids</a></li>
                                             <li><a href="<?php echo site_url('config/cash_intervals'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>les intervals de cash</a></li>
+                                            <li><a href="<?php echo site_url('config/tarifs'); ?>"><i class="ion-ios7-paper">&nbsp;&nbsp;</i>les tarifs clients</a></li>
                                             
                                         </ul>
                                     </li>

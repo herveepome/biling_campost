@@ -50,6 +50,23 @@ if (isset($_SESSION['user'])) {
                                             <input type="text" value="<?php if (isset($zone)) echo $zone->zone; ?>"  id="example-email" name="zone" class="form-control" placeholder="zone" required>
                                         </div>
                                     </div>
+                                     <div class="form-group row">
+                                        <label class="col-2 col-form-label" for="example-email">Client</label>
+                                        <div class="col-4">
+                                                <select class="form-control" name="customer" required>
+                                                    <option disabled selected>Sélectionnez un client</option>
+                                                    <?php
+                                                    if (isset($customers)) {
+                                                        foreach ($customers as $customer) {
+                                                            ?>
+                                                            <option><?php echo $customer->name ?></option>
+                                                            <?php }
+                                                        }
+                                                        ?>
+
+                                                </select>
+                                        </div>
+                                        </div>
                                     
                                       <center>
                                               <button type="submit" class="btn btn-primary waves-effect waves-light btn-md">Valider</button>

@@ -18,6 +18,7 @@ class ConfigurationManager extends MainController {
     public function __construct() {
         parent::__construct();
       // chargement de la base de donnée
+        $this->load->model('Customer_model');
         $this->load->model('Configuration_model');
     }
 
@@ -83,9 +84,11 @@ class ConfigurationManager extends MainController {
   /* configurer les zones */
 
     public function zone($action='', $value=''){
+        $data['customers'] = $this->customer_model->getALL(array("deleted"=>0)) ;
         if (($action=='new')&&($value==''))
         {   
             $data['zone']=null;
+            
             $this->load->view('general/header.php');
             $this->load->view('configuration/zone/add_zone.php',$data);
             $this->load->view('general/footer.php');
@@ -321,6 +324,74 @@ class ConfigurationManager extends MainController {
             $this->load->view('configuration/cash/list_cash.php', $data);
             $this->load->view('general/footer.php');
         }
+    }
+
+    // configurer les tarifs clients
+
+    public function tarifs(){
+        $data['customers'] = $this->customer_model->getALL(array("deleted"=>0)) ;
+        if (($action=='new')&&($value==''))
+        {   
+            $data['tarif']=null;
+            $this->load->view('general/header.php');
+            $this->load->view('configuration/region/add_tarif.php',$data);
+            $this->load->view('general/footer.php');
+        }
+
+        // éditer une région
+        else if ($action=='create'){
+            $zone=array('zone' =>$this->Configuration_model->find('id','zone',addslashes($this->input->post('zone')),'zone')) ;
+            $id_zone=$zone["zone"][0]->id; 
+            $region=array(
+                        'name'=>addslashes($this->input->post('region')),
+                        'zone_id'=>$id_zone  
+                    );
+            $this->Configuration_model->create($region,'regions');
+
+            redirect('config/tarifs');
+        }
+        // éditer une région
+       else if(($action=='edit')&&($value!=''))
+        {
+           if($value > 0){
+                $data['region'] = $this->Configuration_model->edit($value,'id','regions');
+                $data['zones']=$this->Configuration_model->all('zone');
+                $this->load->view('general/header.php');
+                $this->load->view('configuration/region/add_region.php',$data);
+                $this->load->view('general/footer.php');
+
+            }
+        }
+        // mettre à jour une région
+        else if(($action=='update')&&($value!='')){
+            $zone=array('zone' =>$this->Configuration_model->find('id','zone',addslashes($this->input->post('zone')),'zone')) ;
+            $id_zone=$zone["zone"][0]->id; 
+            $region=array(
+                'name'=>addslashes($this->input->post('region')),
+                'zone_id'=>$id_zone  
+            );
+            $this->Configuration_model->update($value,$region,'id','regions');
+            redirect('config/regions');
+             
+        } 
+        // supprimer une région
+        else if(($action=='delete')&&($value!=''))
+        {   
+            $region = array('name'=>$this->Configuration_model->find('name','id',$value,'regions')[0]->name,
+                            'zone_id'=>$this->Configuration_model->find('zone_id','id',$value,'regions')[0]->zone_id,
+                             'deleted'=>1);
+            $this->Configuration_model->update($value,$region,'id','regions');
+                    redirect('config/regions');
+             
+        }
+        // lister les régions
+        else{
+            $data['regions']=$this->Configuration_model->all('regions');
+            $this->load->view('general/header.php');
+            $this->load->view('configuration/region/list_regions.php', $data);
+            $this->load->view('general/footer.php');
+        }
+
     }
 
 }
