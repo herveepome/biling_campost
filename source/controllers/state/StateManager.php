@@ -602,8 +602,7 @@ class StateManager extends MainController {
                     }
                 }
             } else {
-                if ($state[0]->type == "FC" || $state[0]->type == "FRT" || $state[0]->type == "FUV") {
-
+                
 
 
                     $this->operation_model->executeQuery("CREATE  TEMPORARY TABLE IF NOT EXISTS nominal1 AS (select * from (SELECT v.id,v.reference,"
@@ -705,7 +704,7 @@ class StateManager extends MainController {
                     $this->operation_model->executeQuery("DROP TABLE alternatifs1");
                     $this->operation_model->executeQuery("DROP TABLE alternatifs2");
                     $this->operation_model->executeQuery("DROP TABLE alternatifs3");
-                }
+                
             }
         }
 

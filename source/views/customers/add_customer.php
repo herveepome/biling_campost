@@ -78,10 +78,11 @@ if (isset($_SESSION['user'])) {
                                     <label class="col-2 col-form-label" for="example-email">Adresse</label>
                                     <div class="col-4">
                                         <input type="text" value="<?php if (isset($customer)) echo $customer[0]->adress; ?>"  id="example-email" name="adress" class="form-control" placeholder="Adresse" >
-                                        <?php var_dump($adresses);die;if (isset($adresses) && $adresses != null && !empty($adresses)) { ?>
+                                        <?php  if (isset($adresses) && $adresses != null && !empty($adresses)) { ?>
                                         <select class="form-control" name="adress" >
                                                 <option disabled selected> choisir une adresse  </option>
-                                        <?php  foreach ($adresses as $adresse) {  ?>
+                                        <?php var_dump($adresses);   foreach ($adresses as $adresse) { ?>
+                                                
                                                     <option> 
                                                         <?php echo $adresse->$adresse ?>
                                                     </option>
