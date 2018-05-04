@@ -50,22 +50,22 @@ if (isset($_SESSION['user'])) {
                                             <input type="text" value="<?php if (isset($region)) echo $region->name; ?>"  id="example-email" name="region" class="form-control" placeholder="region" required>
                                         </div>
                                     </div>
-                                     <div class="form-group row">
-                                        <label class="col-2 col-form-label">Zone</label>
+                                <!--     <div class="form-group row">
+                                        <label class="col-2 col-form-label">ville</label>
                                         <div class="col-2">
 
-                                            <select class="form-control" name="zone" required>
-                                                <?php if (isset($zones) && $zones != null && !empty($zones)) { ?>
+                                            <select class="form-control" name="ville" required>
+                                                <?php // if (isset($villes) && $villes != null && !empty($villes)) { ?>
                                                      
-                                                    <?php foreach ($zones as $zone) { ?>
-                                                        <option><?php echo $zone->zone ?></option>
+                                                    <?php// foreach ($villes as $ville) { ?>
+                                                        <option><?php // echo $ville->ville ?></option>
                                                        <?php
                                                     }
                                                 }
                                                 ?> 
                                             </select>       
                                         </div>
-                                    </div>
+                                    </div> -->
                                     
                                       <center>
                                               <button type="submit" class="btn btn-primary waves-effect waves-light btn-md">Valider</button>
@@ -90,5 +90,5 @@ if (isset($_SESSION['user'])) {
 </div>
 <!-- end wrapper -->
 <!-- end wrapper -->
-<?php }
+<?php// }
 }?>

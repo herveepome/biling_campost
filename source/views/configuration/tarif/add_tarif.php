@@ -1,7 +1,37 @@
+<script>
+    function change() {
+        val = document.getElementById("select_id").value;
+       // alert(val);
+       jQuery.ajax({
+            url: " <?php echo base_url(); ?>" + "index.php/config/ConfigurationManager/labelZonePoids " ,
+            type: "POST",
+            dataType: "JSON",
+            data: {select_id : val},
+            success:function(data){
+                var result = jQuery.parseJSON(JSON.stringify(data));
+                //alert(JSON.stringify(data)) ;
+               if (result){
+                    for (var i = 0; i < result.label.length; i++) {
+                        jQuery('#'+'ajaxd' + i).html(JSON.stringify(result.label[i]).split('"').join(''));
+                        jQuery('#'+'ajaxp' + i).html(JSON.stringify(result.label[i]).split('"').join(''));
+                   }
+                   for(var i = 0; i < result.ville.length; i++){
+                        jQuery('#'+'ajaxv' + i).html(JSON.stringify(result.ville[i]).split('"').join(''));
+                   }
+               } 
+
+        }
+       })
+
+    }
+</script>
+
+
 <?php
 
+
 if (isset($_SESSION['user'])) {
- //var_dump('tata') ; die;
+ //var_dump($_SESSION) ; die;
   $var ='http://'.$_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
   $var = substr($var, strlen(site_url())+1);
   
@@ -13,115 +43,73 @@ if (isset($_SESSION['user'])) {
         redirect ("login_form/".$var );
     } else {
         ?>
-<div class="wrapper">
-    <div class="container-fluid">
+        <div class="wrapper">
+            <div class="container-fluid">
 
-        <!-- Page-Title -->
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="page-title-box">
-                    <h4 class="page-title">Nouveau client</h4>
+                <!-- Page-Title -->
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="page-title-box">
+                           
+                            <h4 class="page-title">Tarification client</h4>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <!-- end page title end breadcrumb -->
+                <!-- end page title end breadcrumb -->
 
 
-        <!-- Basic Form Wizard -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card-box">
-                    <h4 class="m-t-0 header-title"><b>Création d'un nouveau client</b></h4>
+                <!-- Basic Form Wizard -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card-box">
+                            <h4 class="m-t-0 header-title"><b>Tarification client</b></h4>
 
-                    <?php if ($this->uri->segment(2) == "create"): ?>
-                    <form id="basic-form" action="<?php echo site_url('customer/store/'); ?>"   method="POST">
-                        <?php else: ?>
-                        <?php if (isset($customer)): ?>
-                        <form id="basic-form" action="<?php echo site_url('customer/' . $customer[0]->id . '/update'); ?>"   method="POST">
-                            <?php endif; ?>
-                            <?php endif; ?>
-                        <div>
-                            <h3>Informations relative au client</h3>
-                            <section>
-                                <div class="form-group row">
-                                    <label class="col-2 col-form-label">Nom de l'entreprise</label>
-                                    <div class="col-6">
-                                        <input type="text" value="<?php if (isset($customer)) echo $customer[0]->name; ?>" id="example-email" name="name" class="form-control" placeholder="Nom de l'entreprise" required>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-2 col-form-label" for="example-email">Registre de commerce</label>
-                                    <div class="col-6">
-                                        <input type="text" value="<?php if (isset($customer)) echo $customer[0]->business_register; ?>"id="example-email" name="business_register" class="form-control" placeholder="Numéro registre de commerce"  required>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-2 col-form-label" for="example-email">Numéro de contribuable</label>
-                                    <div class="col-6">
-                                        <input type="text" value="<?php if (isset($customer)) echo $customer[0]->uin; ?>" id="example-email" name="uin" class="form-control" placeholder="Numéro de contribuable" minlength="12" maxlength="20" required>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-2 col-form-label" for="example-email">Numéro de compte</label>
-                                    <div class="col-6">
-                                        <input type="text"  value="<?php if (isset($customer)) echo $customer[0]->account_number; ?>" id="example-email" name="account_number" class="form-control" placeholder="Numéro de compte" >
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-2 col-form-label" for="example-email">Banque</label>
-                                    <div class="col-6">
-                                        <input type="text" value="<?php if (isset($customer)) echo $customer[0]->bank; ?>" id="example-email" name="bank" class="form-control" placeholder="Banque" >
-                                    </div>
-                                </div>
-                                <?php ?>
-                                <div class="form-group row">
-                                    <label class="col-2 col-form-label" for="example-email">Adresse</label>
-                                    <div class="col-4">
-                                        <input type="text" value="<?php if (isset($customer)) echo $customer[0]->adress; ?>"  id="example-email" name="adress" class="form-control" placeholder="Adresse" >
-                                        <?php if (isset($adresses) && $adresses != null && !empty($adresses)) { ?>
-                                        <select class="form-control" name="adress" >
-                                                <option disabled selected> choisir une adresse  </option>
-                                        <?php  foreach ($adresses as $adresse) {  ?>
-                                                    <option> 
-                                                        <?php echo $adresse->$adresse ?>
-                                                    </option>
-                                               <?php }
-                                            }
-                                            ?>
-                                        </select>
-                                    </div>
-                                </div>
+                            <?php if ($this->uri->segment(2) == "new"): ?>
+                                    <form id="basic-form" action="<?php echo site_url('tarifs/create'); ?>"   method="POST">
+                                    <?php else: ?>
+                                        <?php if (isset($tarif)): ?>
+                                            <form id="basic-form" action="<?php echo site_url('tarifs/' . $tarif->id . '/update'); ?>"   method="POST">
+                                            <?php endif; ?>
+                                        <?php endif; ?>
 
-                                <div class="form-group row">
-                                    <label class="col-2 col-form-label" for="example-email">Numéro de téléphone</label>
-                                    <div class="col-4">
-                                        <input type="text" value="<?php if (isset($customer)) echo $customer[0]->phone_number; ?>"id="example-email"  name="phone_number" class="form-control" placeholder="Numéro de téléphone" >
-                                    </div>
+                                <div>
+                                    <h3>Sélectionnez un client</h3>
+                                    <section>
+                                        <div class="form-group clearfix">
+                                           <label class="col-2 col-form-label" for="example-email">Client</label>
+                                            <div class="col-4">
+                                                    <select onchange="change()" id="select_id" class="form-control" name="customer" value="<?php if (isset($customer)) echo $customer[0]->name; ?>" required>
+                                                       <?php if(isset($customer)){  ?>
+                                                                 <option><?php echo $customer[0]->name ?></option>
+                                                       <?php  } else{ ?>
+                                                                    <option disabled selected>Sélectionnez un Client</option>
+                                                     <?php  } 
+                                                        if (isset($customers)) {
+                                                            foreach ($customers as $customer) {
+                                                                ?>
+                                                                <option><?php echo $customer->name ?></option>
+                                                                <?php }
+                                                            }
+                                                            ?>
 
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-2 col-form-label" for="example-email">Format du numéro de tracking</label>
-                                    <div class="col-4">
-                                        <input type="text" value="<?php if (isset($customer)) echo $customer[0]->tracking_number; ?>"id="example-email"  name="tracking_number" class="form-control" placeholder="Format du numéro de tracking " >
-                                    </div>
-
-                                </div>
-
-
-                            </section>
-                            <h3>Commissions sur les cashs </h3>
-                            <section>
-
-                                <div class="form-group row">
-                                    <?php if (isset($cashs) && $cashs != null && !empty($cashs)) { $i=0;?>
-                                         <?php foreach ($cashs as $cash) { ?>
+                                                    </select>
+                                            </div>
+                                        </div>
+                                       
+                                    </section>
+                                    <h3>Commissions sur les cashs</h3>
+                                    <section>
+                                        <div class="form-group row">
+                                    <?php if (isset($intervals) && $intervals != null && !empty($intervals)) { $i=0;?>
+                                         <?php foreach ($intervals as $interval) { ?>
 
                                             <div class="col-6">
                                                 <div class="form-group row">
-                                                    <label class="col-4 col-form-label" for="example-email"> [ <?php echo $cash->interval ; ?> ] </label>
+                                                    <label class="col-4 col-form-label" for="example-email"> [ <?php echo $interval->interval ; ?> ] </label>
 
                                                         <input class="col-6" type="text" value="<?php if (isset($cash_collected)){   echo($cash_collected[$i]->amount); $i++;}   ?>" id="example-email"  name="amount[]" class="form-control" placeholder="commission" required>
 
+                                                   
 
                                                 </div>
 
@@ -131,20 +119,20 @@ if (isset($_SESSION['user'])) {
                                     }
                                     ?>
                                 </div>
-                            </section>
-                            <h3>Tarification à domicile</h3>
-                            <section>
-                                <div class="form-group row">
-                                    <?php if (isset($zones) && $zones != null && !empty($zones)) {
-                                        if (isset($poids) && $poids != null && !empty($poids)) {
-                                            $i=0;?>
-                                        <?php foreach ($zones as $zone) {
-                                                foreach ($poids as $poid) {?>
 
+                                    </section>
+                                    <h3>Tarification à domicile</h3>
+                                    <section>
+                                        <div class="form-group row">
+                                  
+                                            <?php if(isset($_SESSION['data'])){
+                                                $length = $_SESSION['data']['label'] ;
+                                                for($i = 0; $i < $length ; $i++) {?> 
                                                 <div class="col-6">
                                                     <div class="form-group row">
-                                                        <label class="col-4 col-form-label" for="example-email">
-                                                            [ <?php echo $zone->zone; ?> ][<?php echo $poid->weight; ?>] </label>
+                                                        <label class="col-4 col-form-label" id="<?php echo("ajaxd".$i)?>" for="example-email">
+                                                             
+                                                             </label>
 
                                                             <input class="col-6" type="text" value="<?php if (isset($domicile_collected)){echo($domicile_collected[$i]->amount); $i++;}   ?>" id="example-email"  name="tarifdomicile[]" class="form-control"
                                                                    placeholder="tarif à domicile"
@@ -153,59 +141,89 @@ if (isset($_SESSION['user'])) {
                                                     </div>
 
                                                 </div>
-                                                <?php
-                                            }
-                                        }
-                                    }
-                                    }
-                                    ?>
-                                </div>
-                            </section>
-                            <h3>Tarification au bureau de poste</h3>
-                            <section>
-                                <div class="form-group row">
-                                    <?php if (isset($zones) && $zones != null && !empty($zones)) {
-                                        if (isset($poids) && $poids != null && !empty($poids)) {
-                                            $i=0;?>
-                                            <?php foreach ($zones as $zone) {
-                                                foreach ($poids as $poid) {?>
+                                                <?php } }?>
+                                          
+                                        </div>
+                                    </section>
+                                    <h3>Tarification au bureau de poste</h3>
+                                    <section>
+                                        <div class="form-group row">
+                                  
+                                            <?php if(isset($_SESSION['data'])){
+                                                $length = $_SESSION['data']['label'] ;
+                                                for($i = 0; $i < $length ; $i++) {?> 
+                                                <div class="col-6">
+                                                    <div class="form-group row">
+                                                        <label class="col-4 col-form-label" id="<?php echo("ajaxp".$i)?>" for="example-email">
+                                                             
+                                                             </label>
 
-                                                    <div class="col-6">
-                                                        <div class="form-group row">
-                                                            <label class="col-4 col-form-label" for="example-email">
-                                                                [ <?php echo $zone->zone; ?> ][<?php echo $poid->weight; ?>] </label>
-
-                                                                <input class="col-6" type="text" value="<?php if (isset($bureau_collected)){echo($bureau_collected[$i]->amount); $i++;}   ?>" id="example-email"  name="tarifbureau[]" class="form-control"
-                                                                       placeholder="tarif au bureau de poste"
-                                                                       required>
-
-                                                        </div>
+                                                            <input class="col-6" type="text" value="<?php if (isset($bureau_collected)){echo($bureau_collected[$i]->amount); $i++;}   ?>" id="example-email"  name="tarifbureau[]" class="form-control"
+                                                                   placeholder="tarif au bureau de poste"
+                                                                   required>
 
                                                     </div>
-                                                    <?php
-                                                }
-                                            }
-                                        }
-                                    }
-                                    ?>
+
+                                                </div>
+                                                <?php } } else {?>
+
+
+                                              <?php  }?>
+                                          
+                                        </div>
+                                    </section>
+                                     <h3>Choisir le point de livraison du client</h3>
+                                    <section>
+                                        <div class="form-group row">
+                                            <label class="col-2 col-form-label" for="example-email">Point de livraison</label>
+                                            <div class="col-4">
+                                                    <select  class="form-control" name="deposit" value="<?php if (isset($deposit)) echo $deposit[0]->name; ?>" required>
+                                                       <?php if(isset($deposit)) {?>  
+                                                            <option><?php echo $deposit[0]->name ; ?></option>
+                                                        <?php } else {?>
+                                                                    <option selected disabled>Sélectionnez un point de livraison</option>
+                                                       <?php } 
+                                                        if (isset($deposits)) {
+                                                            foreach ($deposits as $deposit) {
+                                                                ?>
+                                                                <option ><?php echo $deposit->name ?></option>
+                                                                <?php }
+                                                            }
+                                                            ?>
+
+                                                    </select>
+                                            </div>
+                                          
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-2 col-form-label" for="example-email">Ville</label>
+                                            <div class="col-4">
+                                                    <select multiple class="form-control" name="ville[]" value="<?php if (isset($ville)) echo $ville[0]->name; ?>" required>
+                                                        <?php if(isset($_SESSION['data'])){
+                                                        $length = $_SESSION['data']['ville'] ;
+                                                        for($i = 0; $i < $length ; $i++) {?> >
+                                                                <option id="<?php echo("ajaxv".$i)?>" > </option>
+                                                                <?php }
+                                                            }
+                                                            ?>
+
+                                                    </select>
+                                            </div>
+                                          
+                                        </div>
+                                    </section>
                                 </div>
-                            </section>
+                            </form>
 
                         </div>
-                    </form>
-
+                    </div>
                 </div>
-            </div>
+
+
+            </div> <!-- end container -->
         </div>
+        <!-- end wrapper -->
 
-        <!-- End row -->
-
-
-
-
-    </div> <!-- end container -->
-</div>
-<!-- end wrapper -->
-
+        <!-- End Navigation Bar-->
 <?php }
 }?>

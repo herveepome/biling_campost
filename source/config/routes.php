@@ -158,6 +158,13 @@ $route['region/create']['POST'] = 'config/ConfigurationManager/region/create/$da
 $route['region/(:num)/edit']['get'] = 'config/ConfigurationManager/region/edit/$1';
 $route['region/(:num)/update']['POST'] = 'config/ConfigurationManager/region/update/$1';
 $route['region/(:num)/delete']['get'] = 'config/ConfigurationManager/region/delete/$1';
+// villes
+$route['config/villes']['get'] = 'config/ConfigurationManager/ville';
+$route['ville/new']['get'] = 'config/ConfigurationManager/ville/new';
+$route['ville/create']['POST'] = 'config/ConfigurationManager/ville/create/$data';
+$route['ville/(:num)/edit']['get'] = 'config/ConfigurationManager/ville/edit/$1';
+$route['ville/(:num)/update']['POST'] = 'config/ConfigurationManager/ville/update/$1';
+$route['ville/(:num)/delete']['get'] = 'config/ConfigurationManager/ville/delete/$1';
 // cash intervalls
 $route['config/cash_intervals']['get'] = 'config/ConfigurationManager/cashInterval';
 $route['cash/new']['get'] = 'config/ConfigurationManager/cashInterval/new';

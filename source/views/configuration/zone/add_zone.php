@@ -53,13 +53,45 @@ if (isset($_SESSION['user'])) {
                                      <div class="form-group row">
                                         <label class="col-2 col-form-label" for="example-email">Client</label>
                                         <div class="col-4">
-                                                <select class="form-control" name="customer" required>
-                                                    <option disabled selected>Sélectionnez un client</option>
-                                                    <?php
+                                                <select class="form-control" name="customer" value="<?php if (isset($customer)) echo $customer[0]->name; ?>" required>
+                                                   <?php if(isset($customer)){  ?>
+                                                             <option><?php echo $customer[0]->name ?></option>
+                                                   <?php  } else{ ?>
+                                                                <option disabled selected>Sélectionnez un Client</option>
+                                                 <?php  } 
                                                     if (isset($customers)) {
                                                         foreach ($customers as $customer) {
                                                             ?>
                                                             <option><?php echo $customer->name ?></option>
+                                                            <?php }
+                                                        }
+                                                        ?>
+
+                                                </select>
+                                        </div>
+                                        </div>
+                                    <div class="form-group row">
+                                        <label class="col-2 col-form-label" for="example-email">Ville</label>
+                                        <div class="col-4">
+
+                                                <select multiple class="form-control" name="ville[]" value="<?php if (isset($ville)) echo $ville[0]->name; ?>" required>
+                                                    <?php if(isset($ville)){ ?>
+                                                             <option><?php echo $ville[0]->name ?></option>
+                                                   <?php  } else{ ?>
+                                                                <option disabled selected>Sélectionnez une ville</option>
+                                                 <?php  } 
+                                                   
+                                                    if (isset($regions)) {
+                                                         if (isset($villes)) {
+                                                            $i = 0 ;
+                                                            
+                                                                foreach ($regions as $region) { ?>
+                                                                    <option style="font-weight: bold;"> <?php echo $region->name ?> </option> 
+                                                                 <?php    foreach($villes[$i] as $ville){?>
+                                                                            <option style="padding-left: 15px;"><?php echo $ville->name ?></option>
+                                                                    <?php } $i++; 
+                                                                } ?>
+                                                            
                                                             <?php }
                                                         }
                                                         ?>

@@ -34,13 +34,13 @@ if (isset($_SESSION['user'])) {
                     <div class="row">
                         <div class="col-12">
                             <div class="p-20">
-                                <?php if ($this->uri->segment(2) == "create"): ?>
+                                <?php if ($this->uri->segment(2) == "create"){ ?>
                                     <form action="<?php echo site_url('customer/store/'); ?>"   method="POST">
-                                    <?php else: ?>
-                                    <?php if (isset($customer)): ?>
-                                    <form id="basic-form" action="<?php echo site_url('customer/' . $customer[0]->id . '/update'); ?>"   method="POST">
-                                        <?php endif; ?>
-                                        <?php endif; ?>
+                                    <?php } else { 
+                                             if (isset($customer)) { ?>
+                                                <form  action="<?php echo site_url('customer/' . $customer[0]->id . '/update'); ?>"   method="POST">
+                                            <?php }
+                                            } ?>
 
         <!-- end page title end breadcrumb -->
                                    
@@ -125,12 +125,7 @@ if (isset($_SESSION['user'])) {
         <!-- end row -->
     </div> <!-- end container -->
 </div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- end wrapper -->
+
 <!-- end wrapper -->
 <?php }
 }?>
