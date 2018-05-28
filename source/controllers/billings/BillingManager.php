@@ -191,7 +191,62 @@ class BillingManager extends MainController {
 
             if (!empty($operation_id) && !empty($versement_id) ){
 
-               $this->operation_model->executeQuery("CREATE  TEMPORARY TABLE IF NOT EXISTS nominal AS ("
+                $this->operation_model->executeQuery("CREATE  TEMPORARY TABLE IF NOT EXISTS nominal1 AS (select * from (SELECT v.id,v.reference,"
+                            . "o.status,o.start_time,o.tracking_number,o.size,o.order,o.delivered_date,"
+                            . "o.address,o.region,o.payment_method,o.amount_to_collect, v.credit as amount_collected,"
+                            . "o.bureau, o.date_operation, o.deposit_local FROM versement v LEFT join operation o "
+                            . " ON o.tracking_number=v.reference  AND o.state_file_id=" . $operation_id[0]->id . " AND v.state_file_id=" . $versement_id[0]->id
+                            . " AND o.order<>v.reference ORDER BY o.order)A where A.tracking_number IS NOT NULL)");
+
+                    $this->operation_model->executeQuery("CREATE  TEMPORARY TABLE IF NOT EXISTS nominal2 AS (select * from (SELECT v.id,v.reference,"
+                            . "o.status,o.start_time,o.tracking_number,o.size,o.order,o.delivered_date,"
+                            . "o.address,o.region,o.payment_method,o.amount_to_collect, v.credit as amount_collected,"
+                            . "o.bureau, o.date_operation, o.deposit_local FROM versement v LEFT join operation o "
+                            . " ON o.order=v.reference  AND o.state_file_id=" . $operation_id[0]->id . " AND v.state_file_id=" . $versement_id[0]->id
+                            . "  AND  o.tracking_number<>v.reference ORDER BY o.order)A where A.tracking_number IS NOT NULL)");
+                    $this->operation_model->executeQuery("CREATE  TEMPORARY TABLE IF NOT EXISTS nominal3 AS (select * from (SELECT v.id,v.reference,"
+                            . "o.status,o.start_time,o.tracking_number,o.size,o.order,o.delivered_date,"
+                            . "o.address,o.region,o.payment_method,o.amount_to_collect, v.credit as amount_collected,"
+                            . "o.bureau, o.date_operation, o.deposit_local FROM versement v LEFT join operation o "
+                            . "ON o.order=v.reference  AND o.state_file_id=" . $operation_id[0]->id . " AND v.state_file_id=" . $versement_id[0]->id
+                            . "  AND  o.tracking_number=v.reference ORDER BY o.order)A where A.tracking_number IS NOT NULL)");
+
+
+                    $this->operation_model->executeQuery("CREATE  TEMPORARY TABLE IF NOT EXISTS alternatifs1 AS (select * from (SELECT v.id,v.reference,"
+                            . "o.status,o.start_time,o.tracking_number,o.size,o.order,o.delivered_date,"
+                            . "o.address,o.region,o.payment_method,o.amount_to_collect, v.credit as amount_collected,"
+                            . "o.bureau, o.date_operation, o.deposit_local FROM versement v LEFT join operation o "
+                            . "ON right(o.order,LENGTH(v.reference))=v.reference AND cast(o.amount_to_collect as unsigned integer)=cast(v.credit as unsigned integer)  AND o.state_file_id=" . $operation_id[0]->id . " AND v.state_file_id=" . $versement_id[0]->id
+                            . "  AND right(o.tracking_number,LENGTH(v.reference))<>v.reference AND o.order<>v.reference AND o.tracking_number<>v.reference  ORDER BY o.order)A where A.tracking_number IS NOT NULL)");
+                    $this->operation_model->executeQuery("CREATE  TEMPORARY TABLE IF NOT EXISTS alternatifs2 AS (select * from (SELECT v.id,v.reference,"
+                            . "o.status,o.start_time,o.tracking_number,o.size,o.order,o.delivered_date,"
+                            . "o.address,o.region,o.payment_method,o.amount_to_collect, v.credit as amount_collected,"
+                            . "o.bureau, o.date_operation, o.deposit_local FROM versement v LEFT join operation o "
+                            . "ON right(o.tracking_number,LENGTH(v.reference))=v.reference AND cast(o.amount_to_collect as unsigned integer)=cast(v.credit as unsigned integer)  AND o.state_file_id=" . $operation_id[0]->id . " AND v.state_file_id=" . $versement_id[0]->id
+                            . "  AND right(o.order,LENGTH(v.reference))<>v.reference AND o.order<>v.reference AND o.tracking_number<>v.reference  ORDER BY o.order)A where A.tracking_number IS NOT NULL)");
+                    $this->operation_model->executeQuery("CREATE  TEMPORARY TABLE IF NOT EXISTS alternatifs3 AS (select * from (SELECT v.id,v.reference,"
+                            . "o.status,o.start_time,o.tracking_number,o.size,o.order,o.delivered_date,"
+                            . "o.address,o.region,o.payment_method,o.amount_to_collect, v.credit as amount_collected,"
+                            . "o.bureau, o.date_operation, o.deposit_local FROM versement v LEFT join operation o "
+                            . "ON right(o.tracking_number,LENGTH(v.reference))=v.reference AND cast(o.amount_to_collect as unsigned integer)=cast(v.credit as unsigned integer)  AND o.state_file_id=" . $operation_id[0]->id . " AND v.state_file_id=" . $versement_id[0]->id
+                            . "  AND right(o.order,LENGTH(v.reference))=v.reference AND o.order<>v.reference AND o.tracking_number<>v.reference  ORDER BY o.order)A where A.tracking_number IS NOT NULL)");
+
+                $rows1 = $rows2 = $rows3 = $rows4 = $rows5 = $rows6 = array();
+                        $rows1 = $this->operation_model->getCroisedRows("select * from nominal1");
+                        $rows2 = $this->operation_model->getCroisedRows("select * from nominal2");
+                        $rows3 = $this->operation_model->getCroisedRows("select * from nominal3");
+                        $rows4 = $this->operation_model->getCroisedRows("select * from alternatifs1");
+                        $rows5 = $this->operation_model->getCroisedRows("select * from alternatifs2");
+                        $rows6 = $this->operation_model->getCroisedRows("select * from alternatifs3");
+                        $data["rows"] = array_merge($rows1, $rows2, $rows3, $rows4, $rows5, $rows6);
+                        $this->operation_model->executeQuery("DROP TABLE nominal1");
+                    $this->operation_model->executeQuery("DROP TABLE nominal2");
+                    $this->operation_model->executeQuery("DROP TABLE nominal3");
+                    $this->operation_model->executeQuery("DROP TABLE alternatifs1");
+                    $this->operation_model->executeQuery("DROP TABLE alternatifs2");
+                    $this->operation_model->executeQuery("DROP TABLE alternatifs3");
+
+            /*   $this->operation_model->executeQuery("CREATE  TEMPORARY TABLE IF NOT EXISTS nominal AS ("
                     . "select * from (SELECT v.reference,"
                     . "o.status,o.start_time,o.tracking_number,o.size,o.order,o.delivered_date,"
                     . "o.address,o.region,o.payment_method,o.amount_to_collect, v.credit as amount_collected,"
@@ -250,7 +305,7 @@ class BillingManager extends MainController {
                 $this->operation_model->executeQuery("DROP TABLE alternatifs_egaux");
                 $this->operation_model->executeQuery("DROP TABLE alternatifs_differents");
                 $this->operation_model->executeQuery("DROP TABLE alternatifs_superieur");
-                $data =  array_merge($nominal,$alternatifs_egaux,$alternatifs_differents);
+                $data =  array_merge($nominal,$alternatifs_egaux,$alternatifs_differents); */
 
 
             }

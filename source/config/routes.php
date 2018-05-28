@@ -158,6 +158,13 @@ $route['region/create']['POST'] = 'config/ConfigurationManager/region/create/$da
 $route['region/(:num)/edit']['get'] = 'config/ConfigurationManager/region/edit/$1';
 $route['region/(:num)/update']['POST'] = 'config/ConfigurationManager/region/update/$1';
 $route['region/(:num)/delete']['get'] = 'config/ConfigurationManager/region/delete/$1';
+// villes
+$route['config/villes']['get'] = 'config/ConfigurationManager/ville';
+$route['ville/new']['get'] = 'config/ConfigurationManager/ville/new';
+$route['ville/create']['POST'] = 'config/ConfigurationManager/ville/create/$data';
+$route['ville/(:num)/edit']['get'] = 'config/ConfigurationManager/ville/edit/$1';
+$route['ville/(:num)/update']['POST'] = 'config/ConfigurationManager/ville/update/$1';
+$route['ville/(:num)/delete']['get'] = 'config/ConfigurationManager/ville/delete/$1';
 // cash intervalls
 $route['config/cash_intervals']['get'] = 'config/ConfigurationManager/cashInterval';
 $route['cash/new']['get'] = 'config/ConfigurationManager/cashInterval/new';
@@ -172,3 +179,10 @@ $route['weight/create']['POST'] = 'config/ConfigurationManager/weightInterval/cr
 $route['weight/(:num)/edit']['get'] = 'config/ConfigurationManager/weightInterval/edit/$1';
 $route['weight/(:num)/update']['POST'] = 'config/ConfigurationManager/weightInterval/update/$1';
 $route['weight/(:num)/delete']['get'] = 'config/ConfigurationManager/weightInterval/delete/$1';
+
+$route['config/tarifs']['get'] = 'config/ConfigurationManager/tarifs';
+$route['tarifs/new']['get'] = 'config/ConfigurationManager/tarifs/new';
+$route['tarifs/create']['POST'] = 'config/ConfigurationManager/tarifs/create/$data';
+$route['tarifs/(:num)/edit']['get'] = 'config/ConfigurationManager/tarifs/edit/$1';
+$route['tarifs/(:num)/update']['POST'] = 'config/ConfigurationManager/tarifs/update/$1';
+$route['tarifs/(:num)/delete']['get'] = 'config/ConfigurationManager/tarifs/delete/$1';
