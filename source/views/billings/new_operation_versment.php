@@ -1,28 +1,11 @@
-<?php
 
-if (isset($_SESSION['user'])) {
- //var_dump('tata') ; die;
-  $var ='http://'.$_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-  $var = substr($var, strlen(site_url())+1);
-  
-    $now = time(); // Checking the time now when home page starts.
-    if ($now > $_SESSION['expire']) {
-        session_destroy();
-
-        $var = str_replace('/', '-', $var) ;
-        redirect ("login_form/".$var );
-    } else {
-        ?>
-        
-        
-        ?>
 <div class="wrapper">
     <div class="container-fluid">
 
         <!-- Page-Title -->
         <div class="row">
-            <div class="col-sm-12">
-                <div class="col-sm-5 m-t-20">
+            <div class="col-sm-12" >
+                <div class="col-sm-5 m-t-20" >
                     
                 </div>
             </div>
@@ -30,7 +13,7 @@ if (isset($_SESSION['user'])) {
         <!-- end page title end breadcrumb -->
         <div class="row">
             <div class="col-12">
-                <div class="card-box">
+                <div id="txt" class="card-box">
                     <h4 class="m-t-0 header-title"><b>Chargement du <?php if (isset($file_to_upload) && $file_to_upload != null) echo $file_to_upload; ?></b></h4>
                     <div class="row">
 
@@ -38,6 +21,9 @@ if (isset($_SESSION['user'])) {
                             <div class="p-20">
                                 <?php //if (isset($file_to_upload) && $file_to_upload!=null): ?>
                                 <?php //if ($file_to_upload=="Fichier des versements"): ?>
+
+                                <div id="loading" style="display: none; margin-left: 10%; text-align: left;"><img src='<?php echo base_url('assets/images/load.gif'); ?>' width="64" height="64" /><br>Veuillez patienter, Chargement en cours...
+                                </div><br>
                                 <form action="<?php echo site_url($link); ?>"   method="POST" class="form-horizontal" onsubmit="return (verifFileExtension('fichier', extensionsValides));" role="form" accept-charset="utf-8" enctype="multipart/form-data" >
                                     <?php //else: ?>
 
@@ -99,9 +85,6 @@ if (isset($_SESSION['user'])) {
                                         </div>
                                     </div>
 
-                                    
-
-
                                     <div class="actions_perso">
                                         <button type="submit" onclick="move()" class="btn btn-primary waves-effect waves-light btn-md">Charger</button>
                                         <a class="btn btn-danger waves-effect waves-light" href="<?php echo site_url('billings'); ?>">Annuler</a>
@@ -122,5 +105,3 @@ if (isset($_SESSION['user'])) {
 </div> <!-- end container -->
 </div>
 <!-- end wrapper -->
-<?php }
-}?>

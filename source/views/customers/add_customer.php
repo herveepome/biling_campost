@@ -1,18 +1,4 @@
-<?php
 
-if (isset($_SESSION['user'])) {
- //var_dump('tata') ; die;
-  $var ='http://'.$_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-  $var = substr($var, strlen(site_url())+1);
-  
-    $now = time(); // Checking the time now when home page starts.
-    if ($now > $_SESSION['expire']) {
-        session_destroy();
-
-        $var = str_replace('/', '-', $var) ;
-        redirect ("login_form/".$var );
-    } else {
-        ?>
 <div class="wrapper">
     <div class="container-fluid">
 
@@ -107,6 +93,25 @@ if (isset($_SESSION['user'])) {
                                     </div>
 
                                 </div>
+                                <div class="form-group row">
+                                    <label class="col-2 col-form-label" for="example-email">Copier la tarification de :</label>
+                                    <div class="col-6">
+                                        <select class="form-control" name="customercopy" value="">
+                                                       
+                                                <option disabled selected>Sélectionnez un Client</option>
+                                                     <?php   
+                                                        if (isset($customers)) {
+                                                            foreach ($customers as $customer) {
+                                                                ?>
+                                                                <option><?php echo $customer->name ?></option>
+                                                                <?php }
+                                                            }
+                                                            ?>
+
+                                        </select>
+                                    </div>
+
+                                </div>
 
                                     
                                       <center>
@@ -127,5 +132,3 @@ if (isset($_SESSION['user'])) {
 </div>
 
 <!-- end wrapper -->
-<?php }
-}?>

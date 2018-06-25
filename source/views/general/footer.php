@@ -101,26 +101,27 @@
 
         </script>
         <script>
+              function move() {
+                 $('#loading').css('display','block');
+                // $("#loading").fadeOut("1000");
+               /* var elem = document.getElementById("myBar");
+                var finalMessage = document.getElementById('finalMessage');
+                var timer = document.getElementById('time').value;
+                //alert(timer);
+                var width = 1;
+                var id = setInterval(frame, timer);
+                function frame() {
+                    if (width >= 100) {
+                        finalMessage.innerHTML = "Veuillez patienter, Chargement du fichier en cours ...";
+                        return true;
+                    } else {
+                        width++;
+                        finalMessage.innerHTML = "Veuillez patienter, Chargement du fichier en cours";
+                        elem.style.width = width + '%';
 
-    function move() {
-        var elem = document.getElementById("myBar");
-        var finalMessage = document.getElementById('finalMessage');
-        var timer = document.getElementById('time').value;
-        //alert(timer);
-        var width = 1;
-        var id = setInterval(frame, timer);
-        function frame() {
-            if (width >= 100) {
-                finalMessage.innerHTML = "Veuillez patienter, Chargement du fichier en cours ...";
-                return true;
-            } else {
-                width++;
-                finalMessage.innerHTML = "Veuillez patienter, Chargement du fichier en cours";
-                elem.style.width = width + '%';
-
-            }
-        }
-    }
+                    }
+                } */
+            } 
 
         </script>
 

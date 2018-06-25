@@ -1,21 +1,7 @@
 <!DOCTYPE html>
 <html>
     <body>
-    <?php
 
-    if (isset($_SESSION['user'])) {
- //var_dump('tata') ; die;
-  $var ='http://'.$_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-  $var = substr($var, strlen(site_url())+1);
-  
-    $now = time(); // Checking the time now when home page starts.
-    if ($now > $_SESSION['expire']) {
-        session_destroy();
-
-        $var = str_replace('/', '-', $var) ;
-        redirect ("login_form/".$var );
-    } else {
-        ?>
 
         <div class="wrapper">
             <div class="container-fluid">
@@ -80,8 +66,7 @@
             </div> <!-- end container -->
         </div>
         <!-- end wrapper -->
-        <?php }
-        }?>
+        
 
         <!-- Footer -->
         <footer class="footer">

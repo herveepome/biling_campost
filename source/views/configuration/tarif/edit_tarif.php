@@ -1,31 +1,3 @@
-<script>
-    function change() {
-        val = document.getElementById("select_id").value;
-        alert(val); 
-       jQuery.ajax({
-            url: " <?php echo base_url(); ?>" + "index.php/config/ConfigurationManager/labelZonePoids " ,
-            type: "POST",
-            dataType: "JSON",
-            data: {select_id : val},
-            success:function(data){
-                var result = jQuery.parseJSON(JSON.stringify(data));
-                //alert(JSON.stringify(data)) ;
-               if (result){
-                    for (var i = 0; i < result.label.length; i++) {
-                        jQuery('#'+'ajaxd' + i).html(JSON.stringify(result.label[i]).split('"').join(''));
-                        jQuery('#'+'ajaxp' + i).html(JSON.stringify(result.label[i]).split('"').join(''));
-                   }
-                   for(var i = 0; i < result.ville.length; i++){
-                        jQuery('#'+'ajaxv' + i).html(JSON.stringify(result.ville[i]).split('"').join(''));
-                   }
-               } 
-
-        }
-       })
-
-    }
-</script>
-
 
         <div class="wrapper">
             <div class="container-fluid">
@@ -46,15 +18,10 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="card-box">
-                            <h4 class="m-t-0 header-title"><b>Tarification client</b></h4>
 
-                            <?php if ($this->uri->segment(2) == "new"): ?>
-                                    <form id="basic-form" action="<?php echo site_url('tarifs/create'); ?>"   method="POST">
-                                    <?php else: ?>
-                                        <?php if (isset($tarif)): ?>
-                                            <form id="basic-form" action="<?php echo site_url('tarifs/' . $tarif->id . '/update'); ?>"   method="POST">
+                                        <?php if (isset($customer)): ?>
+                                            <form id="basic-form" action="<?php echo site_url('tarifs/' . $customer->id . '/update'); ?>"   method="POST">
                                             <?php endif; ?>
-                                        <?php endif; ?>
 
                                 <div>
                                     <h3>Sélectionnez un client</h3>
@@ -62,9 +29,9 @@
                                         <div class="form-group clearfix">
                                            <label class="col-2 col-form-label" for="example-email">Client</label>
                                             <div class="col-4">
-                                                    <select onchange="change()" id="select_id" class="form-control" name="customer" value="<?php if (isset($customer)) echo $customer[0]->name; ?>" required>
+                                                    <select id="select_id" class="form-control" name="customer" value="<?php if (isset($customer)) echo $customer->name; ?>" required>
                                                        <?php if(isset($customer)){  ?>
-                                                                 <option><?php echo $customer[0]->name ?></option>
+                                                                 <option><?php echo $customer->name ?></option>
                                                        <?php  } else{ ?>
                                                                     <option disabled selected>Sélectionnez un Client</option>
                                                      <?php  } 
@@ -107,53 +74,51 @@
                                     <h3>Tarification à domicile</h3>
                                     <section>
                                         <div class="form-group row">
-                                  
-                                            <?php if(isset($_SESSION['data'])){
-                                                $length = $_SESSION['data']['label'] ;
-                                                for($i = 0; $i < $length ; $i++) {?> 
-                                                <div class="col-6">
-                                                    <div class="form-group row">
-                                                        <label class="col-4 col-form-label" id="<?php echo("ajaxd".$i)?>" for="example-email">
-                                                             
-                                                             </label>
+                                    <?php if (isset($domicile) && $domicile != null && !empty($domicile)) { ?>
+                                         <?php foreach ($domicile as $domicil) { ?>
 
-                                                            <input class="col-6" type="text" value="<?php if (isset($domicile_collected)){echo($domicile_collected[$i]->amount); $i++;}   ?>" id="example-email"  name="tarifdomicile[]" class="form-control"
-                                                                   placeholder="tarif à domicile"
-                                                                   required>
+                                            <div class="col-6">
+                                                <div class="form-group row">
+                                                    <label class="col-4 col-form-label" for="example-email"> [ <?php echo $domicil['label'] ; ?> ] </label>
 
-                                                    </div>
+                                                        <input class="col-6" type="text" value="<?php echo $domicil['amount'] ;  ?>" id="example-email"  name="amount[]" class="form-control" placeholder="tarif domicile" required>
+
+                                                   
 
                                                 </div>
-                                                <?php } }?>
-                                          
-                                        </div>
+
+                                            </div>
+                                        <?php
+                                         }
+                                    }
+                                    ?>
+                                </div>
+
                                     </section>
+
                                     <h3>Tarification au bureau de poste</h3>
-                                    <section>
+                                     <section>
                                         <div class="form-group row">
-                                  
-                                            <?php if(isset($_SESSION['data'])){
-                                                $length = $_SESSION['data']['label'] ;
-                                                for($i = 0; $i < $length ; $i++) {?> 
-                                                <div class="col-6">
-                                                    <div class="form-group row">
-                                                        <label class="col-4 col-form-label" id="<?php echo("ajaxp".$i)?>" for="example-email">
-                                                             
-                                                             </label>
+                                    <?php if (isset($bureau) && $bureau != null && !empty($bureau)) { ?>
+                                         <?php foreach ($bureau as $buro) { ?>
 
-                                                            <input class="col-6" type="text" value="<?php if (isset($bureau_collected)){echo($bureau_collected[$i]->amount); $i++;}   ?>" id="example-email"  name="tarifbureau[]" class="form-control"
-                                                                   placeholder="tarif au bureau de poste"
-                                                                   required>
+                                            <div class="col-6">
+                                                <div class="form-group row">
+                                                    <label class="col-4 col-form-label" for="example-email"> [ <?php echo $buro['label'] ; ?> ] </label>
 
-                                                    </div>
+                                                        <input class="col-6" type="text" value="<?php echo $buro['amount'] ;  ?>" id="example-email"  name="amount[]" class="form-control" placeholder="tarif bureau" required>
+
+                                                   
 
                                                 </div>
-                                                <?php } } else {?>
 
+                                            </div>
+                                        <?php
+                                         }
+                                    }
+                                    ?>
+                                </div>
 
-                                              <?php  }?>
-                                          
-                                        </div>
                                     </section>
                                      <h3>Choisir le point de livraison du client</h3>
                                     <section>
@@ -182,10 +147,9 @@
                                             <label class="col-2 col-form-label" for="example-email">Ville</label>
                                             <div class="col-4">
                                                     <select multiple class="form-control" name="ville[]" value="<?php if (isset($ville)) echo $ville[0]->name; ?>" required>
-                                                        <?php if(isset($_SESSION['data'])){
-                                                        $length = $_SESSION['data']['ville'] ;
-                                                        for($i = 0; $i < $length ; $i++) {?> >
-                                                                <option id="<?php echo("ajaxv".$i)?>" > </option>
+                                                        <?php if(isset($villes)){
+                                                        foreach ($villes as $ville) {?> >
+                                                                <option ><?php echo $ville['ville'] ; ?> </option>
                                                                 <?php }
                                                             }
                                                             ?>
@@ -208,4 +172,3 @@
         <!-- end wrapper -->
 
         <!-- End Navigation Bar-->
-

@@ -1,18 +1,4 @@
-<?php
 
-if (isset($_SESSION['user'])) {
- //var_dump('tata') ; die;
-  $var ='http://'.$_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-  $var = substr($var, strlen(site_url())+1);
-  
-    $now = time(); // Checking the time now when home page starts.
-    if ($now > $_SESSION['expire']) {
-        session_destroy();
-
-        $var = str_replace('/', '-', $var) ;
-        redirect ("login_form/".$var );
-    } else {
-        ?>
 <div class="wrapper">
     <div class="container-fluid">
         <!-- Page-Title -->
@@ -41,24 +27,26 @@ if (isset($_SESSION['user'])) {
                               <thead>
                               <tr>
                                   <th>zone</th>
+                                  <th>client</th>
                                   <th>Actions</th>
                               </tr>
                               </thead>
 
 
                               <tbody>
-                                  <?php if (isset($zones) && $zones!=null && !empty($zones)){ ?>
+                                  <?php if (isset($zones) && $zones!=null && !empty($zones)){
+                                    foreach ($zones as $zone) { ?>
                                   
-                                  <?php foreach ($zones as $zone) {?>
                              <tr>
-                                  <td><?php echo $zone->zone ?></td>
+                                  <td><?php echo $zone['zone']?></td>
+                                  <td><?php echo $zone['name'] ?></td>
                                   <td class="actions">
-                                        <a href="<?php echo site_url('zone/'.$zone->id.'/edit'); ?>" class="on-default edit-row" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="fa fa-pencil"></i></a>
-                                        <a href="#custom-modal<?php echo $zone->id ?>" class="hidden on-editing cancel-row" data-animation="fadein" data-plugin="custommodal" data-original-title="Delete" data-overlaySpeed="200" data-overlayColor="#36404a"><i class="fa fa-times"></i></a>
+                                        <a href="<?php echo site_url('zone/'.$zone['zoneId'].'/edit'); ?>" class="on-default edit-row" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="fa fa-pencil"></i></a>
+                                        <a href="#custom-modal<?php echo $zone['zoneId'] ?>" class="hidden on-editing cancel-row" data-animation="fadein" data-plugin="custommodal" data-original-title="Delete" data-overlaySpeed="200" data-overlayColor="#36404a"><i class="fa fa-times"></i></a>
                                   </td>
                               </tr>
-                             <?php 
-                                  }} ?>
+                             <?php
+                           }}?>
                               
                               </tbody>
                           </table>
@@ -67,14 +55,14 @@ if (isset($_SESSION['user'])) {
                     <?php foreach ($zones as $zone) {?>
                     
                     <!-- Custom Modal -->
-        <div id="custom-modal<?php echo $zone->id ?>" class="modal-demo">
+        <div id="custom-modal<?php echo $zone['zoneId'] ?>" class="modal-demo">
             <button type="button" class="close" onclick="Custombox.close();">
                 <span>&times;</span><span class="sr-only">Close</span>
             </button>
             <h4 class="custom-modal-title">Attention</h4>
             <div class="custom-modal-text">
-             <?php echo "Voulez vous vraiment supprimer la zone".$zone->zone." ?" ?>
-                 <a class="btn btn-primary waves-effect waves-light btn-md" href="<?php echo site_url('zone/'.$zone->id .'/delete'); ?>">oui</a>
+             <?php echo "Voulez vous vraiment supprimer la zone".$zone['zone']." ?" ?>
+                 <a class="btn btn-primary waves-effect waves-light btn-md" href="<?php echo site_url('zone/'.$zone['zoneId'] .'/delete'); ?>">oui</a>
                   <a class="btn btn-danger waves-effect waves-light" href="<?php echo site_url('config/zones'); ?>">Non</a>
                     
             </div>
@@ -91,5 +79,3 @@ if (isset($_SESSION['user'])) {
 </div>
 <!-- end wrapper -->
 </div>
-<?php }
-}?>

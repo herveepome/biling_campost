@@ -181,20 +181,23 @@ class ConfigurationManager extends MainController {
         // supprimer une zone
         else if(($action=='delete')&&($value!=''))
         {   
-            $zone = $this->Configuration_model->getWhere('zone','id',$value)[0];
-            $data = array('zone'=>$zone->zone,
-                           'customer_id'=>$zone->customer_id, 
-                            'town_id'=>$zone->town_id,
-                            'deleted'=>1 ); 
-
-           
-            $this->Configuration_model->update($value,$data,'id','zone');
+           $this->zone_model->insert(array("deleted"=>1),$value);
                     redirect('config/zones');
              
         }
-        // lister les zones
+        // lister les zones par client
         else{
-            $data['zones']=$this->Configuration_model->all('zone');
+            $zones=$this->Operation_model->getCroisedRows("select * from zone where deleted=0 group by zone,customer_id" ) ;
+            
+            $customer = array() ;
+            foreach ($zones as $zone) {
+                $customer[] = array( "zoneId"=>$zone->id,
+                                    "zone"=>$zone->zone,
+                                    "id"=>$zone->customer_id,
+                                    "name"=> $this->customer_model->getALL(array("id"=>$zone->customer_id))[0]->name,
+                );
+            }
+            $data['zones'] = $customer ; 
             $this->load->view('general/header.php');
             $this->load->view('configuration/zone/list_zones.php', $data);
             $this->load->view('general/footer.php');
@@ -456,7 +459,7 @@ class ConfigurationManager extends MainController {
         $data['customers'] = $this->customer_model->getALL(array("deleted"=>0)) ; //clients
         $data['intervals'] = $this->Interval_model->getALL(array("deleted"=>0));// interval
       //  $data['zones'] = $this->Zone_model->getALL(array("deleted"=>0)); //zone
-       // $data['poids'] = $this->Weight_model->getALL(array("deleted"=>0)); //poids
+        $data['poids'] = $this->Weight_model->getALL(array("deleted"=>0)); //poids
         $data['deposits']=$this->Local_model->getALL(); // point de livraison
       
         if (($action=='new')&&($value==''))
@@ -520,42 +523,44 @@ class ConfigurationManager extends MainController {
         // éditer une tarification client
        else if(($action=='edit')&&($value!=''))
         {
-            //$customer_id = $_SESSION['item']['client'] ;
+            $data['customer'] = $this->customer_model->getALL(array("id"=>$value))[0];
             $domicileId = $this->Local_model->getALL(array("name"=>'A domicile'))[0]->id; 
             $bureauId = $this->Local_model->getALL(array("name"=>'Bureau de poste'))[0]->id; 
            if($value > 0){
                 $data['cash_collected']=$this->Cash_model->getALL(array("customer_id"=>$value));
-                $data['bureau_collected']=$this->Deposit_model->getALL(array("customer_id"=>$value,"deposit_local_id"=>$bureauId));
-                $data['domicile_collected']=$this->Deposit_model->getALL(array("customer_id"=>$value,"deposit_local_id"=>$domicileId));
+                $bureau_collected=$this->Deposit_model->getALL(array("customer_id"=>$value,"deposit_local_id"=>$bureauId));
+                $domicile_collected=$this->Deposit_model->getALL(array("customer_id"=>$value,"deposit_local_id"=>$domicileId));
+                $bureau =array() ;$domicile = array();
+                foreach ($bureau_collected as $tarifbureau) {
+                    $zone = $this->Zone_model->getALL(array("id"=>$tarifbureau->zone_id))[0]->zone;
+                    $poids = $this->Weight_model->getALL(array("id"=>$tarifbureau->weight_id))[0]->weight;
+                    $bureau[] =  array("label"=>'['.$zone.']['.$poids.']',
+                                        "amount"=>$tarifbureau->amount,
+                                    );
+                 }
+                  foreach ($domicile_collected as $tarifdomicile) {
+                    $zone = $this->Zone_model->getALL(array("id"=>$tarifdomicile->zone_id))[0]->zone;
+                    $poids = $this->Weight_model->getALL(array("id"=>$tarifdomicile->weight_id))[0]->weight;
+                    $domicile[] =  array("label"=>'['.$zone.']['.$poids.']',
+                                        "amount"=>$tarifdomicile->amount,
+                                    );
+                 }
+                 $data['bureau'] = $bureau ; $data['domicile'] = $domicile ;
+                 $ville_id = $this->Zone_model->getALL(array("customer_id"=>$value, "deleted"=>0));
+                 $villes=array(); 
+                 foreach ($ville_id as $ville) {
+                     $villes[] = array("id"=>$ville->town_id,
+                                        "ville"=>$this->Town_model->getALL(array("id"=>$ville->town_id))[0]->name,
+                                    ) ;
+                 }
+                 $data['villes']=$villes ;
                 $this->load->view('general/header.php');
-                $this->load->view('configuration/tarif/add_tarif.php',$data);
+                $this->load->view('configuration/tarif/edit_tarif.php',$data);
                 $this->load->view('general/footer.php');
 
             }
         }
-        // mettre à jour une région
-    /*    else if(($action=='update')&&($value!='')){
-            $zone=array('zone' =>$this->Configuration_model->find('id','zone',addslashes($this->input->post('zone')),'zone')) ;
-            $id_zone=$zone["zone"][0]->id; 
-            $region=array(
-                'name'=>addslashes($this->input->post('region')),
-                'zone_id'=>$id_zone  
-            );
-            $this->Configuration_model->update($value,$region,'id','regions');
-            redirect('config/tarifs');
-             
-        }  */
-        // supprimer une région
-      /*  else if(($action=='delete')&&($value!=''))
-        {   
-            $region = array('name'=>$this->Configuration_model->find('name','id',$value,'regions')[0]->name,
-                            'zone_id'=>$this->Configuration_model->find('zone_id','id',$value,'regions')[0]->zone_id,
-                             'deleted'=>1);
-            $this->Configuration_model->update($value,$region,'id','regions');
-                    redirect('config/tarifs');
-             
-        } */
-        // lister les clients ayant une tarification
+     
         else{
             $data['customers'] = $this->Operation_model->getCroisedRows('select * from customer where deleted=0 and id in (select distinct customer_id from deposit_collected)  ');
             $this->load->view('general/header.php');
@@ -577,10 +582,10 @@ class ConfigurationManager extends MainController {
                 $label[] = "[".$zone->zone."]"."[".$poid->weight."]"  ;
             }
         }
-        $villes = $this->Operation_model->getCroisedRows('select name from town where id in (select town_id from zone where customer_id='.$customer_id.' )');
+        $villes = $this->Operation_model->getCroisedRows('select name from town where deposit_local=1 and id in (select town_id from zone where customer_id='.$customer_id.' )');
         //var_dump($villes) ; die;
         $lenght_label = count($label) ;
-        $ville = array() ;
+        $vill = array() ;
         foreach ($villes as $ville ) {
             $vill[]=$ville->name ;
         }

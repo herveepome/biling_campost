@@ -1,12 +1,5 @@
 <?php
-if (isset($_SESSION['user'])) {
-
-    $now = time(); // Checking the time now when home page starts.
-    if ($now > $_SESSION['expire']) {
-        session_destroy();
-        redirect ('login_form');
-    } else {
-        //var_dump($dup_item_number);die;
+  //var_dump($dup_item_number);die;
         if (isset($dup_item_number) && $dup_item_number > 1) {
             ?>
 
@@ -150,7 +143,4 @@ if (isset($_SESSION['user'])) {
 
                         </div>
                     </div>
-        <?php
-        }
-    }
-?>
+    
