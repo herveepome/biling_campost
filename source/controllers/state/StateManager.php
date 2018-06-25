@@ -602,8 +602,7 @@ class StateManager extends MainController {
                     }
                 }
             } else {
-                if ($state[0]->type == "FC" || $state[0]->type == "FRT" || $state[0]->type == "FUV") {
-
+                
 
 
                     $this->operation_model->executeQuery("CREATE  TEMPORARY TABLE IF NOT EXISTS nominal1 AS (select * from (SELECT v.id,v.reference,"
@@ -705,7 +704,7 @@ class StateManager extends MainController {
                     $this->operation_model->executeQuery("DROP TABLE alternatifs1");
                     $this->operation_model->executeQuery("DROP TABLE alternatifs2");
                     $this->operation_model->executeQuery("DROP TABLE alternatifs3");
-                }
+                
             }
         }
 
@@ -932,16 +931,23 @@ class StateManager extends MainController {
                     else
                         $order_date = $row['9'];
 
-                    if (isset($row['30']) && $row['30'] == "Warehouse")
+                    if (isset($row['30']) && $row['30'] == "Warehouse" || $row['1'] == "Reversed" )
                         $deposit_local = "Bureau de poste";
                     else
                         $deposit_local = "A domicile";
+                    
+       
+                    
 
                     if (isset($row['4']) && $row['4'] == null || $row['4'] == "")
                         $size = 'SMALL';
                     else
                         $size = $row['4'];
+                    
+                    
+                    
 
+                    
                     if ($row["0"] != "Shipment Provider") {
                         //  var_dump($row['5']) ; die;
                         $result = array(

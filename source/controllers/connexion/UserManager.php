@@ -44,7 +44,7 @@ class UserManager extends MainController{
         if ($this->input->post()){
             $error = null;
             extract($this->input->post(NULL, TRUE));
-            $user  = $this->user_model->getALL(array("login"=>$login,"password"=>sha1($password)));
+            $user  = $this->user_model->getALL(array("login"=>$login,"password"=>$password));
             if (isset($user) && !empty($user)&& $user!=null){
                
                 $_SESSION['user'] = $login;
